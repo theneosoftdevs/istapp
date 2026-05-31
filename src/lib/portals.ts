@@ -79,8 +79,8 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   student: [
     { label: "Accueil",      to: "/student/dashboard",    icon: LayoutDashboard },
     { label: "Horaire",      to: "/student/schedule",     icon: CalendarDays },
-    { label: "Notes",        to: "/student/grades",       icon: FileText },
     { label: "Travaux",      to: "/student/assignments",  icon: ClipboardCheck },
+    { label: "Notes",        to: "/student/grades",       icon: FileText },
     { label: "Ressources",   to: "/student/resources",    icon: FolderOpen },
   ],
   teacher: [
