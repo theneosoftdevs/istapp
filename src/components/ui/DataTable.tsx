@@ -63,46 +63,78 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/50 hover:bg-muted/50">
-              {columns.map((col) => (
-                <TableHead
-                  key={col.key}
-                  className={cn(
-                    "whitespace-nowrap font-medium text-muted-foreground",
-                    alignClass[col.align ?? "left"],
-                    col.className,
-                  )}
-                >
-                  {col.header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((row) => (
-              <TableRow
-                key={rowKey(row)}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={cn(onRowClick && "cursor-pointer")}
-              >
+    <div className="space-y-4">
+      {/* Table view for Desktop/Tablet */}
+      <div className="hidden overflow-hidden rounded-xl border border-border bg-card md:block">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
                 {columns.map((col) => (
-                  <TableCell
+                  <TableHead
                     key={col.key}
-                    className={cn(alignClass[col.align ?? "left"], col.className)}
+                    className={cn(
+                      "whitespace-nowrap font-medium text-muted-foreground",
+                      alignClass[col.align ?? "left"],
+                      col.className,
+                    )}
                   >
-                    {col.render
-                      ? col.render(row)
-                      : ((row as Record<string, ReactNode>)[col.key] ?? "—")}
-                  </TableCell>
+                    {col.header}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {data.map((row) => (
+                <TableRow
+                  key={rowKey(row)}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={cn(onRowClick && "cursor-pointer")}
+                >
+                  {columns.map((col) => (
+                    <TableCell
+                      key={col.key}
+                      className={cn(alignClass[col.align ?? "left"], col.className)}
+                    >
+                      {col.render
+                        ? col.render(row)
+                        : ((row as Record<string, any>)[col.key] ?? "—")}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Card view for Mobile */}
+      <div className="grid grid-cols-1 gap-3 md:hidden">
+        {data.map((row) => (
+          <div
+            key={rowKey(row)}
+            onClick={onRowClick ? () => onRowClick(row) : undefined}
+            className={cn(
+              "rounded-xl border border-border bg-card p-4 transition-colors",
+              onRowClick && "active:bg-accent cursor-pointer"
+            )}
+          >
+            <div className="space-y-3">
+              {columns.map((col) => (
+                <div key={col.key} className="flex justify-between gap-4">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {col.header}
+                  </span>
+                  <div className={cn("text-sm font-medium text-foreground text-right", col.className)}>
+                    {col.render
+                      ? col.render(row)
+                      : ((row as Record<string, any>)[col.key] ?? "—")}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
