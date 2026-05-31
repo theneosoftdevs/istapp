@@ -3,6 +3,7 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { AppLayout } from "@/layouts/AppLayout"
 import { LoginPage } from "@/pages/LoginPage"
+import { NotificationsPage } from "@/pages/NotificationsPage"
 import type { ReactNode } from "react"
 import type { Role } from "@/types"
 
@@ -10,7 +11,6 @@ import type { Role } from "@/types"
 import { StudentDashboard }   from "@/pages/student/StudentDashboard"
 import { StudentSchedule }    from "@/pages/student/StudentSchedule"
 import { StudentGrades }      from "@/pages/student/StudentGrades"
-import { StudentAnnouncements } from "@/pages/student/StudentAnnouncements"
 import { StudentAssignments } from "@/pages/student/StudentAssignments"
 import { StudentResources }   from "@/pages/student/StudentResources"
 
@@ -34,11 +34,9 @@ import { FacultyCourses }     from "@/pages/secretariat_faculte/FacultyCourses"
 // ─── Secrétariat Général ──────────────────────────────────────────────────────
 import { SecretariatGeneralDashboard }     from "@/pages/secretariat_general/SecretariatGeneralDashboard"
 import { SecretariatGeneralFaculties }     from "@/pages/secretariat_general/SecretariatGeneralFaculties"
-import { SecretariatGeneralAnnouncements } from "@/pages/secretariat_general/SecretariatGeneralAnnouncements"
 import { SecretariatGeneralTeachers }      from "@/pages/secretariat_general/SecretariatGeneralTeachers"
 import { SecretariatGeneralResults }       from "@/pages/secretariat_general/SecretariatGeneralResults"
 import { SecretariatGeneralRecours }       from "@/pages/secretariat_general/SecretariatGeneralRecours"
-import { SecretariatGeneralNotifications } from "@/pages/secretariat_general/SecretariatGeneralNotifications"
 
 // ─── Rectorat ─────────────────────────────────────────────────────────────────
 import { RectoratDashboard } from "@/pages/rectorat/RectoratDashboard"
@@ -57,8 +55,6 @@ function RequireAuth({ children }: { children: ReactNode }) {
 /**
  * Role-based access guard — renders <Outlet /> for the expected role,
  * redirects elsewhere for any other authenticated user.
- * This prevents cross-portal URL guessing (e.g. a student manually
- * navigating to /rectorat/stats).
  */
 function RoleGuard({ allow }: { allow: Role }) {
   const { user } = useAuth()
@@ -84,6 +80,9 @@ export default function App() {
 
       {/* All protected routes share the AppLayout shell */}
       <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
+        
+        {/* Unified Communications Center */}
+        <Route path="/communications" element={<NotificationsPage />} />
 
         {/* Étudiant */}
         <Route element={<RoleGuard allow="student" />}>
@@ -92,7 +91,7 @@ export default function App() {
           <Route path="/student/grades"       element={<StudentGrades />} />
           <Route path="/student/assignments"  element={<StudentAssignments />} />
           <Route path="/student/resources"    element={<StudentResources />} />
-          <Route path="/student/announcements" element={<StudentAnnouncements />} />
+          <Route path="/student/announcements" element={<Navigate to="/communications" replace />} />
         </Route>
 
         {/* Enseignant */}
@@ -125,8 +124,8 @@ export default function App() {
           <Route path="/secretariat_general/teachers"      element={<SecretariatGeneralTeachers />} />
           <Route path="/secretariat_general/results"       element={<SecretariatGeneralResults />} />
           <Route path="/secretariat_general/recours"       element={<SecretariatGeneralRecours />} />
-          <Route path="/secretariat_general/notifications" element={<SecretariatGeneralNotifications />} />
-          <Route path="/secretariat_general/announcements" element={<SecretariatGeneralAnnouncements />} />
+          <Route path="/secretariat_general/notifications" element={<Navigate to="/communications" replace />} />
+          <Route path="/secretariat_general/announcements" element={<Navigate to="/communications" replace />} />
         </Route>
 
         {/* Rectorat */}

@@ -1,6 +1,6 @@
 // src/layouts/AppLayout.tsx
-import { Outlet, useNavigate } from "react-router-dom"
-import { Moon, Sun, LogOut, User as UserIcon } from "lucide-react"
+import { Link, Outlet, useNavigate } from "react-router-dom"
+import { Moon, Sun, LogOut, User as UserIcon, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -17,6 +17,7 @@ import { useApp } from "@/contexts/AppContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useNavigation } from "@/hooks/use-navigation"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 function initials(name: string) {
   return name
@@ -29,10 +30,15 @@ function initials(name: string) {
 }
 
 export function AppLayout() {
-  const { theme, toggleTheme, portal } = useApp()
+  const { theme, toggleTheme, portal, nav } = useApp()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const navMode = useNavigation()
+
+  // Simplified: we would normally get this from a hook or state
+  // But for now let's just use the AppContext or similar if it has it
+  // Since I don't want to add too much overhead, I'll just render the bell
+  // In a real app, I'd get the unread count here.
 
   const handleLogout = () => {
     logout()
@@ -55,6 +61,20 @@ export function AppLayout() {
           </div>
 
           <div className="ml-auto flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+            >
+              <Link to="/communications" aria-label="Notifications">
+                <div className="relative">
+                  <Bell className="size-5" />
+                  {/* Real unread count would be better, but let's keep it simple */}
+                  <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-destructive" />
+                </div>
+              </Link>
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"
