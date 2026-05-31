@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useStore } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
+import { useCurrentTeacher } from "@/src/hooks/useCurrentUser"
 import {
   addAssignment,
   removeAssignment,
@@ -34,21 +34,19 @@ import {
 } from "@/src/lib/store"
 
 export function TeacherAssignments() {
-  const { user } = useAuth()
-  const teacherId = user?.refId ?? "t1"
-  const store = useStore()
+  const store   = useStore()
+  const teacher = useCurrentTeacher(store)
 
-  const teacher = store.teachers.find((t) => t.id === teacherId) ?? store.teachers[0]
-  const myCourses = store.courses.filter((c) => c.teacherId === teacher.id)
+  const myCourses     = store.courses.filter((c) => c.teacherId === teacher.id)
   const myAssignments = store.assignments.filter((a) => a.teacherId === teacher.id)
   const mySubmissions = store.submissions.filter((s) =>
     myAssignments.some((a) => a.id === s.assignmentId),
   )
 
   const [createOpen, setCreateOpen] = useState(false)
-  const [gradeOpen, setGradeOpen] = useState<string | null>(null)
+  const [gradeOpen, setGradeOpen]   = useState<string | null>(null)
   const [gradeValue, setGradeValue] = useState("")
-  const [feedback, setFeedback] = useState("")
+  const [feedback, setFeedback]     = useState("")
   const [form, setForm] = useState({
     courseId: "",
     title: "",
@@ -59,13 +57,13 @@ export function TeacherAssignments() {
   function handleCreate() {
     if (!form.courseId || !form.title.trim() || !form.dueDate) return
     addAssignment({
-      id: nextAssignmentId(),
-      courseId: form.courseId,
-      teacherId: teacher.id,
-      title: form.title.trim(),
+      id:          nextAssignmentId(),
+      courseId:    form.courseId,
+      teacherId:   teacher.id,
+      title:       form.title.trim(),
       description: form.description.trim(),
-      dueDate: form.dueDate,
-      createdAt: new Date().toISOString().slice(0, 10),
+      dueDate:     form.dueDate,
+      createdAt:   new Date().toISOString().slice(0, 10),
     })
     setForm({ courseId: "", title: "", description: "", dueDate: "" })
     setCreateOpen(false)
@@ -75,6 +73,12 @@ export function TeacherAssignments() {
     const score = Number(gradeValue)
     if (isNaN(score) || score < 0 || score > 20) return
     gradeSubmission(subId, score, feedback.trim())
+    setGradeOpen(null)
+    setGradeValue("")
+    setFeedback("")
+  }
+
+  function closeGradeDialog() {
     setGradeOpen(null)
     setGradeValue("")
     setFeedback("")
@@ -129,8 +133,8 @@ export function TeacherAssignments() {
             </Card>
           ) : (
             myAssignments.map((a) => {
-              const course = store.courses.find((c) => c.id === a.courseId)
-              const subCount = store.submissions.filter((s) => s.assignmentId === a.id).length
+              const course    = store.courses.find((c) => c.id === a.courseId)
+              const subCount  = store.submissions.filter((s) => s.assignmentId === a.id).length
               return (
                 <Card key={a.id}>
                   <CardHeader className="pb-2">
@@ -142,7 +146,9 @@ export function TeacherAssignments() {
                         </CardDescription>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <Badge variant="secondary">{subCount} remise{subCount !== 1 ? "s" : ""}</Badge>
+                        <Badge variant="secondary">
+                          {subCount} remise{subCount !== 1 ? "s" : ""}
+                        </Badge>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -175,16 +181,14 @@ export function TeacherAssignments() {
           ) : (
             mySubmissions.map((s) => {
               const assignment = store.assignments.find((a) => a.id === s.assignmentId)
-              const student = store.students.find((st) => st.id === s.studentId)
+              const student    = store.students.find((st) => st.id === s.studentId)
               return (
                 <Card key={s.id}>
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <CardTitle className="text-sm font-semibold text-foreground">
-                          {student
-                            ? `${student.firstName} ${student.lastName}`
-                            : s.studentId}
+                          {student ? `${student.firstName} ${student.lastName}` : s.studentId}
                         </CardTitle>
                         <CardDescription>
                           {assignment?.title ?? "Travail"} · Remis le{" "}
@@ -237,6 +241,7 @@ export function TeacherAssignments() {
         </TabsContent>
       </Tabs>
 
+      {/* ─── Create assignment dialog ─────────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -301,12 +306,8 @@ export function TeacherAssignments() {
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        open={gradeOpen !== null}
-        onOpenChange={(open) => {
-          if (!open) { setGradeOpen(null); setGradeValue(""); setFeedback("") }
-        }}
-      >
+      {/* ─── Grade submission dialog ──────────────────────────────────────── */}
+      <Dialog open={gradeOpen !== null} onOpenChange={(open) => !open && closeGradeDialog()}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Corriger la remise</DialogTitle>

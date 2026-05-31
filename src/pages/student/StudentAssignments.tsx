@@ -16,15 +16,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { useStore } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
+import { useCurrentStudent } from "@/src/hooks/useCurrentUser"
 import { addSubmission, nextSubmissionId } from "@/src/lib/store"
 
 export function StudentAssignments() {
-  const { user } = useAuth()
-  const studentId = user?.refId ?? "s1"
-  const store = useStore()
-
-  const student = store.students.find((s) => s.id === studentId) ?? store.students[0]
+  const store   = useStore()
+  const student = useCurrentStudent(store)
 
   const myCourseIds = store.courses
     .filter((c) => c.promotionId === student.promotionId)
@@ -33,8 +30,8 @@ export function StudentAssignments() {
   const assignments = store.assignments
     .filter((a) => myCourseIds.includes(a.courseId))
     .map((a) => {
-      const course = store.courses.find((c) => c.id === a.courseId)
-      const submission = store.submissions.find(
+      const course      = store.courses.find((c) => c.id === a.courseId)
+      const submission  = store.submissions.find(
         (s) => s.assignmentId === a.id && s.studentId === student.id,
       )
       const isOverdue = !submission && new Date(a.dueDate) < new Date()
@@ -42,23 +39,27 @@ export function StudentAssignments() {
     })
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
 
-  const todo = assignments.filter((a) => !a.submission && !a.isOverdue).length
+  const todo      = assignments.filter((a) => !a.submission && !a.isOverdue).length
   const submitted = assignments.filter((a) => a.submission).length
-  const graded = assignments.filter((a) => a.submission?.grade !== undefined).length
+  const graded    = assignments.filter((a) => a.submission?.grade !== undefined).length
 
   const [submitTarget, setSubmitTarget] = useState<(typeof assignments)[0] | null>(null)
-  const [content, setContent] = useState("")
-  const [viewTarget, setViewTarget] = useState<(typeof assignments)[0] | null>(null)
+  const [content, setContent]           = useState("")
 
   function handleSubmit() {
     if (!submitTarget || !content.trim()) return
     addSubmission({
-      id: nextSubmissionId(),
+      id:           nextSubmissionId(),
       assignmentId: submitTarget.id,
-      studentId: student.id,
-      content: content.trim(),
-      submittedAt: new Date().toISOString(),
+      studentId:    student.id,
+      content:      content.trim(),
+      submittedAt:  new Date().toISOString(),
     })
+    setSubmitTarget(null)
+    setContent("")
+  }
+
+  function closeDialog() {
     setSubmitTarget(null)
     setContent("")
   }
@@ -71,24 +72,9 @@ export function StudentAssignments() {
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <KPICard
-          title="À remettre"
-          value={todo}
-          icon={ClipboardCheck}
-          colorClass="bg-chart-4/10 text-chart-4"
-        />
-        <KPICard
-          title="Remis"
-          value={submitted}
-          icon={CheckCircle2}
-          colorClass="bg-chart-1/10 text-chart-1"
-        />
-        <KPICard
-          title="Corrigés"
-          value={graded}
-          icon={Star}
-          colorClass="bg-chart-2/10 text-chart-2"
-        />
+        <KPICard title="À remettre" value={todo}      icon={ClipboardCheck} colorClass="bg-chart-4/10 text-chart-4" />
+        <KPICard title="Remis"      value={submitted}  icon={CheckCircle2}   colorClass="bg-chart-1/10 text-chart-1" />
+        <KPICard title="Corrigés"   value={graded}     icon={Star}           colorClass="bg-chart-2/10 text-chart-2" />
       </div>
 
       {assignments.length === 0 ? (
@@ -100,20 +86,16 @@ export function StudentAssignments() {
       ) : (
         <div className="space-y-3">
           {assignments.map((a) => {
-            const statusLabel = a.submission?.grade !== undefined
-              ? "Corrigé"
-              : a.submission
-              ? "Remis"
-              : a.isOverdue
-              ? "Délai dépassé"
+            const statusLabel =
+              a.submission?.grade !== undefined ? "Corrigé"
+              : a.submission      ? "Remis"
+              : a.isOverdue       ? "Délai dépassé"
               : "À remettre"
 
-            const statusClass = a.submission?.grade !== undefined
-              ? "border-success text-success"
-              : a.submission
-              ? "border-chart-2 text-chart-2"
-              : a.isOverdue
-              ? "border-destructive text-destructive"
+            const statusClass =
+              a.submission?.grade !== undefined ? "border-success text-success"
+              : a.submission      ? "border-chart-2 text-chart-2"
+              : a.isOverdue       ? "border-destructive text-destructive"
               : "border-warning text-warning"
 
             return (
@@ -132,20 +114,22 @@ export function StudentAssignments() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="pt-0 space-y-3">
+                <CardContent className="space-y-3 pt-0">
                   {a.description && (
                     <p className="text-sm text-muted-foreground">{a.description}</p>
                   )}
 
                   {a.submission ? (
                     <div className="rounded-md bg-muted/50 p-3 text-sm">
-                      <p className="font-medium text-foreground mb-1">Ma remise :</p>
+                      <p className="mb-1 font-medium text-foreground">Ma remise :</p>
                       <p className="text-muted-foreground">{a.submission.content}</p>
                       {a.submission.grade !== undefined && (
-                        <div className="mt-2 border-t border-border pt-2 flex items-center justify-between">
-                          <span className="text-muted-foreground text-xs">Note :</span>
+                        <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
+                          <span className="text-xs text-muted-foreground">Note :</span>
                           <span
-                            className={`font-semibold text-sm ${a.submission.grade >= 10 ? "text-success" : "text-destructive"}`}
+                            className={`text-sm font-semibold ${
+                              a.submission.grade >= 10 ? "text-success" : "text-destructive"
+                            }`}
                           >
                             {a.submission.grade}/20
                           </span>
@@ -159,11 +143,7 @@ export function StudentAssignments() {
                       )}
                     </div>
                   ) : !a.isOverdue ? (
-                    <Button
-                      size="sm"
-                      className="gap-1.5"
-                      onClick={() => setSubmitTarget(a)}
-                    >
+                    <Button size="sm" className="gap-1.5" onClick={() => setSubmitTarget(a)}>
                       <Clock className="size-4" />
                       Remettre le travail
                     </Button>
@@ -175,12 +155,7 @@ export function StudentAssignments() {
         </div>
       )}
 
-      <Dialog
-        open={submitTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) { setSubmitTarget(null); setContent("") }
-        }}
-      >
+      <Dialog open={submitTarget !== null} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Remettre le travail</DialogTitle>
@@ -206,21 +181,9 @@ export function StudentAssignments() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setSubmitTarget(null); setContent("") }}>
-              Annuler
-            </Button>
-            <Button onClick={handleSubmit} disabled={!content.trim()}>
-              Soumettre
-            </Button>
+            <Button variant="outline" onClick={closeDialog}>Annuler</Button>
+            <Button onClick={handleSubmit} disabled={!content.trim()}>Soumettre</Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={viewTarget !== null} onOpenChange={(open) => !open && setViewTarget(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Ma remise</DialogTitle>
-          </DialogHeader>
         </DialogContent>
       </Dialog>
     </>

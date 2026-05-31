@@ -11,13 +11,12 @@ import { useAuth } from "@/src/contexts/AuthContext"
 
 export function StudentDashboard() {
   const { user } = useAuth()
-  const studentId = user?.refId ?? "s1"
 
   const { data, loading } = usePageData((d) => {
-    const student = d.students.find((s) => s.id === studentId) ?? d.students[0]
-    const courses = d.courses.filter((c) => c.promotionId === student.promotionId)
+    const student  = d.students.find((s) => s.id === user?.refId) ?? d.students[0]
+    const courses  = d.courses.filter((c) => c.promotionId === student.promotionId)
     const schedules = d.schedules.filter((s) => s.promotionId === student.promotionId)
-    const grades = d.grades.filter((g) => g.studentId === student.id)
+    const grades   = d.grades.filter((g) => g.studentId === student.id)
     const announcements = d.announcements
       .filter((a) => a.audience === "all" || a.audience === "student")
       .sort((a, b) => b.date.localeCompare(a.date))
@@ -33,7 +32,7 @@ export function StudentDashboard() {
     <>
       <PageHeader
         title={`Bonjour, ${student.firstName}`}
-        subtitle={`${student.matricule} · Promotion ${student.promotionId.toUpperCase()}`}
+        subtitle={`${student.matricule} · ${student.promotionId.toUpperCase()}`}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -7,16 +7,14 @@ import { Loader } from "@/src/components/ui/Loader"
 import { ScheduleGrid } from "@/src/components/ScheduleGrid"
 import { usePageData } from "@/src/hooks/usePageData"
 import { useAuth } from "@/src/contexts/AuthContext"
-
-const DAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+import { WEEK_DAYS_FULL } from "@/src/lib/constants"
 
 export function TeacherDashboard() {
   const { user } = useAuth()
-  const teacherId = user?.refId ?? "t1"
-  const todayName = DAYS[new Date().getDay()]
+  const todayName = WEEK_DAYS_FULL[new Date().getDay()]
 
   const { data, loading } = usePageData((d) => {
-    const teacher = d.teachers.find((t) => t.id === teacherId) ?? d.teachers[0]
+    const teacher = d.teachers.find((t) => t.id === user?.refId) ?? d.teachers[0]
     const courses = d.courses.filter((c) => c.teacherId === teacher.id)
     const promotionIds = new Set(courses.map((c) => c.promotionId))
     const students = d.students.filter((s) => promotionIds.has(s.promotionId))
@@ -99,7 +97,10 @@ export function TeacherDashboard() {
           <CardContent>
             <ul className="divide-y divide-border">
               {courses.map((c) => (
-                <li key={c.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <li
+                  key={c.id}
+                  className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                >
                   <div className="min-w-0">
                     <p className="truncate font-medium text-foreground">{c.name}</p>
                     <p className="font-mono text-xs text-muted-foreground">{c.code}</p>

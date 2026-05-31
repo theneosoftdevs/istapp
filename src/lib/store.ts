@@ -15,79 +15,37 @@ import type {
   Role,
 } from "@/src/types"
 
-function uid(prefix: string) {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function uid(prefix: string): string {
   return `${prefix}${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
-let state: AppData = {
-  ...(structuredClone(rawData) as unknown as Omit<
-    AppData,
-    "assignments" | "submissions" | "gradeAppeals" | "courseResources" | "notifications"
-  >),
-  assignments: [
-    {
-      id: "asgn-1",
-      courseId: "c1",
-      teacherId: "t1",
-      title: "TP1 — Application CRUD en Node.js",
-      description:
-        "Réalisez une application CRUD complète avec Node.js et Express. Documentez vos endpoints REST.",
-      dueDate: "2026-02-15",
-      createdAt: "2026-01-20",
-    },
-    {
-      id: "asgn-2",
-      courseId: "c2",
-      teacherId: "t1",
-      title: "Modélisation BDD hospitalière",
-      description:
-        "Concevez le schéma entité-relation d'un système hospitalier, puis implémentez-le en SQL.",
-      dueDate: "2026-02-10",
-      createdAt: "2026-01-18",
-    },
-  ],
-  submissions: [
-    {
-      id: "sub-1",
-      assignmentId: "asgn-1",
-      studentId: "s1",
-      content:
-        "Application réalisée avec Express 4 et MongoDB. Repo : https://github.com/aline/tp1-crud",
-      submittedAt: "2026-02-12T10:30:00Z",
-    },
-  ],
-  gradeAppeals: [],
-  courseResources: [
-    {
-      id: "res-1",
-      courseId: "c1",
-      teacherId: "t1",
-      title: "Cours 1 — Introduction à Node.js",
-      type: "pdf",
-      url: "https://drive.google.com/file/d/example1",
-      createdAt: "2026-01-10",
-    },
-    {
-      id: "res-2",
-      courseId: "c1",
-      teacherId: "t1",
-      title: "Tutoriel React Hooks",
-      type: "video",
-      url: "https://www.youtube.com/watch?v=example",
-      createdAt: "2026-01-12",
-    },
-    {
-      id: "res-3",
-      courseId: "c2",
-      teacherId: "t1",
-      title: "Exercices SQL avancés",
-      type: "pdf",
-      url: "https://drive.google.com/file/d/example2",
-      createdAt: "2026-01-15",
-    },
-  ],
-  notifications: [],
+/** Clamp a numeric score to the 0–20 range. */
+function clampScore(n: number): number {
+  return Math.max(0, Math.min(20, Number.isFinite(n) ? n : 0))
 }
+
+// ─── State initialisation ─────────────────────────────────────────────────────
+// All seed data lives in data.json — this function just defensively ensures
+// every required array exists even if the JSON is extended incrementally.
+
+function initState(): AppData {
+  const raw = structuredClone(rawData) as unknown as AppData
+  return {
+    ...raw,
+    teacherTitles:    raw.teacherTitles    ?? [],
+    assignments:      raw.assignments      ?? [],
+    submissions:      raw.submissions      ?? [],
+    gradeAppeals:     raw.gradeAppeals     ?? [],
+    courseResources:  raw.courseResources  ?? [],
+    notifications:    raw.notifications    ?? [],
+  }
+}
+
+let state: AppData = initState()
+
+// ─── Subscription (useSyncExternalStore) ─────────────────────────────────────
 
 type Listener = () => void
 const listeners = new Set<Listener>()
@@ -112,7 +70,7 @@ export function addStudent(student: Student) {
   emit()
 }
 
-export function nextStudentId() {
+export function nextStudentId(): string {
   const max = state.students.reduce((acc, s) => {
     const n = Number(s.id.replace(/\D/g, ""))
     return Number.isFinite(n) && n > acc ? n : acc
@@ -127,22 +85,23 @@ export function updateGradeStatus(id: string, status: Grade["status"]) {
   emit()
 }
 
-export function setGradeScore(id: string, score: number) {
-  const grade = state.grades.find((g) => g.id === id)
-  const student = grade ? state.students.find((s) => s.id === grade.studentId) : null
-  const course = grade ? state.courses.find((c) => c.id === grade.courseId) : null
+export function setGradeScore(id: string, rawScore: number) {
+  const score = clampScore(rawScore)
+  const grade   = state.grades.find((g) => g.id === id)
+  const student = grade ? state.students.find((s) => s.id === grade.studentId) : undefined
+  const course  = grade ? state.courses.find((c) => c.id === grade.courseId)   : undefined
 
   const notification: Notification = {
     id: uid("notif-"),
     type: "grade_modified",
-    message: `Note modifiée : ${student ? `${student.firstName} ${student.lastName}` : "Étudiant"} — ${course?.name ?? "cours"} → ${score}/20`,
+    message: `Note modifiée — ${student ? `${student.firstName} ${student.lastName}` : "Étudiant"} · ${course?.name ?? "cours"} : ${score}/20`,
     targetRole: "secretariat_general",
     read: false,
     createdAt: new Date().toISOString(),
     metadata: {
-      gradeId: id,
+      gradeId:   id,
       studentId: grade?.studentId ?? "",
-      courseId: grade?.courseId ?? "",
+      courseId:  grade?.courseId  ?? "",
     },
   }
 
@@ -161,7 +120,7 @@ export function addTeacher(teacher: Teacher) {
   emit()
 }
 
-export function nextTeacherId() {
+export function nextTeacherId(): string {
   const max = state.teachers.reduce((acc, t) => {
     const n = Number(t.id.replace(/\D/g, ""))
     return Number.isFinite(n) && n > acc ? n : acc
@@ -169,7 +128,7 @@ export function nextTeacherId() {
   return `t${max + 1}`
 }
 
-export function nextTeacherMatricule() {
+export function nextTeacherMatricule(): string {
   const max = state.teachers.reduce((acc, t) => {
     const n = Number(t.matricule.replace(/\D/g, ""))
     return Number.isFinite(n) && n > acc ? n : acc
@@ -189,7 +148,7 @@ export function addPromotion(promotion: Promotion) {
   emit()
 }
 
-export function nextFacultyId() {
+export function nextFacultyId(): string {
   const max = state.faculties.reduce((acc, f) => {
     const n = Number(f.id.replace(/\D/g, ""))
     return Number.isFinite(n) && n > acc ? n : acc
@@ -197,7 +156,7 @@ export function nextFacultyId() {
   return `f${max + 1}`
 }
 
-export function nextPromotionId() {
+export function nextPromotionId(): string {
   const max = state.promotions.reduce((acc, p) => {
     const n = Number(p.id.replace(/\D/g, ""))
     return Number.isFinite(n) && n > acc ? n : acc
@@ -205,17 +164,17 @@ export function nextPromotionId() {
   return `p${max + 1}`
 }
 
-// ─── Course Assignment ────────────────────────────────────────────────────────
+// ─── Course–teacher assignment ────────────────────────────────────────────────
 
 export function assignCourseToTeacher(courseId: string, teacherId: string) {
-  const course = state.courses.find((c) => c.id === courseId)
-  const teacher = state.teachers.find((t) => t.id === teacherId)
+  const course      = state.courses.find((c) => c.id === courseId)
+  const teacher     = state.teachers.find((t) => t.id === teacherId)
   const oldTeacherId = course?.teacherId
 
   const notification: Notification = {
     id: uid("notif-"),
     type: "course_assigned",
-    message: `Cours attribué : "${course?.name ?? courseId}" → ${teacher ? `${teacher.firstName} ${teacher.lastName}` : "Enseignant"}`,
+    message: `Cours attribué — "${course?.name ?? courseId}" → ${teacher ? `${teacher.firstName} ${teacher.lastName}` : "Enseignant"}`,
     targetRole: "secretariat_general",
     read: false,
     createdAt: new Date().toISOString(),
@@ -232,9 +191,7 @@ export function assignCourseToTeacher(courseId: string, teacherId: string) {
       if (t.id === teacherId) {
         return {
           ...t,
-          courseIds: t.courseIds.includes(courseId)
-            ? t.courseIds
-            : [...t.courseIds, courseId],
+          courseIds: t.courseIds.includes(courseId) ? t.courseIds : [...t.courseIds, courseId],
         }
       }
       return t
@@ -260,7 +217,7 @@ export function removeAssignment(id: string) {
   emit()
 }
 
-export function nextAssignmentId() {
+export function nextAssignmentId(): string {
   return uid("asgn-")
 }
 
@@ -271,17 +228,16 @@ export function addSubmission(submission: Submission) {
   emit()
 }
 
-export function gradeSubmission(id: string, grade: number, feedback: string) {
+export function gradeSubmission(id: string, rawGrade: number, feedback: string) {
+  const grade = clampScore(rawGrade)
   state = {
     ...state,
-    submissions: state.submissions.map((s) =>
-      s.id === id ? { ...s, grade, feedback } : s,
-    ),
+    submissions: state.submissions.map((s) => (s.id === id ? { ...s, grade, feedback } : s)),
   }
   emit()
 }
 
-export function nextSubmissionId() {
+export function nextSubmissionId(): string {
   return uid("sub-")
 }
 
@@ -291,7 +247,7 @@ export function addGradeAppeal(appeal: GradeAppeal) {
   const notification: Notification = {
     id: uid("notif-"),
     type: "new_appeal",
-    message: `Nouveau recours — Note contestée par un étudiant : "${appeal.reason.substring(0, 60)}${appeal.reason.length > 60 ? "…" : ""}"`,
+    message: `Nouveau recours soumis — "${appeal.reason.substring(0, 60)}${appeal.reason.length > 60 ? "…" : ""}"`,
     targetRole: "secretariat_general",
     read: false,
     createdAt: new Date().toISOString(),
@@ -312,14 +268,12 @@ export function resolveGradeAppeal(
 ) {
   state = {
     ...state,
-    gradeAppeals: state.gradeAppeals.map((a) =>
-      a.id === id ? { ...a, status, response } : a,
-    ),
+    gradeAppeals: state.gradeAppeals.map((a) => (a.id === id ? { ...a, status, response } : a)),
   }
   emit()
 }
 
-export function nextAppealId() {
+export function nextAppealId(): string {
   return uid("recours-")
 }
 
@@ -331,14 +285,11 @@ export function addCourseResource(resource: CourseResource) {
 }
 
 export function removeCourseResource(id: string) {
-  state = {
-    ...state,
-    courseResources: state.courseResources.filter((r) => r.id !== id),
-  }
+  state = { ...state, courseResources: state.courseResources.filter((r) => r.id !== id) }
   emit()
 }
 
-export function nextResourceId() {
+export function nextResourceId(): string {
   return uid("res-")
 }
 
@@ -347,9 +298,7 @@ export function nextResourceId() {
 export function markNotificationRead(id: string) {
   state = {
     ...state,
-    notifications: state.notifications.map((n) =>
-      n.id === id ? { ...n, read: true } : n,
-    ),
+    notifications: state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
   }
   emit()
 }

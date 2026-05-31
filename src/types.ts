@@ -155,6 +155,7 @@ export interface Notification {
 }
 
 export interface AppData {
+  teacherTitles: string[]
   users: User[]
   faculties: Faculty[]
   promotions: Promotion[]

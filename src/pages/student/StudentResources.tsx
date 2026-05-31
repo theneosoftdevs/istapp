@@ -1,45 +1,21 @@
 // src/pages/student/StudentResources.tsx
-import { FileText, Video, Link2, File, ExternalLink, FolderOpen } from "lucide-react"
+import { ExternalLink, FolderOpen } from "lucide-react"
 import { PageHeader } from "@/src/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useStore } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
-import type { CourseResource } from "@/src/types"
-
-const RESOURCE_ICONS: Record<CourseResource["type"], typeof FileText> = {
-  pdf: FileText,
-  video: Video,
-  link: Link2,
-  doc: File,
-}
-
-const RESOURCE_LABELS: Record<CourseResource["type"], string> = {
-  pdf: "PDF",
-  video: "Vidéo",
-  link: "Lien web",
-  doc: "Document",
-}
-
-const RESOURCE_COLORS: Record<CourseResource["type"], string> = {
-  pdf: "bg-destructive/10 text-destructive",
-  video: "bg-chart-2/10 text-chart-2",
-  link: "bg-chart-5/10 text-chart-5",
-  doc: "bg-chart-3/10 text-chart-3",
-}
+import { useCurrentStudent } from "@/src/hooks/useCurrentUser"
+import { RESOURCE_ICONS, RESOURCE_LABELS, RESOURCE_COLORS } from "@/src/lib/constants"
 
 export function StudentResources() {
-  const { user } = useAuth()
-  const studentId = user?.refId ?? "s1"
-  const store = useStore()
-
-  const student = store.students.find((s) => s.id === studentId) ?? store.students[0]
+  const store   = useStore()
+  const student = useCurrentStudent(store)
 
   const coursesWithResources = store.courses
     .filter((c) => c.promotionId === student.promotionId)
     .map((c) => {
-      const teacher = store.teachers.find((t) => t.id === c.teacherId)
+      const teacher   = store.teachers.find((t) => t.id === c.teacherId)
       const resources = store.courseResources.filter((r) => r.courseId === c.id)
       return {
         ...c,
@@ -87,8 +63,7 @@ export function StudentResources() {
                     <div>
                       <CardTitle className="text-base">{c.name}</CardTitle>
                       <p className="mt-0.5 text-sm text-muted-foreground">
-                        <span className="font-mono text-xs">{c.code}</span> ·{" "}
-                        {c.teacherName}
+                        <span className="font-mono text-xs">{c.code}</span> · {c.teacherName}
                       </p>
                     </div>
                     <Badge variant="secondary">
@@ -103,7 +78,7 @@ export function StudentResources() {
                       return (
                         <div
                           key={r.id}
-                          className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-accent/30 transition-colors"
+                          className="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-accent/30"
                         >
                           <div
                             className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${RESOURCE_COLORS[r.type]}`}

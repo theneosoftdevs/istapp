@@ -26,13 +26,12 @@ interface GradeRow extends Grade {
 
 export function TeacherGrades() {
   const { user } = useAuth()
-  const teacherId = user?.refId ?? "t1"
   const { toast } = useToast()
   const [courseId, setCourseId] = useState<string>("all")
 
   const { data, loading } = usePageData((d) => {
-    const teacher = d.teachers.find((t) => t.id === teacherId) ?? d.teachers[0]
-    const courses = d.courses.filter((c) => c.teacherId === teacher.id)
+    const teacher  = d.teachers.find((t) => t.id === user?.refId) ?? d.teachers[0]
+    const courses  = d.courses.filter((c) => c.teacherId === teacher.id)
     const courseIds = new Set(courses.map((c) => c.id))
     const grades: GradeRow[] = d.grades
       .filter((g) => courseIds.has(g.courseId))
@@ -41,14 +40,13 @@ export function TeacherGrades() {
         return {
           ...g,
           studentName: student ? `${student.firstName} ${student.lastName}` : "—",
-          matricule: student?.matricule ?? "—",
+          matricule:   student?.matricule ?? "—",
         }
       })
     return { teacher, courses, grades }
   })
 
-  const courseName = (id: string) =>
-    data?.courses.find((c) => c.id === id)?.name ?? "Cours"
+  const courseName = (id: string) => data?.courses.find((c) => c.id === id)?.name ?? "Cours"
 
   const filtered = useMemo(() => {
     if (!data) return []

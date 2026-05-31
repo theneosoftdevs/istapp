@@ -1,0 +1,1 @@
+- [Refactoring arch](refactoring-arch.md) — patterns établis pour hooks partagés, constantes, et sécurité des routes.

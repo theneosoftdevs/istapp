@@ -1,23 +1,21 @@
 // src/pages/student/StudentSchedule.tsx
+import { CalendarOff, Clock, MapPin } from "lucide-react"
 import { PageHeader } from "@/src/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader } from "@/src/components/ui/Loader"
 import { EmptyState } from "@/src/components/ui/EmptyState"
-import { CalendarOff, Clock, MapPin } from "lucide-react"
 import { usePageData } from "@/src/hooks/usePageData"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { WEEK_DAYS } from "@/src/lib/constants"
 import type { Course, ScheduleSlot } from "@/src/types"
-
-const DAY_ORDER = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
 
 export function StudentSchedule() {
   const { user } = useAuth()
-  const studentId = user?.refId ?? "s1"
 
   const { data, loading } = usePageData((d) => {
-    const student = d.students.find((s) => s.id === studentId) ?? d.students[0]
+    const student = d.students.find((s) => s.id === user?.refId) ?? d.students[0]
     const courses = d.courses.filter((c) => c.promotionId === student.promotionId)
-    const slots = d.schedules.filter((s) => s.promotionId === student.promotionId)
+    const slots   = d.schedules.filter((s) => s.promotionId === student.promotionId)
     return { student, courses, slots }
   })
 
@@ -26,7 +24,7 @@ export function StudentSchedule() {
   const { courses, slots } = data
   const courseOf = (id: string) => courses.find((c) => c.id === id)
 
-  const byDay = DAY_ORDER.map((day) => ({
+  const byDay = WEEK_DAYS.map((day) => ({
     day,
     slots: slots
       .filter((s) => s.day === day)
@@ -66,21 +64,19 @@ export function StudentSchedule() {
                         key={slot.id}
                         className="rounded-lg border border-border bg-muted/30 p-3"
                       >
-                        <p className="font-medium text-foreground">
-                          {course?.name ?? "Cours"}
-                        </p>
+                        <p className="font-medium text-foreground">{course?.name ?? "Cours"}</p>
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                           <span className="inline-flex items-center gap-1">
                             <Clock className="size-3.5" />
-                            {slot.start} - {slot.end}
+                            {slot.start} – {slot.end}
                           </span>
                           <span className="inline-flex items-center gap-1">
                             <MapPin className="size-3.5" />
                             {slot.room}
                           </span>
-                          {course ? (
+                          {course && (
                             <span className="font-mono text-[11px]">{course.code}</span>
-                          ) : null}
+                          )}
                         </div>
                       </li>
                     )
