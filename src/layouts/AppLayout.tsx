@@ -55,7 +55,7 @@ export function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
           <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
-            <img src="/icon.svg" alt="Logo ISTA" className="size-8 shrink-0" />
+            <img src="/ista.jpeg" alt="Logo ISTA" className="size-8 shrink-0 rounded-sm object-cover" />
             <div className="hidden min-w-0 sm:block">
               <p className="truncate text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
                 Goma

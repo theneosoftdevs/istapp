@@ -20,9 +20,7 @@ export function AppSidebar({ mode }: AppSidebarProps) {
       )}
     >
       <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4", isRail ? "justify-center" : "gap-2.5")}>
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-          <GraduationCap className="size-5" />
-        </div>
+        <img src="/ista.jpeg" alt="Logo ISTA" className="size-9 shrink-0 rounded-lg object-cover" />
         {!isRail && (
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">ISTA-Goma</p>
