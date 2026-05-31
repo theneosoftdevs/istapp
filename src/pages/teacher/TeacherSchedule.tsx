@@ -1,0 +1,91 @@
+// src/pages/teacher/TeacherSchedule.tsx
+import { PageHeader } from "@/src/components/ui/PageHeader"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader } from "@/src/components/ui/Loader"
+import { EmptyState } from "@/src/components/ui/EmptyState"
+import { CalendarOff, Clock, MapPin } from "lucide-react"
+import { usePageData } from "@/src/hooks/usePageData"
+import { useAuth } from "@/src/contexts/AuthContext"
+import type { Course } from "@/src/types"
+
+const DAY_ORDER = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+
+export function TeacherSchedule() {
+  const { user } = useAuth()
+  const teacherId = user?.refId ?? "t1"
+
+  const { data, loading } = usePageData((d) => {
+    const teacher = d.teachers.find((t) => t.id === teacherId) ?? d.teachers[0]
+    const courses = d.courses.filter((c) => c.teacherId === teacher.id)
+    const slots = d.schedules.filter((s) => s.teacherId === teacher.id)
+    return { teacher, courses, slots }
+  })
+
+  if (loading || !data) return <Loader fullHeight />
+
+  const { courses, slots } = data
+  const courseOf = (id: string) => courses.find((c) => c.id === id) as Course | undefined
+
+  const byDay = DAY_ORDER.map((day) => ({
+    day,
+    slots: slots.filter((s) => s.day === day).sort((a, b) => a.start.localeCompare(b.start)),
+  })).filter((g) => g.slots.length > 0)
+
+  return (
+    <>
+      <PageHeader
+        title="Emploi du temps"
+        subtitle="Vos séances d'enseignement de la semaine."
+      />
+
+      {byDay.length === 0 ? (
+        <Card>
+          <CardContent className="p-0">
+            <EmptyState
+              icon={CalendarOff}
+              title="Aucun cours programmé"
+              description="Aucune séance n'est planifiée pour vous."
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {byDay.map(({ day, slots: daySlots }) => (
+            <Card key={day}>
+              <CardHeader>
+                <CardTitle className="text-base">{day}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {daySlots.map((slot) => {
+                    const course = courseOf(slot.courseId)
+                    return (
+                      <li
+                        key={slot.id}
+                        className="rounded-lg border border-border bg-muted/30 p-3"
+                      >
+                        <p className="font-medium text-foreground">
+                          {course?.name ?? "Cours"}
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="size-3.5" />
+                            {slot.start} - {slot.end}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="size-3.5" />
+                            {slot.room}
+                          </span>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}

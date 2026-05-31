@@ -1,0 +1,114 @@
+// src/layouts/AppLayout.tsx
+import { Outlet, useNavigate } from "react-router-dom"
+import { Menu, Moon, Sun, LogOut, User as UserIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { AppSidebar } from "@/src/layouts/AppSidebar"
+import { useApp } from "@/src/contexts/AppContext"
+import { useAuth } from "@/src/contexts/AuthContext"
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase()
+}
+
+export function AppLayout() {
+  const { theme, toggleTheme, toggleSidebar, portal } = useApp()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login", { replace: true })
+  }
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      <AppSidebar />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="lg:hidden"
+            onClick={toggleSidebar}
+            aria-label="Ouvrir le menu"
+          >
+            <Menu className="size-5" />
+          </Button>
+
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground">
+              Portail {portal?.label}
+            </p>
+          </div>
+
+          <div className="ml-auto flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="Basculer le thème"
+            >
+              {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex items-center gap-2 rounded-full p-0.5 pr-2 transition-colors hover:bg-accent"
+                  aria-label="Menu utilisateur"
+                >
+                  <Avatar className="size-8">
+                    <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                      {user ? initials(user.name) : "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="hidden text-sm font-medium text-foreground sm:inline">
+                    {user?.name}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex flex-col">
+                  <span className="font-medium">{user?.name}</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {user?.email}
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled>
+                  <UserIcon className="size-4" />
+                  Mon profil
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} variant="destructive">
+                  <LogOut className="size-4" />
+                  Se déconnecter
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-7xl space-y-6">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  )
+}
