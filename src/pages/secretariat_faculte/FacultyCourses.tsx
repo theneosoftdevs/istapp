@@ -1,9 +1,9 @@
 // src/pages/secretariat_faculte/FacultyCourses.tsx
 import { useState } from "react"
 import { BookOpen, Clock, UserCheck } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
+import { DataTable, type Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
@@ -21,9 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useStore } from "@/src/hooks/usePageData"
-import { assignCourseToTeacher } from "@/src/lib/store"
-import type { Course } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import { assignCourseToTeacher } from "@/lib/store"
+import type { Course } from "@/types"
 
 interface CourseRow extends Course {
   promotionName: string

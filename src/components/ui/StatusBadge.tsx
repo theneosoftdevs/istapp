@@ -1,6 +1,6 @@
 // src/components/ui/StatusBadge.tsx
 import { cn } from "@/lib/utils"
-import type { StatusValue } from "@/src/types"
+import type { StatusValue } from "@/types"
 
 interface StatusBadgeProps {
   status: StatusValue | string

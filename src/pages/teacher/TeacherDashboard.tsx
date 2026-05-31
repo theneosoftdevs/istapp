@@ -1,13 +1,13 @@
 // src/pages/teacher/TeacherDashboard.tsx
 import { Users, FileClock, BookOpen, CalendarDays } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { ScheduleGrid } from "@/src/components/ScheduleGrid"
-import { usePageData } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { WEEK_DAYS_FULL } from "@/src/lib/constants"
+import { Loader } from "@/components/ui/Loader"
+import { ScheduleGrid } from "@/components/ScheduleGrid"
+import { usePageData } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
+import { WEEK_DAYS_FULL } from "@/lib/constants"
 
 export function TeacherDashboard() {
   const { user } = useAuth()

@@ -1,9 +1,9 @@
 // src/pages/student/StudentAnnouncements.tsx
-import { PageHeader } from "@/src/components/ui/PageHeader"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { AnnouncementList } from "@/src/components/AnnouncementList"
-import { usePageData } from "@/src/hooks/usePageData"
+import { Loader } from "@/components/ui/Loader"
+import { AnnouncementList } from "@/components/AnnouncementList"
+import { usePageData } from "@/hooks/usePageData"
 
 export function StudentAnnouncements() {
   const { data, loading } = usePageData((d) =>

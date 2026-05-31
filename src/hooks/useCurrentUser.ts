@@ -1,8 +1,8 @@
 // src/hooks/useCurrentUser.ts
 // Centralises the "find the entity that matches the logged-in user" logic
 // so every page uses the same resolution instead of duplicating it.
-import { useAuth } from "@/src/contexts/AuthContext"
-import type { AppData, Student, Teacher } from "@/src/types"
+import { useAuth } from "@/contexts/AuthContext"
+import type { AppData, Student, Teacher } from "@/types"
 
 /**
  * Returns the Student record linked to the currently authenticated user.

@@ -1,11 +1,11 @@
 // src/pages/secretariat_general/SecretariatGeneralAnnouncements.tsx
 import { useState } from "react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { AnnouncementList } from "@/src/components/AnnouncementList"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
-import { usePageData } from "@/src/hooks/usePageData"
+import { Loader } from "@/components/ui/Loader"
+import { AnnouncementList } from "@/components/AnnouncementList"
+import { StatusBadge } from "@/components/ui/StatusBadge"
+import { usePageData } from "@/hooks/usePageData"
 import {
   Select,
   SelectContent,
@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Role } from "@/src/types"
+import type { Role } from "@/types"
 
 type AudienceFilter = Role | "all"
 

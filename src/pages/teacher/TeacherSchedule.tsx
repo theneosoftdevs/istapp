@@ -1,13 +1,13 @@
 // src/pages/teacher/TeacherSchedule.tsx
 import { CalendarOff, Clock, MapPin } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { EmptyState } from "@/src/components/ui/EmptyState"
-import { usePageData } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { WEEK_DAYS } from "@/src/lib/constants"
-import type { Course } from "@/src/types"
+import { Loader } from "@/components/ui/Loader"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { usePageData } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
+import { WEEK_DAYS } from "@/lib/constants"
+import type { Course } from "@/types"
 
 export function TeacherSchedule() {
   const { user } = useAuth()

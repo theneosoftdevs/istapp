@@ -1,10 +1,10 @@
 // src/pages/teacher/TeacherGrades.tsx
 import { useMemo, useState } from "react"
 import { CheckCircle2 } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
-import { Loader } from "@/src/components/ui/Loader"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
+import { Loader } from "@/components/ui/Loader"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -13,11 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePageData } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
+import { usePageData } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
-import { updateGradeStatus } from "@/src/lib/store"
-import type { Grade } from "@/src/types"
+import { updateGradeStatus } from "@/lib/store"
+import type { Grade } from "@/types"
 
 interface GradeRow extends Grade {
   studentName: string

@@ -1,8 +1,8 @@
 // src/contexts/AuthContext.tsx
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import type { ReactNode } from "react"
-import rawData from "@/src/data.json"
-import type { AppData, Role, User } from "@/src/types"
+import rawData from "@/data.json"
+import type { AppData, Role, User } from "@/types"
 
 const data = rawData as AppData
 const STORAGE_KEY = "ista-role"

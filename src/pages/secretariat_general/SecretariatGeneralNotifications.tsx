@@ -1,14 +1,14 @@
 // src/pages/secretariat_general/SecretariatGeneralNotifications.tsx
 import { Bell, CheckCheck, BookOpen, AlertCircle, Star, BookMarked } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { useStore } from "@/src/hooks/usePageData"
-import { markNotificationRead, markAllNotificationsRead } from "@/src/lib/store"
-import type { Notification } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import { markNotificationRead, markAllNotificationsRead } from "@/lib/store"
+import type { Notification } from "@/types"
 
 const TYPE_CONFIG: Record<
   Notification["type"],

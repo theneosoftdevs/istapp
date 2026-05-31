@@ -1,7 +1,7 @@
 // src/hooks/usePageData.ts
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
-import { getState, subscribe } from "@/src/lib/store"
-import type { AppData } from "@/src/types"
+import { getState, subscribe } from "@/lib/store"
+import type { AppData } from "@/types"
 
 /** Subscribe to the live in-memory data store (re-renders on mutation). */
 export function useStore(): AppData {

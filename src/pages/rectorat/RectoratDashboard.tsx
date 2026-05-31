@@ -1,11 +1,11 @@
 // src/pages/rectorat/RectoratDashboard.tsx
 import { Users, GraduationCap, TrendingUp, BookOpen } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { usePageData } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
+import { Loader } from "@/components/ui/Loader"
+import { usePageData } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
 import {
   BarChart,
   Bar,

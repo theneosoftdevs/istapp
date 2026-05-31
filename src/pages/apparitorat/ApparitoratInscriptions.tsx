@@ -1,15 +1,15 @@
 // src/pages/apparitorat/ApparitoratInscriptions.tsx
 import { useMemo, useState } from "react"
 import { Search } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
+import { KPICard } from "@/components/ui/KPICard"
 import { Input } from "@/components/ui/input"
-import { usePageData } from "@/src/hooks/usePageData"
-import { InscriptionDialog } from "@/src/pages/apparitorat/InscriptionDialog"
+import { usePageData } from "@/hooks/usePageData"
+import { InscriptionDialog } from "@/pages/apparitorat/InscriptionDialog"
 import { Users, UserCheck, UserCog } from "lucide-react"
-import type { Student } from "@/src/types"
+import type { Student } from "@/types"
 
 export function ApparitoratInscriptions() {
   const [query, setQuery] = useState("")

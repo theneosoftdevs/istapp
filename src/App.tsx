@@ -1,49 +1,49 @@
 // src/App.tsx
 import { Navigate, Outlet, Route, Routes } from "react-router-dom"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { AppLayout } from "@/src/layouts/AppLayout"
-import { LoginPage } from "@/src/pages/LoginPage"
+import { useAuth } from "@/contexts/AuthContext"
+import { AppLayout } from "@/layouts/AppLayout"
+import { LoginPage } from "@/pages/LoginPage"
 import type { ReactNode } from "react"
-import type { Role } from "@/src/types"
+import type { Role } from "@/types"
 
 // ─── Étudiant ──────────────────────────────────────────────────────────────
-import { StudentDashboard }   from "@/src/pages/student/StudentDashboard"
-import { StudentSchedule }    from "@/src/pages/student/StudentSchedule"
-import { StudentGrades }      from "@/src/pages/student/StudentGrades"
-import { StudentAnnouncements } from "@/src/pages/student/StudentAnnouncements"
-import { StudentAssignments } from "@/src/pages/student/StudentAssignments"
-import { StudentResources }   from "@/src/pages/student/StudentResources"
+import { StudentDashboard }   from "@/pages/student/StudentDashboard"
+import { StudentSchedule }    from "@/pages/student/StudentSchedule"
+import { StudentGrades }      from "@/pages/student/StudentGrades"
+import { StudentAnnouncements } from "@/pages/student/StudentAnnouncements"
+import { StudentAssignments } from "@/pages/student/StudentAssignments"
+import { StudentResources }   from "@/pages/student/StudentResources"
 
 // ─── Enseignant ───────────────────────────────────────────────────────────────
-import { TeacherDashboard }   from "@/src/pages/teacher/TeacherDashboard"
-import { TeacherCourses }     from "@/src/pages/teacher/TeacherCourses"
-import { TeacherGrades }      from "@/src/pages/teacher/TeacherGrades"
-import { TeacherSchedule }    from "@/src/pages/teacher/TeacherSchedule"
-import { TeacherAssignments } from "@/src/pages/teacher/TeacherAssignments"
+import { TeacherDashboard }   from "@/pages/teacher/TeacherDashboard"
+import { TeacherCourses }     from "@/pages/teacher/TeacherCourses"
+import { TeacherGrades }      from "@/pages/teacher/TeacherGrades"
+import { TeacherSchedule }    from "@/pages/teacher/TeacherSchedule"
+import { TeacherAssignments } from "@/pages/teacher/TeacherAssignments"
 
 // ─── Apparitorat ──────────────────────────────────────────────────────────────
-import { ApparitoratDashboard }   from "@/src/pages/apparitorat/ApparitoratDashboard"
-import { ApparitoratInscriptions } from "@/src/pages/apparitorat/ApparitoratInscriptions"
-import { ApparitoratStudents }    from "@/src/pages/apparitorat/ApparitoratStudents"
+import { ApparitoratDashboard }   from "@/pages/apparitorat/ApparitoratDashboard"
+import { ApparitoratInscriptions } from "@/pages/apparitorat/ApparitoratInscriptions"
+import { ApparitoratStudents }    from "@/pages/apparitorat/ApparitoratStudents"
 
 // ─── Secrétariat Faculté ──────────────────────────────────────────────────────
-import { FacultyDashboard }   from "@/src/pages/secretariat_faculte/FacultyDashboard"
-import { FacultyPromotions }  from "@/src/pages/secretariat_faculte/FacultyPromotions"
-import { FacultyCourses }     from "@/src/pages/secretariat_faculte/FacultyCourses"
+import { FacultyDashboard }   from "@/pages/secretariat_faculte/FacultyDashboard"
+import { FacultyPromotions }  from "@/pages/secretariat_faculte/FacultyPromotions"
+import { FacultyCourses }     from "@/pages/secretariat_faculte/FacultyCourses"
 
 // ─── Secrétariat Général ──────────────────────────────────────────────────────
-import { SecretariatGeneralDashboard }     from "@/src/pages/secretariat_general/SecretariatGeneralDashboard"
-import { SecretariatGeneralFaculties }     from "@/src/pages/secretariat_general/SecretariatGeneralFaculties"
-import { SecretariatGeneralAnnouncements } from "@/src/pages/secretariat_general/SecretariatGeneralAnnouncements"
-import { SecretariatGeneralTeachers }      from "@/src/pages/secretariat_general/SecretariatGeneralTeachers"
-import { SecretariatGeneralResults }       from "@/src/pages/secretariat_general/SecretariatGeneralResults"
-import { SecretariatGeneralRecours }       from "@/src/pages/secretariat_general/SecretariatGeneralRecours"
-import { SecretariatGeneralNotifications } from "@/src/pages/secretariat_general/SecretariatGeneralNotifications"
+import { SecretariatGeneralDashboard }     from "@/pages/secretariat_general/SecretariatGeneralDashboard"
+import { SecretariatGeneralFaculties }     from "@/pages/secretariat_general/SecretariatGeneralFaculties"
+import { SecretariatGeneralAnnouncements } from "@/pages/secretariat_general/SecretariatGeneralAnnouncements"
+import { SecretariatGeneralTeachers }      from "@/pages/secretariat_general/SecretariatGeneralTeachers"
+import { SecretariatGeneralResults }       from "@/pages/secretariat_general/SecretariatGeneralResults"
+import { SecretariatGeneralRecours }       from "@/pages/secretariat_general/SecretariatGeneralRecours"
+import { SecretariatGeneralNotifications } from "@/pages/secretariat_general/SecretariatGeneralNotifications"
 
 // ─── Rectorat ─────────────────────────────────────────────────────────────────
-import { RectoratDashboard } from "@/src/pages/rectorat/RectoratDashboard"
-import { RectoratStats }     from "@/src/pages/rectorat/RectoratStats"
-import { RectoratFaculties } from "@/src/pages/rectorat/RectoratFaculties"
+import { RectoratDashboard } from "@/pages/rectorat/RectoratDashboard"
+import { RectoratStats }     from "@/pages/rectorat/RectoratStats"
+import { RectoratFaculties } from "@/pages/rectorat/RectoratFaculties"
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 

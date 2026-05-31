@@ -1,8 +1,8 @@
 // src/pages/student/StudentAssignments.tsx
 import { useState } from "react"
 import { ClipboardCheck, Clock, CheckCircle2, Star } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -15,9 +15,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { useStore } from "@/src/hooks/usePageData"
-import { useCurrentStudent } from "@/src/hooks/useCurrentUser"
-import { addSubmission, nextSubmissionId } from "@/src/lib/store"
+import { useStore } from "@/hooks/usePageData"
+import { useCurrentStudent } from "@/hooks/useCurrentUser"
+import { addSubmission, nextSubmissionId } from "@/lib/store"
 
 export function StudentAssignments() {
   const store   = useStore()

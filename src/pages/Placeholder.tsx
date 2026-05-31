@@ -1,7 +1,7 @@
 // src/pages/Placeholder.tsx
 import { Construction } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { EmptyState } from "@/src/components/ui/EmptyState"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { EmptyState } from "@/components/ui/EmptyState"
 
 export function Placeholder({ title }: { title: string }) {
   return (

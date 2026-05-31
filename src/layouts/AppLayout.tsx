@@ -1,6 +1,6 @@
 // src/layouts/AppLayout.tsx
 import { Outlet, useNavigate } from "react-router-dom"
-import { Menu, Moon, Sun, LogOut, User as UserIcon } from "lucide-react"
+import { Moon, Sun, LogOut, User as UserIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -11,9 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { AppSidebar } from "@/src/layouts/AppSidebar"
-import { useApp } from "@/src/contexts/AppContext"
-import { useAuth } from "@/src/contexts/AuthContext"
+import { AppSidebar } from "@/layouts/AppSidebar"
+import { MobileNavbar } from "@/layouts/MobileNavbar"
+import { useApp } from "@/contexts/AppContext"
+import { useAuth } from "@/contexts/AuthContext"
+import { useNavigation } from "@/hooks/use-navigation"
+import { cn } from "@/lib/utils"
 
 function initials(name: string) {
   return name
@@ -26,9 +29,10 @@ function initials(name: string) {
 }
 
 export function AppLayout() {
-  const { theme, toggleTheme, toggleSidebar, portal } = useApp()
+  const { theme, toggleTheme, portal } = useApp()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const navMode = useNavigation()
 
   const handleLogout = () => {
     logout()
@@ -36,20 +40,14 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <AppSidebar />
+    <div className="flex min-h-screen bg-background text-foreground">
+      {/* Sidebar for Tablet & Desktop */}
+      {(navMode === "desktop" || navMode === "tablet") && (
+        <AppSidebar mode={navMode} />
+      )}
+
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="lg:hidden"
-            onClick={toggleSidebar}
-            aria-label="Ouvrir le menu"
-          >
-            <Menu className="size-5" />
-          </Button>
-
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-foreground">
               Portail {portal?.label}
@@ -103,12 +101,18 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className={cn(
+          "flex-1 px-4 py-6 sm:px-6 lg:px-8",
+          navMode === "mobile" ? "pb-24" : "pb-12"
+        )}>
           <div className="mx-auto w-full max-w-7xl space-y-6">
             <Outlet />
           </div>
         </main>
       </div>
+
+      {/* Navbar for Mobile */}
+      {navMode === "mobile" && <MobileNavbar />}
     </div>
   )
 }

@@ -1,10 +1,10 @@
 // src/pages/secretariat_general/SecretariatGeneralFaculties.tsx
 import { Building2, Users, BookOpen, UserSquare2 } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { EmptyState } from "@/src/components/ui/EmptyState"
-import { usePageData } from "@/src/hooks/usePageData"
+import { Loader } from "@/components/ui/Loader"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { usePageData } from "@/hooks/usePageData"
 
 export function SecretariatGeneralFaculties() {
   const { data, loading } = usePageData((d) => {

@@ -1,7 +1,7 @@
 // src/pages/teacher/TeacherCourses.tsx
 import { useState } from "react"
 import { Users, Clock, BookOpen, Plus, Trash2 } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,11 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useStore } from "@/src/hooks/usePageData"
-import { useCurrentTeacher } from "@/src/hooks/useCurrentUser"
-import { addCourseResource, removeCourseResource, nextResourceId } from "@/src/lib/store"
-import { RESOURCE_ICONS, RESOURCE_LABELS } from "@/src/lib/constants"
-import type { CourseResource } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import { useCurrentTeacher } from "@/hooks/useCurrentUser"
+import { addCourseResource, removeCourseResource, nextResourceId } from "@/lib/store"
+import { RESOURCE_ICONS, RESOURCE_LABELS } from "@/lib/constants"
+import type { CourseResource } from "@/types"
 
 interface ResForm {
   title: string

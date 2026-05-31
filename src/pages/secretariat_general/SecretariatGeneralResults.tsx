@@ -1,10 +1,10 @@
 // src/pages/secretariat_general/SecretariatGeneralResults.tsx
 import { useState } from "react"
 import { BarChart3, Users, Award, TrendingUp } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
 import {
   Select,
   SelectContent,
@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useStore } from "@/src/hooks/usePageData"
-import type { Student } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import type { Student } from "@/types"
 
 interface StudentRow extends Student {
   promotionName: string

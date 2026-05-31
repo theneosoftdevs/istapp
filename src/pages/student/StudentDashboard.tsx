@@ -1,13 +1,13 @@
 // src/pages/student/StudentDashboard.tsx
 import { BookOpen, GaugeCircle, CalendarClock, Award } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { ScheduleGrid } from "@/src/components/ScheduleGrid"
-import { AnnouncementList } from "@/src/components/AnnouncementList"
-import { usePageData } from "@/src/hooks/usePageData"
-import { useAuth } from "@/src/contexts/AuthContext"
+import { Loader } from "@/components/ui/Loader"
+import { ScheduleGrid } from "@/components/ScheduleGrid"
+import { AnnouncementList } from "@/components/AnnouncementList"
+import { usePageData } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function StudentDashboard() {
   const { user } = useAuth()

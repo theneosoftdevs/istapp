@@ -1,10 +1,10 @@
 // src/pages/secretariat_faculte/FacultyPromotions.tsx
 import { useState } from "react"
 import { Users, GraduationCap } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { Loader } from "@/src/components/ui/Loader"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { Loader } from "@/components/ui/Loader"
 import {
   Select,
   SelectContent,
@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePageData } from "@/src/hooks/usePageData"
-import type { Promotion } from "@/src/types"
+import { usePageData } from "@/hooks/usePageData"
+import type { Promotion } from "@/types"
 
 interface PromotionRow extends Promotion {
   facultyName: string

@@ -1,11 +1,11 @@
 // src/pages/rectorat/RectoratFaculties.tsx
 import { Building2, Users, BookOpen, GraduationCap, UserSquare2 } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { Loader } from "@/src/components/ui/Loader"
-import { usePageData } from "@/src/hooks/usePageData"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { Loader } from "@/components/ui/Loader"
+import { usePageData } from "@/hooks/usePageData"
 
 interface FacultyRow {
   id: string

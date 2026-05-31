@@ -1,14 +1,14 @@
 // src/pages/apparitorat/ApparitoratDashboard.tsx
 import { Users, UserCheck, UserCog, UserX } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
-import { InscriptionDialog } from "@/src/pages/apparitorat/InscriptionDialog"
-import { usePageData } from "@/src/hooks/usePageData"
-import type { Student } from "@/src/types"
+import { Loader } from "@/components/ui/Loader"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
+import { InscriptionDialog } from "@/pages/apparitorat/InscriptionDialog"
+import { usePageData } from "@/hooks/usePageData"
+import type { Student } from "@/types"
 
 interface PendingRow extends Student {
   facultyCode: string

@@ -1,8 +1,8 @@
 // src/components/AnnouncementList.tsx
 import { Megaphone } from "lucide-react"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
-import { EmptyState } from "@/src/components/ui/EmptyState"
-import type { Announcement } from "@/src/types"
+import { StatusBadge } from "@/components/ui/StatusBadge"
+import { EmptyState } from "@/components/ui/EmptyState"
+import type { Announcement } from "@/types"
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("fr-FR", {

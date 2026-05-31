@@ -8,9 +8,9 @@ import {
   useState,
 } from "react"
 import type { ReactNode } from "react"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { NAV_BY_ROLE, getPortal, type NavItem } from "@/src/lib/portals"
-import type { PortalInfo } from "@/src/types"
+import { useAuth } from "@/contexts/AuthContext"
+import { NAV_BY_ROLE, getPortal, type NavItem } from "@/lib/portals"
+import type { PortalInfo } from "@/types"
 
 type Theme = "light" | "dark"
 const THEME_KEY = "ista-theme"

@@ -1,8 +1,8 @@
 // src/pages/teacher/TeacherAssignments.tsx
 import { useState } from "react"
 import { Plus, ClipboardCheck, Trash2, Star, Users } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,14 +24,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useStore } from "@/src/hooks/usePageData"
-import { useCurrentTeacher } from "@/src/hooks/useCurrentUser"
+import { useStore } from "@/hooks/usePageData"
+import { useCurrentTeacher } from "@/hooks/useCurrentUser"
 import {
   addAssignment,
   removeAssignment,
   gradeSubmission,
   nextAssignmentId,
-} from "@/src/lib/store"
+} from "@/lib/store"
 
 export function TeacherAssignments() {
   const store   = useStore()

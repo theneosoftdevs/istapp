@@ -9,8 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { EmptyState } from "@/src/components/ui/EmptyState"
-import { Loader } from "@/src/components/ui/Loader"
+import { EmptyState } from "@/components/ui/EmptyState"
+import { Loader } from "@/components/ui/Loader"
 import { Inbox } from "lucide-react"
 
 export interface Column<T> {

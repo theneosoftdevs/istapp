@@ -1,10 +1,10 @@
 // src/pages/secretariat_general/SecretariatGeneralTeachers.tsx
 import { useState } from "react"
 import { UserSquare2, Plus, UserCheck, UserX } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,9 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useStore } from "@/src/hooks/usePageData"
-import { addTeacher, nextTeacherId, nextTeacherMatricule } from "@/src/lib/store"
-import type { Teacher } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import { addTeacher, nextTeacherId, nextTeacherMatricule } from "@/lib/store"
+import type { Teacher } from "@/types"
 
 interface TeacherRow extends Teacher {
   facultyName: string

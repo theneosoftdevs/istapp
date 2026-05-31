@@ -1,10 +1,10 @@
 // src/pages/student/StudentGrades.tsx
 import { useState } from "react"
 import { GaugeCircle, Award, FileClock, AlertCircle } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
@@ -16,10 +16,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { useStore } from "@/src/hooks/usePageData"
-import { useCurrentStudent } from "@/src/hooks/useCurrentUser"
-import { addGradeAppeal, nextAppealId } from "@/src/lib/store"
-import type { Grade } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import { useCurrentStudent } from "@/hooks/useCurrentUser"
+import { addGradeAppeal, nextAppealId } from "@/lib/store"
+import type { Grade } from "@/types"
 
 interface GradeRow extends Grade {
   courseName: string

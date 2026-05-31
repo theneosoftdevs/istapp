@@ -4,10 +4,10 @@ import { GraduationCap, Moon, Sun, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { useApp } from "@/src/contexts/AppContext"
-import { PORTALS } from "@/src/lib/portals"
-import type { Role } from "@/src/types"
+import { useAuth } from "@/contexts/AuthContext"
+import { useApp } from "@/contexts/AppContext"
+import { PORTALS } from "@/lib/portals"
+import type { Role } from "@/types"
 
 export function LoginPage() {
   const { login } = useAuth()

@@ -1,8 +1,8 @@
 // src/components/ScheduleGrid.tsx
 import { Clock, MapPin } from "lucide-react"
-import { EmptyState } from "@/src/components/ui/EmptyState"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { CalendarOff } from "lucide-react"
-import type { Course, ScheduleSlot } from "@/src/types"
+import type { Course, ScheduleSlot } from "@/types"
 
 interface ScheduleGridProps {
   slots: ScheduleSlot[]

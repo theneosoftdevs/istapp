@@ -1,10 +1,10 @@
 // src/pages/secretariat_faculte/FacultyDashboard.tsx
 import { useState } from "react"
 import { Users, GraduationCap, BookOpen, UserSquare2 } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { KPICard } from "@/src/components/ui/KPICard"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader } from "@/src/components/ui/Loader"
+import { Loader } from "@/components/ui/Loader"
 import {
   Select,
   SelectContent,
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePageData } from "@/src/hooks/usePageData"
+import { usePageData } from "@/hooks/usePageData"
 
 export function FacultyDashboard() {
   const [facultyId, setFacultyId] = useState("f1")

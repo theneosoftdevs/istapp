@@ -20,9 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useStore } from "@/src/hooks/usePageData"
-import { addStudent, nextStudentId } from "@/src/lib/store"
-import type { Student } from "@/src/types"
+import { useStore } from "@/hooks/usePageData"
+import { addStudent, nextStudentId } from "@/lib/store"
+import type { Student } from "@/types"
 
 interface FormState {
   firstName: string

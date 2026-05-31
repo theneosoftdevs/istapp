@@ -1,5 +1,5 @@
 // src/lib/store.ts
-import rawData from "@/src/data.json"
+import rawData from "@/data.json"
 import type {
   AppData,
   Grade,
@@ -13,7 +13,7 @@ import type {
   CourseResource,
   Notification,
   Role,
-} from "@/src/types"
+} from "@/types"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

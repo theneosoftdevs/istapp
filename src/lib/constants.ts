@@ -1,7 +1,7 @@
 // src/lib/constants.ts
 // Shared UI constants — single source of truth for every component that needs them.
 import { FileText, Video, Link2, File, type LucideIcon } from "lucide-react"
-import type { CourseResource } from "@/src/types"
+import type { CourseResource } from "@/types"
 
 /** Ordered weekdays used to sort schedules (Mon–Sat, index 0 = Lundi) */
 export const WEEK_DAYS = [

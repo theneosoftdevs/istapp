@@ -20,7 +20,7 @@ import {
   Bell,
   type LucideIcon,
 } from "lucide-react"
-import type { Role, PortalInfo } from "@/src/types"
+import type { Role, PortalInfo } from "@/types"
 
 export const PORTALS: (PortalInfo & { icon: LucideIcon; color: string })[] = [
   {

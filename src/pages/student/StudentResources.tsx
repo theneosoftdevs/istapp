@@ -1,12 +1,12 @@
 // src/pages/student/StudentResources.tsx
 import { ExternalLink, FolderOpen } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useStore } from "@/src/hooks/usePageData"
-import { useCurrentStudent } from "@/src/hooks/useCurrentUser"
-import { RESOURCE_ICONS, RESOURCE_LABELS, RESOURCE_COLORS } from "@/src/lib/constants"
+import { useStore } from "@/hooks/usePageData"
+import { useCurrentStudent } from "@/hooks/useCurrentUser"
+import { RESOURCE_ICONS, RESOURCE_LABELS, RESOURCE_COLORS } from "@/lib/constants"
 
 export function StudentResources() {
   const store   = useStore()

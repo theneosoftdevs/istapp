@@ -1,9 +1,9 @@
 // src/pages/apparitorat/ApparitoratStudents.tsx
 import { useMemo, useState } from "react"
 import { Search } from "lucide-react"
-import { PageHeader } from "@/src/components/ui/PageHeader"
-import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { StatusBadge } from "@/src/components/ui/StatusBadge"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { DataTable, type Column } from "@/components/ui/DataTable"
+import { StatusBadge } from "@/components/ui/StatusBadge"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePageData } from "@/src/hooks/usePageData"
-import type { Student } from "@/src/types"
+import { usePageData } from "@/hooks/usePageData"
+import type { Student } from "@/types"
 
 interface StudentRow extends Student {
   facultyCode: string
