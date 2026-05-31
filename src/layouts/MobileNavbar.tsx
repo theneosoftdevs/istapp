@@ -12,50 +12,40 @@ export function MobileNavbar() {
           // Highlight the middle item if there are 5 items (Student/Teacher "Travaux")
           const isMiddle = nav.length === 5 && index === 2
 
-          if (isMiddle) {
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  cn(
-                    "relative -top-5 flex flex-col items-center gap-1 transition-transform active:scale-95 z-10",
-                  )
-                }
-              >
-                <div className={cn(
-                  "flex size-14 items-center justify-center rounded-full border-[6px] border-background shadow-lg transition-colors",
-                  isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "bg-muted text-muted-foreground"
-                )}>
-                  <item.icon className="size-6" />
-                </div>
-                <span className={cn(
-                  "absolute -bottom-5 truncate max-w-[70px] text-center text-[10px] font-bold",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}>
-                  {item.label}
-                </span>
-              </NavLink>
-            )
-          }
-
           return (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-medium transition-colors",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  "flex flex-col items-center gap-1 transition-transform active:scale-95",
+                  isMiddle ? "relative -top-5 z-10" : "flex-1 py-1"
                 )
               }
             >
-              <item.icon className="size-5" />
-              <span className="truncate max-w-[64px] text-center">{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  {isMiddle ? (
+                    <div className={cn(
+                      "flex size-14 items-center justify-center rounded-full border-[6px] border-background shadow-lg transition-colors",
+                      isActive 
+                        ? "bg-primary text-primary-foreground" 
+                        : "bg-muted text-muted-foreground"
+                    )}>
+                      <item.icon className="size-6" />
+                    </div>
+                  ) : (
+                    <item.icon className={cn("size-5", isActive ? "text-primary" : "text-muted-foreground")} />
+                  )}
+                  <span className={cn(
+                    "truncate text-center text-[10px] font-medium transition-colors",
+                    isMiddle ? "absolute -bottom-5 max-w-[70px] font-bold" : "max-w-[64px]",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}>
+                    {item.label}
+                  </span>
+                </>
+              )}
             </NavLink>
           )
         })}

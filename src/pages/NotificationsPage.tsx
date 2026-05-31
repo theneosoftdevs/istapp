@@ -11,7 +11,7 @@ import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/store"
 import { cn } from "@/lib/utils"
-import type { Notification, Announcement } from "@/types"
+import type { Notification } from "@/types"
 
 const TYPE_CONFIG: Record<
   Notification["type"],
@@ -44,8 +44,8 @@ function relativeDate(iso: string) {
   const now = new Date()
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000)
   if (diff < 60) return "À l'instant"
-  if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`
-  if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)}h`
+  if (diff < 3600) return `${Math.floor(diff / 60)} min`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`
   return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })
 }
 
@@ -71,51 +71,51 @@ export function NotificationsPage() {
   const unreadNotifications = notifications.filter((n) => !n.read).length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20 sm:pb-0">
       <PageHeader
-        title="Centre de communications"
-        subtitle="Retrouvez ici toutes les annonces officielles et vos notifications personnelles."
+        title="Communications"
+        subtitle="Annonces officielles et notifications personnelles."
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="announcements" className="gap-2">
-            <Megaphone className="size-4" />
+        <TabsList className="grid w-full grid-cols-2 lg:max-w-md">
+          <TabsTrigger value="announcements" className="gap-1.5 px-2 text-xs sm:text-sm">
+            <Megaphone className="hidden size-4 sm:block" />
             Annonces
-            <Badge variant="secondary" className="ml-1 h-5 px-1.5 py-0 text-[10px]">
+            <Badge variant="secondary" className="ml-0.5 h-5 px-1.5 py-0 text-[10px]">
               {announcements.length}
             </Badge>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="gap-2">
-            <Bell className="size-4" />
+          <TabsTrigger value="notifications" className="gap-1.5 px-2 text-xs sm:text-sm">
+            <Bell className="hidden size-4 sm:block" />
             Notifications
             {unreadNotifications > 0 && (
-              <Badge variant="destructive" className="ml-1 h-5 px-1.5 py-0 text-[10px]">
+              <Badge variant="destructive" className="ml-0.5 h-5 px-1.5 py-0 text-[10px]">
                 {unreadNotifications}
               </Badge>
             )}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="announcements" className="mt-6">
-          <Card>
+        <TabsContent value="announcements" className="mt-4 sm:mt-6">
+          <Card className="overflow-hidden border-0 shadow-none sm:border sm:shadow-sm">
             <CardContent className="p-0">
               <AnnouncementList items={announcements} />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="notifications" className="mt-6">
+        <TabsContent value="notifications" className="mt-4 sm:mt-6">
           {notifications.length === 0 ? (
-            <Card>
+            <Card className="border-0 shadow-none sm:border sm:shadow-sm">
               <CardContent className="flex flex-col items-center gap-3 py-16">
                 <div className="flex size-12 items-center justify-center rounded-full bg-muted">
                   <Bell className="size-6 text-muted-foreground" />
                 </div>
-                <div className="text-center">
+                <div className="text-center px-4">
                   <p className="font-medium text-foreground">Aucune notification</p>
                   <p className="text-sm text-muted-foreground">
-                    Vous n'avez reçu aucune notification pour le moment.
+                    Vous n'avez reçu aucune notification personnelle pour le moment.
                   </p>
                 </div>
               </CardContent>
@@ -127,15 +127,15 @@ export function NotificationsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1.5 text-xs"
+                    className="h-8 gap-1.5 text-xs"
                     onClick={() => user?.role && markAllNotificationsRead(user.role)}
                   >
-                    <CheckCheck className="size-4" />
+                    <CheckCheck className="size-3.5" />
                     Tout marquer lu
                   </Button>
                 )}
               </div>
-              <div className="grid gap-2">
+              <div className="grid gap-3">
                 {notifications.map((n) => {
                   const cfg = TYPE_CONFIG[n.type]
                   const NIcon = cfg.icon
@@ -144,23 +144,32 @@ export function NotificationsPage() {
                       key={n.id}
                       onClick={() => !n.read && markNotificationRead(n.id)}
                       className={cn(
-                        "flex cursor-pointer items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-accent/30",
-                        !n.read && "border-primary/20 bg-primary/5",
+                        "flex cursor-pointer items-start gap-3 rounded-xl border border-border p-3 transition-all active:scale-[0.98] sm:gap-4 sm:p-4",
+                        !n.read ? "border-primary/30 bg-primary/5" : "bg-card hover:bg-accent/30",
                       )}
                     >
-                      <div className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", cfg.color)}>
-                        <NIcon className="size-4" />
+                      <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-full sm:size-11 sm:rounded-lg", cfg.color)}>
+                        <NIcon className="size-5 sm:size-6" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary/80 sm:text-xs">
                             {cfg.label}
                           </span>
-                          {!n.read && <span className="size-2 rounded-full bg-primary" />}
+                          <span className="shrink-0 text-[10px] text-muted-foreground">
+                            {relativeDate(n.createdAt)}
+                          </span>
                         </div>
-                        <p className="mt-1 text-sm text-foreground">{n.message}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{relativeDate(n.createdAt)}</p>
+                        <p className={cn(
+                          "mt-1 text-sm leading-snug text-foreground sm:text-base",
+                          !n.read ? "font-medium" : "font-normal text-muted-foreground/90"
+                        )}>
+                          {n.message}
+                        </p>
                       </div>
+                      {!n.read && (
+                        <div className="mt-1 size-2 rounded-full bg-primary shrink-0 ring-4 ring-primary/10" />
+                      )}
                     </div>
                   )
                 })}

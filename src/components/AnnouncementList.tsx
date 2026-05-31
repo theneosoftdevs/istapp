@@ -26,7 +26,7 @@ export function AnnouncementList({ items }: { items: Announcement[] }) {
   return (
     <ul className="divide-y divide-border">
       {items.map((a) => (
-        <li key={a.id} className="space-y-1.5 py-4 first:pt-0 last:pb-0">
+        <li key={a.id} className="space-y-1.5 px-4 py-4 first:pt-0 last:pb-0 sm:px-6">
           <div className="flex items-start justify-between gap-3">
             <p className="font-medium text-foreground">{a.title}</p>
             <StatusBadge status={a.priority} />
