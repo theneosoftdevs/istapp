@@ -1,10 +1,19 @@
 // src/pages/secretariat_faculte/FacultyCourses.tsx
 import { useState } from "react"
-import { BookOpen, Clock } from "lucide-react"
+import { BookOpen, Clock, UserCheck } from "lucide-react"
 import { PageHeader } from "@/src/components/ui/PageHeader"
 import { KPICard } from "@/src/components/ui/KPICard"
 import { DataTable, type Column } from "@/src/components/ui/DataTable"
-import { Loader } from "@/src/components/ui/Loader"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
@@ -12,7 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePageData } from "@/src/hooks/usePageData"
+import { useStore } from "@/src/hooks/usePageData"
+import { assignCourseToTeacher } from "@/src/lib/store"
 import type { Course } from "@/src/types"
 
 interface CourseRow extends Course {
@@ -22,29 +32,37 @@ interface CourseRow extends Course {
 }
 
 export function FacultyCourses() {
-  const [facultyId, setFacultyId] = useState("all")
+  const store = useStore()
+  const [facultyFilter, setFacultyFilter] = useState("all")
+  const [assignTarget, setAssignTarget] = useState<CourseRow | null>(null)
+  const [selectedTeacherId, setSelectedTeacherId] = useState("")
 
-  const { data, loading } = usePageData((d) => {
-    const rows: CourseRow[] = d.courses.map((c) => {
-      const promotion = d.promotions.find((p) => p.id === c.promotionId)
-      const teacher = d.teachers.find((t) => t.id === c.teacherId)
-      return {
-        ...c,
-        promotionName: promotion?.name ?? "—",
-        teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : "—",
-        teacherTitle: teacher?.title ?? "",
-      }
-    })
-    return { rows, faculties: d.faculties }
+  const rows: CourseRow[] = store.courses.map((c) => {
+    const promotion = store.promotions.find((p) => p.id === c.promotionId)
+    const teacher = store.teachers.find((t) => t.id === c.teacherId)
+    return {
+      ...c,
+      promotionName: promotion?.name ?? "—",
+      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : "Non attribué",
+      teacherTitle: teacher?.title ?? "",
+    }
   })
 
-  if (loading || !data) return <Loader fullHeight />
-
-  const filtered =
-    facultyId === "all" ? data.rows : data.rows.filter((r) => r.facultyId === facultyId)
+  const filtered = facultyFilter === "all" ? rows : rows.filter((r) => r.facultyId === facultyFilter)
 
   const totalHours = filtered.reduce((acc, r) => acc + r.hours, 0)
   const totalCredits = filtered.reduce((acc, r) => acc + r.credits, 0)
+
+  const teachersForDialog = assignTarget
+    ? store.teachers.filter((t) => t.facultyId === assignTarget.facultyId)
+    : []
+
+  function handleAssign() {
+    if (!assignTarget || !selectedTeacherId) return
+    assignCourseToTeacher(assignTarget.id, selectedTeacherId)
+    setAssignTarget(null)
+    setSelectedTeacherId("")
+  }
 
   const columns: Column<CourseRow>[] = [
     {
@@ -66,9 +84,25 @@ export function FacultyCourses() {
       key: "teacher",
       header: "Enseignant",
       render: (c) => (
-        <div className="min-w-0">
-          <p className="text-foreground">{c.teacherName}</p>
-          <p className="text-xs text-muted-foreground">{c.teacherTitle}</p>
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-foreground">{c.teacherName}</p>
+            {c.teacherTitle && (
+              <p className="text-xs text-muted-foreground">{c.teacherTitle}</p>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 shrink-0 gap-1 text-xs"
+            onClick={() => {
+              setAssignTarget(c)
+              setSelectedTeacherId(c.teacherId)
+            }}
+          >
+            <UserCheck className="size-3.5" />
+            Changer
+          </Button>
         </div>
       ),
     },
@@ -77,9 +111,9 @@ export function FacultyCourses() {
       header: "Crédits",
       align: "center",
       render: (c) => (
-        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+        <Badge variant="secondary" className="text-xs">
           {c.credits}
-        </span>
+        </Badge>
       ),
     },
     {
@@ -87,7 +121,7 @@ export function FacultyCourses() {
       header: "Heures",
       align: "center",
       render: (c) => (
-        <span className="inline-flex items-center gap-1 text-muted-foreground">
+        <span className="inline-flex items-center gap-1 text-muted-foreground text-sm">
           <Clock className="size-3.5" />
           {c.hours}h
         </span>
@@ -99,15 +133,15 @@ export function FacultyCourses() {
     <>
       <PageHeader
         title="Cours"
-        subtitle="Catalogue des cours par faculté."
+        subtitle="Catalogue des cours — attribuez chaque cours à un enseignant."
         action={
-          <Select value={facultyId} onValueChange={setFacultyId}>
+          <Select value={facultyFilter} onValueChange={setFacultyFilter}>
             <SelectTrigger className="w-56">
               <SelectValue placeholder="Toutes les facultés" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Toutes les facultés</SelectItem>
-              {data.faculties.map((f) => (
+              {store.faculties.map((f) => (
                 <SelectItem key={f.id} value={f.id}>
                   {f.name}
                 </SelectItem>
@@ -141,6 +175,62 @@ export function FacultyCourses() {
         emptyTitle="Aucun cours"
         emptyDescription="Aucun cours à afficher pour cette faculté."
       />
+
+      <Dialog
+        open={assignTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) { setAssignTarget(null); setSelectedTeacherId("") }
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Attribuer un enseignant</DialogTitle>
+          </DialogHeader>
+          {assignTarget && (
+            <div className="space-y-3">
+              <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                <p className="font-medium text-foreground">{assignTarget.name}</p>
+                <p className="text-muted-foreground">{assignTarget.promotionName}</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Enseignant</Label>
+                <Select value={selectedTeacherId} onValueChange={setSelectedTeacherId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un enseignant…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teachersForDialog.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.firstName} {t.lastName}
+                        <span className="ml-1 text-muted-foreground">({t.title})</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {teachersForDialog.length === 0 && (
+                  <p className="text-xs text-destructive">
+                    Aucun enseignant disponible dans cette faculté.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setAssignTarget(null); setSelectedTeacherId("") }}
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleAssign}
+              disabled={!selectedTeacherId || selectedTeacherId === assignTarget?.teacherId}
+            >
+              Attribuer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

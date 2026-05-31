@@ -1,0 +1,248 @@
+// src/pages/secretariat_general/SecretariatGeneralTeachers.tsx
+import { useState } from "react"
+import { UserSquare2, Plus, UserCheck, UserX } from "lucide-react"
+import { PageHeader } from "@/src/components/ui/PageHeader"
+import { KPICard } from "@/src/components/ui/KPICard"
+import { DataTable, type Column } from "@/src/components/ui/DataTable"
+import { StatusBadge } from "@/src/components/ui/StatusBadge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useStore } from "@/src/hooks/usePageData"
+import { addTeacher, nextTeacherId, nextTeacherMatricule } from "@/src/lib/store"
+import type { Teacher } from "@/src/types"
+
+const TITLES = ["Professeur", "Professeure", "Assistant", "Assistante", "Chef de Travaux", "Maître de Conférences"]
+
+interface TeacherRow extends Teacher {
+  facultyName: string
+  courseCount: number
+}
+
+export function SecretariatGeneralTeachers() {
+  const store = useStore()
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    facultyId: "",
+    title: "Professeur",
+  })
+
+  const rows: TeacherRow[] = store.teachers.map((t) => ({
+    ...t,
+    facultyName: store.faculties.find((f) => f.id === t.facultyId)?.name ?? "—",
+    courseCount: store.courses.filter((c) => c.teacherId === t.id).length,
+  }))
+
+  const active = rows.filter((r) => r.status === "active").length
+  const pending = rows.filter((r) => r.status === "pending").length
+
+  function handleAdd() {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.facultyId) return
+    addTeacher({
+      id: nextTeacherId(),
+      matricule: nextTeacherMatricule(),
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      facultyId: form.facultyId,
+      title: form.title,
+      courseIds: [],
+      status: "active",
+    })
+    setForm({ firstName: "", lastName: "", email: "", phone: "", facultyId: "", title: "Professeur" })
+    setOpen(false)
+  }
+
+  const columns: Column<TeacherRow>[] = [
+    {
+      key: "name",
+      header: "Enseignant",
+      render: (t) => (
+        <div className="min-w-0">
+          <p className="font-medium text-foreground">
+            {t.firstName} {t.lastName}
+          </p>
+          <p className="font-mono text-xs text-muted-foreground">{t.matricule}</p>
+        </div>
+      ),
+    },
+    { key: "title", header: "Titre", render: (t) => t.title },
+    { key: "faculty", header: "Faculté", render: (t) => t.facultyName },
+    {
+      key: "email",
+      header: "Email",
+      render: (t) => (
+        <span className="text-xs text-muted-foreground truncate">{t.email}</span>
+      ),
+    },
+    {
+      key: "courses",
+      header: "Cours",
+      align: "center",
+      render: (t) => (
+        <span className="text-sm font-medium text-foreground">{t.courseCount}</span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Statut",
+      align: "right",
+      render: (t) => (
+        <div className="flex justify-end">
+          <StatusBadge status={t.status} />
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <>
+      <PageHeader
+        title="Enseignants"
+        subtitle="Gérez le corps enseignant de l'institution."
+        action={
+          <Button onClick={() => setOpen(true)} className="gap-1.5">
+            <Plus className="size-4" />
+            Ajouter un enseignant
+          </Button>
+        }
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <KPICard
+          title="Total enseignants"
+          value={rows.length}
+          icon={UserSquare2}
+          colorClass="bg-chart-3/15 text-chart-3"
+        />
+        <KPICard
+          title="Actifs"
+          value={active}
+          icon={UserCheck}
+          colorClass="bg-chart-1/10 text-chart-1"
+        />
+        <KPICard
+          title="En attente"
+          value={pending}
+          icon={UserX}
+          colorClass="bg-chart-4/10 text-chart-4"
+        />
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={rows}
+        rowKey={(t) => t.id}
+        emptyTitle="Aucun enseignant"
+        emptyDescription="Ajoutez des enseignants à l'institution."
+      />
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ajouter un enseignant</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Prénom</Label>
+                <Input
+                  placeholder="Jean-Paul"
+                  value={form.firstName}
+                  onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Nom</Label>
+                <Input
+                  placeholder="Bahati"
+                  value={form.lastName}
+                  onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Email</Label>
+              <Input
+                type="email"
+                placeholder="prenom.nom@ista-goma.cd"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Téléphone</Label>
+              <Input
+                placeholder="+243 9XX XXX XXX"
+                value={form.phone}
+                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Faculté</Label>
+                <Select value={form.facultyId} onValueChange={(v) => setForm((f) => ({ ...f, facultyId: v }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisir…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {store.faculties.map((f) => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Titre</Label>
+                <Select value={form.title} onValueChange={(v) => setForm((f) => ({ ...f, title: v }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TITLES.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={handleAdd}
+              disabled={!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.facultyId}
+            >
+              Ajouter
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}

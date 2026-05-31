@@ -14,7 +14,6 @@ export interface User {
   email: string
   role: Role
   avatar?: string
-  /** linked entity id (student/teacher) when applicable */
   refId?: string
 }
 
@@ -30,7 +29,7 @@ export interface Promotion {
   id: string
   name: string
   facultyId: string
-  level: string // L1, L2, L3, M1, M2
+  level: string
   studentCount: number
 }
 
@@ -57,7 +56,7 @@ export interface Teacher {
   email: string
   phone: string
   facultyId: string
-  title: string // Professeur, Assistant, etc.
+  title: string
   courseIds: string[]
   status: "active" | "pending"
 }
@@ -79,8 +78,8 @@ export interface ScheduleSlot {
   promotionId: string
   teacherId: string
   day: "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi"
-  start: string // HH:mm
-  end: string // HH:mm
+  start: string
+  end: string
   room: string
 }
 
@@ -89,7 +88,7 @@ export interface Grade {
   studentId: string
   courseId: string
   promotionId: string
-  score: number // /20
+  score: number
   status: "validated" | "pending" | "rejected"
   session: string
 }
@@ -104,6 +103,57 @@ export interface Announcement {
   priority: "info" | "important" | "urgent"
 }
 
+export interface Assignment {
+  id: string
+  courseId: string
+  teacherId: string
+  title: string
+  description: string
+  dueDate: string
+  createdAt: string
+}
+
+export interface Submission {
+  id: string
+  assignmentId: string
+  studentId: string
+  content: string
+  submittedAt: string
+  grade?: number
+  feedback?: string
+}
+
+export interface GradeAppeal {
+  id: string
+  studentId: string
+  courseId: string
+  gradeId: string
+  reason: string
+  status: "pending" | "approved" | "rejected"
+  response?: string
+  createdAt: string
+}
+
+export interface CourseResource {
+  id: string
+  courseId: string
+  teacherId: string
+  title: string
+  type: "pdf" | "video" | "link" | "doc"
+  url: string
+  createdAt: string
+}
+
+export interface Notification {
+  id: string
+  type: "grade_modified" | "new_appeal" | "appeal_resolved" | "course_assigned"
+  message: string
+  targetRole: Role
+  read: boolean
+  createdAt: string
+  metadata?: Record<string, string>
+}
+
 export interface AppData {
   users: User[]
   faculties: Faculty[]
@@ -114,6 +164,11 @@ export interface AppData {
   schedules: ScheduleSlot[]
   grades: Grade[]
   announcements: Announcement[]
+  assignments: Assignment[]
+  submissions: Submission[]
+  gradeAppeals: GradeAppeal[]
+  courseResources: CourseResource[]
+  notifications: Notification[]
 }
 
 export type StatusValue =

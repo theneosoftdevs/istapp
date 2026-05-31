@@ -12,6 +12,12 @@ import {
   FileText,
   Megaphone,
   UserPlus,
+  ClipboardCheck,
+  FolderOpen,
+  UserSquare2,
+  BarChart3,
+  AlertCircle,
+  Bell,
   type LucideIcon,
 } from "lucide-react"
 import type { Role, PortalInfo } from "@/src/types"
@@ -27,7 +33,7 @@ export const PORTALS: (PortalInfo & { icon: LucideIcon; color: string })[] = [
   {
     role: "teacher",
     label: "Enseignant",
-    description: "Gestion des cours, notes et plannings.",
+    description: "Gestion des cours, ressources, travaux et notes.",
     icon: BookOpen,
     color: "text-chart-2",
   },
@@ -48,7 +54,7 @@ export const PORTALS: (PortalInfo & { icon: LucideIcon; color: string })[] = [
   {
     role: "secretariat_general",
     label: "Secrétariat Général",
-    description: "Coordination administrative générale.",
+    description: "Coordination administrative, enseignants, résultats.",
     icon: Landmark,
     color: "text-chart-5",
   },
@@ -74,13 +80,16 @@ export interface NavItem {
 export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   student: [
     { label: "Tableau de bord", to: "/student/dashboard", icon: LayoutDashboard },
-    { label: "Mon emploi du temps", to: "/student/schedule", icon: CalendarDays },
+    { label: "Emploi du temps", to: "/student/schedule", icon: CalendarDays },
     { label: "Mes notes", to: "/student/grades", icon: FileText },
+    { label: "Travaux", to: "/student/assignments", icon: ClipboardCheck },
+    { label: "Ressources", to: "/student/resources", icon: FolderOpen },
     { label: "Annonces", to: "/student/announcements", icon: Megaphone },
   ],
   teacher: [
     { label: "Tableau de bord", to: "/teacher/dashboard", icon: LayoutDashboard },
     { label: "Mes cours", to: "/teacher/courses", icon: BookOpen },
+    { label: "Travaux", to: "/teacher/assignments", icon: ClipboardCheck },
     { label: "Saisie des notes", to: "/teacher/grades", icon: FileText },
     { label: "Emploi du temps", to: "/teacher/schedule", icon: CalendarDays },
   ],
@@ -97,11 +106,15 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   secretariat_general: [
     { label: "Tableau de bord", to: "/secretariat_general/dashboard", icon: LayoutDashboard },
     { label: "Facultés", to: "/secretariat_general/faculties", icon: Building2 },
+    { label: "Enseignants", to: "/secretariat_general/teachers", icon: UserSquare2 },
+    { label: "Résultats", to: "/secretariat_general/results", icon: BarChart3 },
+    { label: "Recours", to: "/secretariat_general/recours", icon: AlertCircle },
+    { label: "Notifications", to: "/secretariat_general/notifications", icon: Bell },
     { label: "Annonces", to: "/secretariat_general/announcements", icon: Megaphone },
   ],
   rectorat: [
     { label: "Tableau de bord", to: "/rectorat/dashboard", icon: LayoutDashboard },
-    { label: "Statistiques", to: "/rectorat/stats", icon: LayoutDashboard },
+    { label: "Statistiques", to: "/rectorat/stats", icon: BarChart3 },
     { label: "Facultés", to: "/rectorat/faculties", icon: Building2 },
   ],
 }
