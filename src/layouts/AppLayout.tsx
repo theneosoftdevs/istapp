@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { SettingsDialog } from "@/components/SettingsDialog"
 import { useState } from "react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 function initials(firstName: string, lastName: string) {
   return (firstName[0] || "") + (lastName[0] || "")
@@ -72,28 +73,44 @@ export function AppLayout() {
           </Link>
 
           <div className="ml-auto flex items-center gap-1.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              asChild
-            >
-              <Link to="/communications" aria-label="Notifications">
-                <div className="relative">
-                  <Bell className="size-5" />
-                  {/* Real unread count would be better, but let's keep it simple */}
-                  <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-destructive" />
-                </div>
-              </Link>
-            </Button>
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                  >
+                    <Link to="/communications" aria-label="Annonces et Communiqués">
+                      <div className="relative">
+                        <Bell className="size-5" />
+                        {/* Real unread count would be better, but let's keep it simple */}
+                        <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-destructive" />
+                      </div>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Annonces et Communiqués
+                </TooltipContent>
+              </Tooltip>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              aria-label="Basculer le thème"
-            >
-              {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
-            </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleTheme}
+                    aria-label={theme === "dark" ? "Passer au thème clair" : "Passer au thème sombre"}
+                  >
+                    {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {theme === "dark" ? "Thème clair" : "Thème sombre"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

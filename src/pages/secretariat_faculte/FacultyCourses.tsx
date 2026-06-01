@@ -1,6 +1,6 @@
 // src/pages/secretariat_faculte/FacultyCourses.tsx
 import { useState } from "react"
-import { BookOpen, Clock, UserCheck } from "lucide-react"
+import { BookOpen, Clock, UserCheck, DoorOpen } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { KPICard } from "@/components/ui/KPICard"
 import { DataTable, type Column } from "@/components/ui/DataTable"
@@ -24,27 +24,33 @@ import {
 import { useStore } from "@/hooks/usePageData"
 import { assignCourseToTeacher } from "@/lib/store"
 import type { Course } from "@/types"
+import { toast } from "sonner"
 
 interface CourseRow extends Course {
   promotionName: string
   teacherName: string
   teacherTitle: string
+  roomName: string
 }
 
 export function FacultyCourses() {
   const store = useStore()
   const [facultyFilter, setFacultyFilter] = useState("all")
   const [assignTarget, setAssignTarget] = useState<CourseRow | null>(null)
+  const [assignRoomTarget, setAssignRoomTarget] = useState<CourseRow | null>(null)
   const [selectedTeacherId, setSelectedTeacherId] = useState("")
+  const [selectedRoomId, setSelectedRoomId] = useState("")
 
   const rows: CourseRow[] = store.courses.map((c) => {
     const promotion = store.promotions.find((p) => p.id === c.promotionId)
     const teacher = store.teachers.find((t) => t.id === c.teacherId)
+    const room = store.rooms.find(r => r.id === c.roomId)
     return {
       ...c,
       promotionName: promotion?.name ?? "—",
       teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : "Non attribué",
       teacherTitle: teacher?.title ?? "",
+      roomName: room?.name ?? "Non attribuée"
     }
   })
 
@@ -62,6 +68,14 @@ export function FacultyCourses() {
     assignCourseToTeacher(assignTarget.id, selectedTeacherId)
     setAssignTarget(null)
     setSelectedTeacherId("")
+  }
+
+  function handleAssignRoom() {
+    if (!assignRoomTarget || !selectedRoomId) return
+    // In a real app, update room in store
+    toast.success(`Salle ${store.rooms.find(r => r.id === selectedRoomId)?.name} attribuée au cours ${assignRoomTarget.name}`)
+    setAssignRoomTarget(null)
+    setSelectedRoomId("")
   }
 
   const columns: Column<CourseRow>[] = [
@@ -107,6 +121,26 @@ export function FacultyCourses() {
       ),
     },
     {
+      key: "room",
+      header: "Salle",
+      render: (c) => (
+        <div className="flex items-center gap-2">
+          <span className="text-xs">{c.roomName}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6"
+            onClick={() => {
+              setAssignRoomTarget(c)
+              setSelectedRoomId(c.roomId || "")
+            }}
+          >
+            <DoorOpen className="size-3" />
+          </Button>
+        </div>
+      )
+    },
+    {
       key: "credits",
       header: "Crédits",
       align: "center",
@@ -133,7 +167,7 @@ export function FacultyCourses() {
     <>
       <PageHeader
         title="Cours"
-        subtitle="Catalogue des cours — attribuez chaque cours à un enseignant."
+        subtitle="Catalogue des cours — attribuez chaque cours à un enseignant et une salle."
         action={
           <Select value={facultyFilter} onValueChange={setFacultyFilter}>
             <SelectTrigger className="w-56">
@@ -175,6 +209,56 @@ export function FacultyCourses() {
         emptyTitle="Aucun cours"
         emptyDescription="Aucun cours à afficher pour cette faculté."
       />
+
+      <Dialog
+        open={assignRoomTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) { setAssignRoomTarget(null); setSelectedRoomId("") }
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Attribuer une salle</DialogTitle>
+          </DialogHeader>
+          {assignRoomTarget && (
+            <div className="space-y-3">
+              <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                <p className="font-medium text-foreground">{assignRoomTarget.name}</p>
+                <p className="text-muted-foreground">{assignRoomTarget.promotionName}</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Salle / Auditoire</Label>
+                <Select value={selectedRoomId} onValueChange={setSelectedRoomId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner une salle…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {store.rooms.map((r) => (
+                      <SelectItem key={r.id} value={r.id}>
+                        {r.name} <span className="ml-1 text-muted-foreground">({r.capacity} places)</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setAssignRoomTarget(null); setSelectedRoomId("") }}
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleAssignRoom}
+              disabled={!selectedRoomId}
+            >
+              Attribuer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={assignTarget !== null}

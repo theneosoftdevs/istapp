@@ -1,12 +1,35 @@
 // src/pages/secretariat_general/SecretariatGeneralFaculties.tsx
-import { Building2, Users, BookOpen, UserSquare2 } from "lucide-react"
+import { Building2, Users, BookOpen, UserSquare2, Plus } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Loader } from "@/components/ui/Loader"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { usePageData } from "@/hooks/usePageData"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { addFaculty, nextFacultyId } from "@/lib/store"
+import { toast } from "sonner"
 
 export function SecretariatGeneralFaculties() {
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState({ name: "", code: "", dean: "" })
+
+  const handleAdd = () => {
+    if (!form.name || !form.code) return
+    addFaculty({
+      id: nextFacultyId(),
+      name: form.name,
+      code: form.code,
+      dean: form.dean || "À désigner"
+    })
+    toast.success("Faculté ajoutée avec succès")
+    setForm({ name: "", code: "", dean: "" })
+    setOpen(false)
+  }
+
   const { data, loading } = usePageData((d) => {
     return d.faculties.map((f) => ({
       ...f,
@@ -25,6 +48,12 @@ export function SecretariatGeneralFaculties() {
       <PageHeader
         title="Facultés"
         subtitle="Vue d'ensemble de toutes les entités académiques de l'institution."
+        action={
+          <Button onClick={() => setOpen(true)} className="gap-1.5">
+            <Plus className="size-4" />
+            Nouvelle Faculté
+          </Button>
+        }
       />
 
       {data.length === 0 ? (
@@ -79,6 +108,44 @@ export function SecretariatGeneralFaculties() {
           ))}
         </div>
       )}
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ajouter une faculté</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Nom de la faculté</Label>
+              <Input
+                placeholder="ex: Sciences et Technologies"
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Code / Sigle</Label>
+              <Input
+                placeholder="ex: ST"
+                value={form.code}
+                onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Doyen</Label>
+              <Input
+                placeholder="Nom du Doyen"
+                value={form.dean}
+                onChange={e => setForm(f => ({ ...f, dean: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
+            <Button onClick={handleAdd} disabled={!form.name || !form.code}>Créer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
