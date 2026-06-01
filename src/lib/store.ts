@@ -1,5 +1,6 @@
 // src/lib/store.ts
 import rawData from "@/data.json"
+import { fetchExternalPosts, fetchExternalUsers } from "./api"
 import type {
   AppData,
   Grade,
@@ -13,6 +14,8 @@ import type {
   CourseResource,
   Notification,
   Role,
+  Announcement,
+  Room,
 } from "@/types"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -31,19 +34,93 @@ function clampScore(n: number): number {
 // every required array exists even if the JSON is extended incrementally.
 
 function initState(): AppData {
-  const raw = structuredClone(rawData) as unknown as AppData
+  const raw = structuredClone(rawData) as any
+
+  // Adapt old data format to new one if necessary
+  const users = (raw.users || []).map((u: any) => {
+    if (u.name && !u.firstName) {
+      const parts = u.name.split(" ")
+      return {
+        ...u,
+        firstName: parts[0] || "",
+        lastName: parts[parts.length - 1] || "",
+        middleName: parts.slice(1, -1).join(" ") || ""
+      }
+    }
+    return u
+  })
+
+  const students = (raw.students || []).map((s: any) => ({
+    ...s,
+    middleName: s.middleName || "",
+    birthDate: s.birthDate || "2000-01-01"
+  }))
+
+  const teachers = (raw.teachers || []).map((t: any) => ({
+    ...t,
+    middleName: t.middleName || ""
+  }))
+
+  const announcements = (raw.announcements || []).map((a: any) => ({
+    ...a,
+    scope: a.scope || "global"
+  }))
+
+  const grades = (raw.grades || []).map((g: any) => ({
+    ...g,
+    type: g.type || "Examen"
+  }))
+
   return {
     ...raw,
+    users,
+    students,
+    teachers,
+    announcements,
+    grades,
     teacherTitles:    raw.teacherTitles    ?? [],
     assignments:      raw.assignments      ?? [],
     submissions:      raw.submissions      ?? [],
     gradeAppeals:     raw.gradeAppeals     ?? [],
     courseResources:  raw.courseResources  ?? [],
     notifications:    raw.notifications    ?? [],
+    rooms:            raw.rooms            ?? [],
   }
 }
 
 let state: AppData = initState()
+
+// Load external data
+async function loadExternalData() {
+  try {
+    const [users, posts] = await Promise.all([
+      fetchExternalUsers(),
+      fetchExternalPosts(),
+    ])
+
+    // Map external posts to announcements
+    const externalAnnouncements: Announcement[] = posts.slice(0, 5).map((post: any) => ({
+      id: `ext-${post.id}`,
+      title: post.title,
+      body: post.body,
+      author: "Système Externe",
+      date: new Date().toISOString().split("T")[0],
+      audience: "all",
+      priority: "info",
+      scope: "global"
+    }))
+
+    state = {
+      ...state,
+      announcements: [...state.announcements, ...externalAnnouncements]
+    }
+    emit()
+  } catch (error) {
+    console.error("Failed to load external data", error)
+  }
+}
+
+loadExternalData()
 
 // ─── Subscription (useSyncExternalStore) ─────────────────────────────────────
 
@@ -229,11 +306,39 @@ export function addSubmission(submission: Submission) {
 }
 
 export function gradeSubmission(id: string, rawGrade: number, feedback: string) {
-  const grade = clampScore(rawGrade)
+  const score = clampScore(rawGrade)
+  const sub = state.submissions.find((s) => s.id === id)
+  const assignment = sub ? state.assignments.find((a) => a.id === sub.assignmentId) : undefined
+  const student = sub ? state.students.find((s) => s.id === sub.studentId) : undefined
+
+  // Auto-sync to grades
+  if (sub && assignment && student) {
+    const gradeId = uid("g-")
+    const newGrade: Grade = {
+      id: gradeId,
+      studentId: sub.studentId,
+      courseId: assignment.courseId,
+      promotionId: student.promotionId,
+      score,
+      status: "pending",
+      session: "Travail pratique",
+      type: assignment.type === "Formulaire" ? "Interro" : "TP"
+    }
+    state = {
+      ...state,
+      grades: [newGrade, ...state.grades]
+    }
+  }
+
   state = {
     ...state,
-    submissions: state.submissions.map((s) => (s.id === id ? { ...s, grade, feedback } : s)),
+    submissions: state.submissions.map((s) => (s.id === id ? { ...s, grade: score, feedback } : s)),
   }
+  emit()
+}
+
+export function addGrade(grade: Grade) {
+  state = { ...state, grades: [grade, ...state.grades] }
   emit()
 }
 
@@ -291,6 +396,29 @@ export function removeCourseResource(id: string) {
 
 export function nextResourceId(): string {
   return uid("res-")
+}
+
+// ─── Rooms ────────────────────────────────────────────────────────────────────
+
+export function addRoom(room: Room) {
+  state = { ...state, rooms: [room, ...state.rooms] }
+  emit()
+}
+
+export function removeRoom(id: string) {
+  state = { ...state, rooms: state.rooms.filter((r) => r.id !== id) }
+  emit()
+}
+
+export function nextRoomId(): string {
+  return uid("room-")
+}
+
+// ─── Announcements ────────────────────────────────────────────────────────────
+
+export function addAnnouncement(announcement: Announcement) {
+  state = { ...state, announcements: [announcement, ...state.announcements] }
+  emit()
 }
 
 // ─── Notifications ────────────────────────────────────────────────────────────

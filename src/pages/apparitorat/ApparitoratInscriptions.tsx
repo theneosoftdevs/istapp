@@ -7,12 +7,17 @@ import { StatusBadge } from "@/components/ui/StatusBadge"
 import { KPICard } from "@/components/ui/KPICard"
 import { Input } from "@/components/ui/input"
 import { usePageData } from "@/hooks/usePageData"
+import { useStore } from "@/hooks/usePageData"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { InscriptionDialog } from "@/pages/apparitorat/InscriptionDialog"
 import { Users, UserCheck, UserCog } from "lucide-react"
 import type { Student } from "@/types"
 
 export function ApparitoratInscriptions() {
+  const store = useStore()
   const [query, setQuery] = useState("")
+  const [facultyFilter, setFacultyFilter] = useState("all")
+  const [promotionFilter, setPromotionFilter] = useState("all")
 
   const { data, loading } = usePageData((d) => {
     const facultyName = (id: string) => d.faculties.find((f) => f.id === id)?.code ?? "—"
@@ -27,15 +32,26 @@ export function ApparitoratInscriptions() {
 
   const filtered = useMemo(() => {
     if (!data) return []
+    let list = data.students
+
+    if (facultyFilter !== "all") {
+      list = list.filter(s => s.facultyId === facultyFilter)
+    }
+    if (promotionFilter !== "all") {
+      list = list.filter(s => s.promotionId === promotionFilter)
+    }
+
     const q = query.trim().toLowerCase()
-    if (!q) return data.students
-    return data.students.filter((s) =>
-      [s.firstName, s.lastName, s.matricule, s.email]
-        .join(" ")
-        .toLowerCase()
-        .includes(q),
-    )
-  }, [data, query])
+    if (q) {
+      list = list.filter((s) =>
+        [s.firstName, s.lastName, s.middleName, s.matricule, s.email]
+          .join(" ")
+          .toLowerCase()
+          .includes(q),
+      )
+    }
+    return list
+  }, [data, query, facultyFilter, promotionFilter])
 
   const counts = useMemo(() => {
     const list = data?.students ?? []
@@ -121,15 +137,37 @@ export function ApparitoratInscriptions() {
         />
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Rechercher un étudiant..."
-          className="pl-9"
-          aria-label="Rechercher un étudiant"
-        />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Rechercher un étudiant..."
+            className="pl-9"
+            aria-label="Rechercher un étudiant"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Select value={facultyFilter} onValueChange={setFacultyFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Faculté" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes facultés</SelectItem>
+              {store.faculties.map(f => <SelectItem key={f.id} value={f.id}>{f.code}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={promotionFilter} onValueChange={setPromotionFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Promotion" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes promotions</SelectItem>
+              {store.promotions.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <DataTable

@@ -25,6 +25,7 @@ import {
 import { useStore } from "@/hooks/usePageData"
 import { addTeacher, nextTeacherId, nextTeacherMatricule } from "@/lib/store"
 import type { Teacher } from "@/types"
+import { toast } from "sonner"
 
 interface TeacherRow extends Teacher {
   facultyName: string
@@ -39,6 +40,8 @@ export function SecretariatGeneralTeachers() {
   const [form, setForm] = useState({
     firstName: "",
     lastName:  "",
+    middleName: "",
+    description: "",
     email:     "",
     phone:     "",
     facultyId: "",
@@ -61,6 +64,8 @@ export function SecretariatGeneralTeachers() {
       matricule: nextTeacherMatricule(),
       firstName: form.firstName.trim(),
       lastName:  form.lastName.trim(),
+      middleName: form.middleName.trim(),
+      description: form.description.trim(),
       email:     form.email.trim(),
       phone:     form.phone.trim(),
       facultyId: form.facultyId,
@@ -68,7 +73,11 @@ export function SecretariatGeneralTeachers() {
       courseIds: [],
       status:    "active",
     })
-    setForm({ firstName: "", lastName: "", email: "", phone: "", facultyId: "", title: titles[0] ?? "Professeur" })
+
+    // Simulate sending email
+    toast.success(`Enseignant ajouté. Un email d'invitation a été envoyé à ${form.email}`)
+
+    setForm({ firstName: "", lastName: "", middleName: "", description: "", email: "", phone: "", facultyId: "", title: titles[0] ?? "Professeur" })
     setOpen(false)
   }
 
@@ -140,22 +149,30 @@ export function SecretariatGeneralTeachers() {
           <DialogHeader>
             <DialogTitle>Ajouter un enseignant</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label>Prénom</Label>
-                <Input
-                  placeholder="Jean-Paul"
-                  value={form.firstName}
-                  onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                />
-              </div>
+          <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+            <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <Label>Nom</Label>
                 <Input
                   placeholder="Bahati"
                   value={form.lastName}
                   onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Postnom</Label>
+                <Input
+                  placeholder="Mugisho"
+                  value={form.middleName}
+                  onChange={(e) => setForm((f) => ({ ...f, middleName: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Prénom</Label>
+                <Input
+                  placeholder="Jean-Paul"
+                  value={form.firstName}
+                  onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
                 />
               </div>
             </div>
@@ -174,6 +191,14 @@ export function SecretariatGeneralTeachers() {
                 placeholder="+243 9XX XXX XXX"
                 value={form.phone}
                 onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Description / Bio</Label>
+              <Input
+                placeholder="Spécialiste en réseaux..."
+                value={form.description}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">

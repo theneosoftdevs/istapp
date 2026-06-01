@@ -25,11 +25,13 @@ import { TeacherAssignments } from "@/pages/teacher/TeacherAssignments"
 import { ApparitoratDashboard }   from "@/pages/apparitorat/ApparitoratDashboard"
 import { ApparitoratInscriptions } from "@/pages/apparitorat/ApparitoratInscriptions"
 import { ApparitoratStudents }    from "@/pages/apparitorat/ApparitoratStudents"
+import { ApparitoratRooms }       from "@/pages/apparitorat/ApparitoratRooms"
 
 // ─── Secrétariat Faculté ──────────────────────────────────────────────────────
 import { FacultyDashboard }   from "@/pages/secretariat_faculte/FacultyDashboard"
 import { FacultyPromotions }  from "@/pages/secretariat_faculte/FacultyPromotions"
 import { FacultyCourses }     from "@/pages/secretariat_faculte/FacultyCourses"
+import { FacultyRecours }     from "@/pages/secretariat_faculte/FacultyRecours"
 
 // ─── Secrétariat Général ──────────────────────────────────────────────────────
 import { SecretariatGeneralDashboard }     from "@/pages/secretariat_general/SecretariatGeneralDashboard"
@@ -108,6 +110,7 @@ export default function App() {
           <Route path="/apparitorat/dashboard"    element={<ApparitoratDashboard />} />
           <Route path="/apparitorat/inscriptions" element={<ApparitoratInscriptions />} />
           <Route path="/apparitorat/students"     element={<ApparitoratStudents />} />
+          <Route path="/apparitorat/rooms"        element={<ApparitoratRooms />} />
         </Route>
 
         {/* Secrétariat Faculté */}
@@ -115,6 +118,7 @@ export default function App() {
           <Route path="/secretariat_faculte/dashboard"  element={<FacultyDashboard />} />
           <Route path="/secretariat_faculte/promotions" element={<FacultyPromotions />} />
           <Route path="/secretariat_faculte/courses"    element={<FacultyCourses />} />
+          <Route path="/secretariat_faculte/recours"     element={<FacultyRecours />} />
         </Route>
 
         {/* Secrétariat Général */}

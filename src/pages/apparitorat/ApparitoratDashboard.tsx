@@ -1,5 +1,5 @@
 // src/pages/apparitorat/ApparitoratDashboard.tsx
-import { Users, UserCheck, UserCog, UserX } from "lucide-react"
+import { Users, UserCheck, UserCog, UserX, Venus, Mars } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -17,11 +17,15 @@ interface PendingRow extends Student {
 
 export function ApparitoratDashboard() {
   const { data, loading } = usePageData((d) => {
+    const totalMax = 1000 // Total capacity mock
     const counts = {
       total: d.students.length,
       active: d.students.filter((s) => s.status === "active").length,
       pending: d.students.filter((s) => s.status === "pending").length,
       suspended: d.students.filter((s) => s.status === "suspended").length,
+      girls: d.students.filter(s => s.gender === "F").length,
+      boys: d.students.filter(s => s.gender === "M").length,
+      totalMax
     }
     const pending: PendingRow[] = d.students
       .filter((s) => s.status === "pending")
@@ -78,10 +82,10 @@ export function ApparitoratDashboard() {
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KPICard title="Total étudiants" value={data.counts.total} icon={Users} colorClass="bg-chart-1/10 text-chart-1" />
-        <KPICard title="Actifs" value={data.counts.active} icon={UserCheck} colorClass="bg-chart-2/10 text-chart-2" />
+        <KPICard title="Effectif Total" value={data.counts.total} icon={Users} colorClass="bg-chart-1/10 text-chart-1" subtitle={`Capacité max: ${data.counts.totalMax}`} />
+        <KPICard title="Filles" value={data.counts.girls} icon={Venus} colorClass="bg-chart-4/10 text-chart-4" />
+        <KPICard title="Garçons" value={data.counts.boys} icon={Mars} colorClass="bg-chart-5/10 text-chart-5" />
         <KPICard title="En attente" value={data.counts.pending} icon={UserCog} colorClass="bg-chart-3/15 text-chart-3" />
-        <KPICard title="Suspendus" value={data.counts.suspended} icon={UserX} colorClass="bg-destructive/10 text-destructive" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

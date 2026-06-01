@@ -1,5 +1,5 @@
 // src/pages/student/StudentResources.tsx
-import { ExternalLink, FolderOpen } from "lucide-react"
+import { ExternalLink, FolderOpen, Download } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useStore } from "@/hooks/usePageData"
 import { useCurrentStudent } from "@/hooks/useCurrentUser"
 import { RESOURCE_ICONS, RESOURCE_LABELS, RESOURCE_COLORS } from "@/lib/constants"
+import { toast } from "sonner"
 
 export function StudentResources() {
   const store   = useStore()
@@ -93,17 +94,30 @@ export function StudentResources() {
                               {RESOURCE_LABELS[r.type]} · Ajouté le {r.createdAt}
                             </p>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="shrink-0 gap-1.5"
-                            asChild
-                          >
-                            <a href={r.url} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="size-3.5" />
-                              Ouvrir
-                            </a>
-                          </Button>
+                          <div className="flex shrink-0 gap-2">
+                            {r.type === "pdf" || r.type === "doc" ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={() => toast.success("Téléchargement démarré")}
+                              >
+                                <Download className="size-3.5" />
+                                <span className="hidden sm:inline">Télécharger</span>
+                              </Button>
+                            ) : null}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5"
+                              asChild
+                            >
+                              <a href={r.url} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="size-3.5" />
+                                <span className="hidden sm:inline">Ouvrir</span>
+                              </a>
+                            </Button>
+                          </div>
                         </div>
                       )
                     })}
