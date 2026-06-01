@@ -2,6 +2,7 @@
 import {
   GraduationCap,
   BookOpen,
+  DoorOpen,
   ClipboardList,
   Building2,
   Landmark,
@@ -94,11 +95,13 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
     { label: "Accueil",      to: "/apparitorat/dashboard",    icon: LayoutDashboard },
     { label: "Inscriptions", to: "/apparitorat/inscriptions", icon: UserPlus },
     { label: "Étudiants",    to: "/apparitorat/students",     icon: Users },
+    { label: "Locaux",       to: "/apparitorat/rooms",        icon: DoorOpen },
   ],
   secretariat_faculte: [
     { label: "Accueil",      to: "/secretariat_faculte/dashboard",  icon: LayoutDashboard },
     { label: "Promotions",   to: "/secretariat_faculte/promotions", icon: Users },
     { label: "Cours",        to: "/secretariat_faculte/courses",    icon: BookOpen },
+    { label: "Recours",      to: "/secretariat_faculte/recours",    icon: AlertCircle },
   ],
   secretariat_general: [
     { label: "Accueil",      to: "/secretariat_general/dashboard", icon: LayoutDashboard },

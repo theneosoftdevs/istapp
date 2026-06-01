@@ -19,8 +19,25 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function userForRole(role: Role): User {
   const existing = data.users.find((u) => u.role === role)
-  if (existing) return existing
-  return { id: `tmp-${role}`, name: "Utilisateur", email: "", role }
+  if (existing) {
+    if (existing.name && !existing.firstName) {
+      const parts = existing.name.split(" ")
+      return {
+        ...existing,
+        firstName: parts[0] || "",
+        lastName: parts[parts.length - 1] || "",
+        middleName: parts.slice(1, -1).join(" ") || ""
+      }
+    }
+    return existing
+  }
+  return {
+    id: `tmp-${role}`,
+    firstName: "Utilisateur",
+    lastName: "",
+    email: "",
+    role
+  }
 }
 
 function readStoredRole(): Role | null {

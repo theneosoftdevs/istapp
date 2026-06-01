@@ -1,11 +1,20 @@
 // src/pages/teacher/TeacherGrades.tsx
 import { useMemo, useState } from "react"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, Plus, Loader2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { DataTable, type Column } from "@/components/ui/DataTable"
 import { StatusBadge } from "@/components/ui/StatusBadge"
 import { Loader } from "@/components/ui/Loader"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
@@ -28,6 +37,15 @@ export function TeacherGrades() {
   const { user } = useAuth()
   const { toast } = useToast()
   const [courseId, setCourseId] = useState<string>("all")
+  const [addGradeOpen, setAddGradeOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [newGrade, setNewGrade] = useState({
+    courseId: "",
+    studentId: "",
+    score: "",
+    type: "Examen" as const,
+    session: "Janvier 2026",
+  })
 
   const { data, loading } = usePageData((d) => {
     const teacher  = d.teachers.find((t) => t.id === user?.refId) ?? d.teachers[0]
@@ -63,6 +81,21 @@ export function TeacherGrades() {
     })
   }
 
+  const handleAddGrade = () => {
+    if (!newGrade.courseId || !newGrade.studentId || !newGrade.score) return
+    setIsSubmitting(true)
+    setTimeout(() => {
+      // In a real app, this would call addGrade in store.ts
+      // For now we just mock it
+      toast({
+        title: "Note ajoutée",
+        description: "La note a été enregistrée avec succès.",
+      })
+      setIsSubmitting(false)
+      setAddGradeOpen(false)
+    }, 800)
+  }
+
   const columns: Column<GradeRow>[] = [
     {
       key: "student",
@@ -75,6 +108,11 @@ export function TeacherGrades() {
       ),
     },
     { key: "course", header: "Cours", render: (g) => courseName(g.courseId) },
+    {
+      key: "type",
+      header: "Type",
+      render: (g) => <Badge variant="secondary" className="text-[10px]">{g.type}</Badge>
+    },
     {
       key: "score",
       header: "Note",
@@ -111,8 +149,9 @@ export function TeacherGrades() {
         title="Saisie des notes"
         subtitle="Consultez et validez les notes de vos étudiants."
         action={
+        <div className="flex gap-2">
           <Select value={courseId} onValueChange={setCourseId}>
-            <SelectTrigger className="w-56">
+            <SelectTrigger className="w-48 hidden sm:flex">
               <SelectValue placeholder="Filtrer par cours" />
             </SelectTrigger>
             <SelectContent>
@@ -124,6 +163,11 @@ export function TeacherGrades() {
               ))}
             </SelectContent>
           </Select>
+          <Button onClick={() => setAddGradeOpen(true)} className="gap-2">
+            <Plus className="size-4" />
+            Saisir une note
+          </Button>
+        </div>
         }
       />
 
@@ -134,6 +178,66 @@ export function TeacherGrades() {
         emptyTitle="Aucune note"
         emptyDescription="Aucune note à afficher pour ce cours."
       />
+
+      <Dialog open={addGradeOpen} onOpenChange={setAddGradeOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Saisie d'une note</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Cours</Label>
+              <Select value={newGrade.courseId} onValueChange={(v) => setNewGrade({...newGrade, courseId: v})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez un cours" />
+                </SelectTrigger>
+                <SelectContent>
+                  {data.courses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Étudiant</Label>
+              <Select value={newGrade.studentId} onValueChange={(v) => setNewGrade({...newGrade, studentId: v})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez un étudiant" />
+                </SelectTrigger>
+                <SelectContent>
+                  {/* Normally we'd filter students by promotion associated with course */}
+                  {store.students.slice(0, 10).map(s => <SelectItem key={s.id} value={s.id}>{s.firstName} {s.lastName}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={newGrade.type} onValueChange={(v: any) => setNewGrade({...newGrade, type: v})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TD">TD</SelectItem>
+                    <SelectItem value="TP">TP</SelectItem>
+                    <SelectItem value="Interro">Interrogation</SelectItem>
+                    <SelectItem value="Examen">Examen</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Note /20</Label>
+                <Input type="number" step="0.5" min="0" max="20" value={newGrade.score} onChange={e => setNewGrade({...newGrade, score: e.target.value})} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddGradeOpen(false)}>Annuler</Button>
+            <Button onClick={handleAddGrade} disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

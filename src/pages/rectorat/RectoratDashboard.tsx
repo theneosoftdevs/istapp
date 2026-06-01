@@ -60,7 +60,7 @@ export function RectoratDashboard() {
 
   if (loading || !data) return <Loader fullHeight />
 
-  const userName = user?.name ?? "Madame / Monsieur le Recteur"
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Madame / Monsieur le Recteur"
 
   return (
     <>

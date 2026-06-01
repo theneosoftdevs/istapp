@@ -1,6 +1,6 @@
 // src/pages/student/StudentAssignments.tsx
 import { useState } from "react"
-import { ClipboardCheck, Clock, CheckCircle2, Star } from "lucide-react"
+import { ClipboardCheck, Clock, CheckCircle2, Star, Upload, FileType, Loader2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -18,6 +18,7 @@ import {
 import { useStore } from "@/hooks/usePageData"
 import { useCurrentStudent } from "@/hooks/useCurrentUser"
 import { addSubmission, nextSubmissionId } from "@/lib/store"
+import { toast } from "sonner"
 
 export function StudentAssignments() {
   const store   = useStore()
@@ -45,18 +46,26 @@ export function StudentAssignments() {
 
   const [submitTarget, setSubmitTarget] = useState<(typeof assignments)[0] | null>(null)
   const [content, setContent]           = useState("")
+  const [isUploading, setIsUploading]   = useState(false)
 
   function handleSubmit() {
     if (!submitTarget || !content.trim()) return
-    addSubmission({
-      id:           nextSubmissionId(),
-      assignmentId: submitTarget.id,
-      studentId:    student.id,
-      content:      content.trim(),
-      submittedAt:  new Date().toISOString(),
-    })
-    setSubmitTarget(null)
-    setContent("")
+    setIsUploading(true)
+
+    // Simulate upload
+    setTimeout(() => {
+      addSubmission({
+        id:           nextSubmissionId(),
+        assignmentId: submitTarget.id,
+        studentId:    student.id,
+        content:      content.trim(),
+        submittedAt:  new Date().toISOString(),
+      })
+      setIsUploading(false)
+      setSubmitTarget(null)
+      setContent("")
+      toast.success("Travail remis avec succès")
+    }, 1200)
   }
 
   function closeDialog() {
@@ -161,28 +170,43 @@ export function StudentAssignments() {
             <DialogTitle>Remettre le travail</DialogTitle>
           </DialogHeader>
           {submitTarget && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="rounded-lg bg-muted/50 p-3 text-sm">
                 <p className="font-medium text-foreground">{submitTarget.title}</p>
                 <p className="text-muted-foreground">{submitTarget.courseName}</p>
               </div>
+
+              <div className="space-y-2">
+                <Label>Téléverser un fichier (PDF, ZIP, Image)</Label>
+                <div className="flex flex-col gap-2">
+                  <Button variant="outline" className="w-full gap-2 py-8 border-dashed" onClick={() => toast.info("Simulation d'upload")}>
+                    <Upload className="size-5 text-muted-foreground" />
+                    <div className="text-left">
+                      <p className="text-sm font-medium">Glissez-déposez ou cliquez</p>
+                      <p className="text-xs text-muted-foreground">Taille max. 20Mo</p>
+                    </div>
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-1.5">
-                <Label>Votre travail</Label>
+                <Label htmlFor="submission-content">Commentaire ou lien externe</Label>
                 <Textarea
-                  placeholder="Rédigez votre réponse, collez un lien ou décrivez votre livrable…"
-                  rows={5}
+                  id="submission-content"
+                  placeholder="Lien Google Drive, GitHub, ou commentaire additionnel…"
+                  rows={3}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Vous pouvez aussi coller un lien vers Google Drive ou GitHub.
-                </p>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>Annuler</Button>
-            <Button onClick={handleSubmit} disabled={!content.trim()}>Soumettre</Button>
+            <Button variant="outline" onClick={closeDialog} disabled={isUploading}>Annuler</Button>
+            <Button onClick={handleSubmit} disabled={!content.trim() || isUploading}>
+              {isUploading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Envoyer le travail
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

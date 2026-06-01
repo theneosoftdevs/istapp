@@ -52,6 +52,9 @@ export function TeacherAssignments() {
     title: "",
     description: "",
     dueDate: "",
+    type: "PDF" as const,
+    deadlineTime: "23:59",
+    durationMinutes: 0,
   })
 
   function handleCreate() {
@@ -64,8 +67,11 @@ export function TeacherAssignments() {
       description: form.description.trim(),
       dueDate:     form.dueDate,
       createdAt:   new Date().toISOString().slice(0, 10),
+      type:        form.type,
+      deadlineTime: form.deadlineTime,
+      durationMinutes: form.durationMinutes > 0 ? form.durationMinutes : undefined,
     })
-    setForm({ courseId: "", title: "", description: "", dueDate: "" })
+    setForm({ courseId: "", title: "", description: "", dueDate: "", type: "PDF", deadlineTime: "23:59", durationMinutes: 0 })
     setCreateOpen(false)
   }
 
@@ -283,13 +289,53 @@ export function TeacherAssignments() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Date limite de remise</Label>
-              <Input
-                type="date"
-                value={form.dueDate}
-                onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Type d'évaluation</Label>
+                <Select
+                  value={form.type}
+                  onValueChange={(v: any) => setForm((f) => ({ ...f, type: v }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PDF">Document PDF</SelectItem>
+                    <SelectItem value="Formulaire">Formulaire / QCM</SelectItem>
+                    <SelectItem value="Lien">Lien externe</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Date limite</Label>
+                <Input
+                  type="date"
+                  value={form.dueDate}
+                  onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Heure limite</Label>
+                <Input
+                  type="time"
+                  value={form.deadlineTime}
+                  onChange={(e) => setForm((f) => ({ ...f, deadlineTime: e.target.value }))}
+                />
+              </div>
+              {form.type === "Formulaire" && (
+                <div className="space-y-1.5">
+                  <Label>Durée (minutes)</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    placeholder="Ex : 15"
+                    value={form.durationMinutes || ""}
+                    onChange={(e) => setForm((f) => ({ ...f, durationMinutes: Number(e.target.value) }))}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>

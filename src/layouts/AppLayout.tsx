@@ -1,6 +1,6 @@
 // src/layouts/AppLayout.tsx
 import { Link, Outlet, useNavigate } from "react-router-dom"
-import { Moon, Sun, LogOut, User as UserIcon, Bell } from "lucide-react"
+import { Moon, Sun, LogOut, User as UserIcon, Bell, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -18,15 +18,11 @@ import { useAuth } from "@/contexts/AuthContext"
 import { useNavigation } from "@/hooks/use-navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { SettingsDialog } from "@/components/SettingsDialog"
+import { useState } from "react"
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((p) => p[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
+function initials(firstName: string, lastName: string) {
+  return (firstName[0] || "") + (lastName[0] || "")
 }
 
 export function AppLayout() {
@@ -34,6 +30,9 @@ export function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const navMode = useNavigation()
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  const userName = user ? `${user.firstName} ${user.lastName}` : ""
 
   // Simplified: we would normally get this from a hook or state
   // But for now let's just use the AppContext or similar if it has it
@@ -104,25 +103,25 @@ export function AppLayout() {
                 >
                   <Avatar className="size-8">
                     <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-                      {user ? initials(user.name) : "?"}
+                      {user ? initials(user.firstName, user.lastName) : "?"}
                     </AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium text-foreground sm:inline">
-                    {user?.name}
+                    {userName}
                   </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="flex flex-col">
-                  <span className="font-medium">{user?.name}</span>
+                  <span className="font-medium">{userName}</span>
                   <span className="text-xs font-normal text-muted-foreground">
                     {user?.email}
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem disabled>
-                  <UserIcon className="size-4" />
-                  Mon profil
+                <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                  <Settings className="size-4" />
+                  Paramètres
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} variant="destructive">
                   <LogOut className="size-4" />
@@ -145,6 +144,8 @@ export function AppLayout() {
 
       {/* Navbar for Mobile */}
       {navMode === "mobile" && <MobileNavbar />}
+
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   )
 }

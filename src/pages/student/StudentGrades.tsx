@@ -1,6 +1,6 @@
 // src/pages/student/StudentGrades.tsx
 import { useState } from "react"
-import { GaugeCircle, Award, FileClock, AlertCircle } from "lucide-react"
+import { GaugeCircle, Award, FileClock, AlertCircle, Upload, Loader2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { KPICard } from "@/components/ui/KPICard"
 import { DataTable, type Column } from "@/components/ui/DataTable"
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,7 @@ interface GradeRow extends Grade {
   courseCode: string
   credits: number
   appealStatus: "pending" | "approved" | "rejected" | null
+  appealMessage?: string
 }
 
 export function StudentGrades() {
@@ -45,6 +47,7 @@ export function StudentGrades() {
         courseCode:   course?.code     ?? "—",
         credits:      course?.credits  ?? 0,
         appealStatus: appeal?.status   ?? null,
+        appealMessage: appeal?.statusMessage,
       }
     })
 
@@ -53,20 +56,31 @@ export function StudentGrades() {
 
   const [appealGrade, setAppealGrade] = useState<GradeRow | null>(null)
   const [reason, setReason] = useState("")
+  const [estimatedGrade, setEstimatedGrade] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   function handleAppeal() {
     if (!appealGrade || !reason.trim()) return
-    addGradeAppeal({
-      id:        nextAppealId(),
-      studentId: student.id,
-      courseId:  appealGrade.courseId,
-      gradeId:   appealGrade.id,
-      reason:    reason.trim(),
-      status:    "pending",
-      createdAt: new Date().toISOString(),
-    })
-    setAppealGrade(null)
-    setReason("")
+    setIsSubmitting(true)
+
+    // Simulate upload
+    setTimeout(() => {
+      addGradeAppeal({
+        id:        nextAppealId(),
+        studentId: student.id,
+        courseId:  appealGrade.courseId,
+        gradeId:   appealGrade.id,
+        reason:    reason.trim(),
+        status:    "pending",
+        createdAt: new Date().toISOString(),
+        estimatedGrade: Number(estimatedGrade) || 0,
+        proofUrl: "https://example.com/proof.jpg"
+      })
+      setIsSubmitting(false)
+      setAppealGrade(null)
+      setReason("")
+      setEstimatedGrade("")
+    }, 1000)
   }
 
   function closeDialog() {
@@ -98,6 +112,12 @@ export function StudentGrades() {
       ),
     },
     {
+      key: "type",
+      header: "Type",
+      align: "center",
+      render: (g) => <Badge variant="secondary" className="text-[10px]">{g.type}</Badge>
+    },
+    {
       key: "status",
       header: "Statut",
       align: "center",
@@ -108,12 +128,24 @@ export function StudentGrades() {
       header: "Recours",
       align: "right",
       render: (g) => {
-        if (g.appealStatus === "pending")
-          return <Badge variant="outline" className="border-warning text-warning text-xs">En cours</Badge>
-        if (g.appealStatus === "approved")
-          return <Badge variant="outline" className="border-success text-success text-xs">Approuvé</Badge>
-        if (g.appealStatus === "rejected")
-          return <Badge variant="outline" className="border-destructive text-destructive text-xs">Rejeté</Badge>
+        if (g.appealStatus) {
+          const config = {
+            pending: { color: "border-warning text-warning", label: "En cours" },
+            approved: { color: "border-success text-success", label: "Validé" },
+            rejected: { color: "border-destructive text-destructive", label: "Rejeté" },
+          }[g.appealStatus]
+
+          return (
+            <div className="flex flex-col items-end gap-1">
+              <Badge variant="outline" className={config.color + " text-xs"}>{config.label}</Badge>
+              {g.appealMessage && (
+                <p className="max-w-[150px] text-right text-[10px] text-muted-foreground leading-tight">
+                  {g.appealMessage}
+                </p>
+              )}
+            </div>
+          )
+        }
         if (g.status !== "validated") return null
         return (
           <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={() => setAppealGrade(g)}>
@@ -148,7 +180,7 @@ export function StudentGrades() {
           <DialogHeader>
             <DialogTitle>Contester une note</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             {appealGrade && (
               <div className="rounded-lg bg-muted/50 p-3 text-sm">
                 <p className="font-medium text-foreground">{appealGrade.courseName}</p>
@@ -157,22 +189,46 @@ export function StudentGrades() {
                 </p>
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label>Motif du recours</Label>
+            <div className="space-y-2">
+              <Label htmlFor="estimated-grade">Note estimée</Label>
+              <Input
+                id="estimated-grade"
+                type="number"
+                min="0"
+                max="20"
+                placeholder="Ex: 15"
+                value={estimatedGrade}
+                onChange={(e) => setEstimatedGrade(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reason">Motif du recours</Label>
               <Textarea
+                id="reason"
                 placeholder="Expliquez pourquoi vous contestez cette note…"
                 rows={4}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">
-                Votre demande sera transmise au secrétariat général.
-              </p>
             </div>
+            <div className="space-y-2">
+              <Label>Preuve (Image de la copie)</Label>
+              <div className="flex flex-col gap-2">
+                <Button variant="outline" className="w-full gap-2" type="button" onClick={() => toast.info("Simulateur d'upload")}>
+                  <Upload className="size-4" />
+                  Choisir un fichier
+                </Button>
+                <p className="text-xs text-muted-foreground">Format JPG, PNG ou PDF (max. 5Mo)</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Votre demande sera transmise au secrétariat de faculté pour analyse.
+            </p>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>Annuler</Button>
-            <Button onClick={handleAppeal} disabled={!reason.trim()}>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={closeDialog} disabled={isSubmitting}>Annuler</Button>
+            <Button onClick={handleAppeal} disabled={!reason.trim() || isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
               Soumettre le recours
             </Button>
           </DialogFooter>

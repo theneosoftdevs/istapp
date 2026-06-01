@@ -10,11 +10,15 @@ export type Role =
 
 export interface User {
   id: string
-  name: string
+  firstName: string
+  lastName: string
+  middleName?: string
   email: string
   role: Role
   avatar?: string
   refId?: string
+  phone?: string
+  description?: string
 }
 
 export interface Faculty {
@@ -38,6 +42,8 @@ export interface Student {
   matricule: string
   firstName: string
   lastName: string
+  middleName: string
+  birthDate: string
   email: string
   phone: string
   gender: "M" | "F"
@@ -53,12 +59,22 @@ export interface Teacher {
   matricule: string
   firstName: string
   lastName: string
+  middleName: string
   email: string
   phone: string
   facultyId: string
   title: string
   courseIds: string[]
   status: "active" | "pending"
+  description?: string
+}
+
+export interface Room {
+  id: string
+  name: string
+  capacity: number
+  description: string
+  category: "Laboratoire" | "Salle de cours" | "Auditoire"
 }
 
 export interface Course {
@@ -91,6 +107,7 @@ export interface Grade {
   score: number
   status: "validated" | "pending" | "rejected"
   session: string
+  type: "TD" | "TP" | "Interro" | "Examen"
 }
 
 export interface Announcement {
@@ -101,6 +118,8 @@ export interface Announcement {
   date: string
   audience: Role | "all"
   priority: "info" | "important" | "urgent"
+  scope: "global" | "faculty" | "course"
+  targetId?: string // facultyId or courseId
 }
 
 export interface Assignment {
@@ -111,6 +130,9 @@ export interface Assignment {
   description: string
   dueDate: string
   createdAt: string
+  type: "Formulaire" | "PDF" | "Lien"
+  deadlineTime?: string
+  durationMinutes?: number // For timed forms
 }
 
 export interface Submission {
@@ -132,6 +154,9 @@ export interface GradeAppeal {
   status: "pending" | "approved" | "rejected"
   response?: string
   createdAt: string
+  estimatedGrade: number
+  proofUrl?: string
+  statusMessage?: string
 }
 
 export interface CourseResource {
@@ -170,6 +195,7 @@ export interface AppData {
   gradeAppeals: GradeAppeal[]
   courseResources: CourseResource[]
   notifications: Notification[]
+  rooms: Room[]
 }
 
 export type StatusValue =

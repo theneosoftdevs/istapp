@@ -23,10 +23,13 @@ import {
 import { useStore } from "@/hooks/usePageData"
 import { addStudent, nextStudentId } from "@/lib/store"
 import type { Student } from "@/types"
+import { toast } from "sonner"
 
 interface FormState {
   firstName: string
   lastName: string
+  middleName: string
+  birthDate: string
   email: string
   phone: string
   gender: "M" | "F" | ""
@@ -37,6 +40,8 @@ interface FormState {
 const EMPTY: FormState = {
   firstName: "",
   lastName: "",
+  middleName: "",
+  birthDate: "",
   email: "",
   phone: "",
   gender: "",
@@ -63,6 +68,8 @@ export function InscriptionDialog() {
     const e: Record<string, string> = {}
     if (!form.firstName.trim()) e.firstName = "Le prénom est requis."
     if (!form.lastName.trim()) e.lastName = "Le nom est requis."
+    if (!form.middleName.trim()) e.middleName = "Le postnom est requis."
+    if (!form.birthDate) e.birthDate = "La date de naissance est requise."
     if (!form.email.trim()) e.email = "L'email est requis."
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Email invalide."
     if (!form.gender) e.gender = "Le genre est requis."
@@ -83,6 +90,8 @@ export function InscriptionDialog() {
       matricule: `ISTA-${year}-${seq}`,
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
+      middleName: form.middleName.trim(),
+      birthDate: form.birthDate,
       email: form.email.trim(),
       phone: form.phone.trim() || "—",
       gender: form.gender as "M" | "F",
@@ -93,6 +102,10 @@ export function InscriptionDialog() {
       average: 0,
     }
     addStudent(newStudent)
+
+    // Simulate sending email
+    toast.success(`Inscription réussie ! Un email avec les accès a été envoyé à ${form.email}`)
+
     setForm(EMPTY)
     setErrors({})
     setOpen(false)
@@ -121,19 +134,7 @@ export function InscriptionDialog() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="firstName">Prénom</Label>
-              <Input
-                id="firstName"
-                value={form.firstName}
-                onChange={(e) => set("firstName", e.target.value)}
-                aria-invalid={!!errors.firstName}
-              />
-              {errors.firstName ? (
-                <p className="text-xs text-destructive">{errors.firstName}</p>
-              ) : null}
-            </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <Label htmlFor="lastName">Nom</Label>
               <Input
@@ -146,20 +147,59 @@ export function InscriptionDialog() {
                 <p className="text-xs text-destructive">{errors.lastName}</p>
               ) : null}
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="middleName">Postnom</Label>
+              <Input
+                id="middleName"
+                value={form.middleName}
+                onChange={(e) => set("middleName", e.target.value)}
+                aria-invalid={!!errors.middleName}
+              />
+              {errors.middleName ? (
+                <p className="text-xs text-destructive">{errors.middleName}</p>
+              ) : null}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="firstName">Prénom</Label>
+              <Input
+                id="firstName"
+                value={form.firstName}
+                onChange={(e) => set("firstName", e.target.value)}
+                aria-invalid={!!errors.firstName}
+              />
+              {errors.firstName ? (
+                <p className="text-xs text-destructive">{errors.firstName}</p>
+              ) : null}
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-              aria-invalid={!!errors.email}
-            />
-            {errors.email ? (
-              <p className="text-xs text-destructive">{errors.email}</p>
-            ) : null}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="birthDate">Date de naissance</Label>
+              <Input
+                id="birthDate"
+                type="date"
+                value={form.birthDate}
+                onChange={(e) => set("birthDate", e.target.value)}
+                aria-invalid={!!errors.birthDate}
+              />
+              {errors.birthDate ? (
+                <p className="text-xs text-destructive">{errors.birthDate}</p>
+              ) : null}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => set("email", e.target.value)}
+                aria-invalid={!!errors.email}
+              />
+              {errors.email ? (
+                <p className="text-xs text-destructive">{errors.email}</p>
+              ) : null}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

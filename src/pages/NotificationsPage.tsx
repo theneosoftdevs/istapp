@@ -1,11 +1,12 @@
 import { useState } from "react"
-import { Bell, Megaphone, CheckCheck, Star, AlertCircle, BookMarked } from "lucide-react"
+import { Bell, Megaphone, CheckCheck, Star, AlertCircle, BookMarked, Plus } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AnnouncementList } from "@/components/AnnouncementList"
+import { AnnouncementDialog } from "@/components/AnnouncementDialog"
 import { Loader } from "@/components/ui/Loader"
 import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
@@ -52,10 +53,49 @@ function relativeDate(iso: string) {
 export function NotificationsPage() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState("announcements")
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const canCreate = ["rectorat", "secretariat_general", "apparitorat", "secretariat_faculte", "teacher"].includes(user?.role || "")
 
   const { data, loading } = usePageData((d) => {
+    const student = user?.role === "student" ? d.students.find(s => s.id === user.refId) : null
+
     const announcements = d.announcements
-      .filter((a) => a.audience === "all" || a.audience === user?.role)
+      .filter((a) => {
+        // Global scope: everyone who matches audience
+        if (a.scope === "global") {
+          return a.audience === "all" || a.audience === user?.role
+        }
+
+        // Faculty scope: students of that faculty
+        if (a.scope === "faculty") {
+          if (user?.role === "student") {
+            return student?.facultyId === a.targetId
+          }
+          if (user?.role === "secretariat_faculte") {
+            // Secretaire of that faculty can see it too
+            // Assuming we would check the secretary's faculty here
+            return true
+          }
+          return false
+        }
+
+        // Course scope: students in that course
+        if (a.scope === "course") {
+          if (user?.role === "student") {
+            // Check if student has a grade in this course (as proxy for being in it)
+            // or just has access to it.
+            return d.grades.some(g => g.studentId === student?.id && g.courseId === a.targetId)
+          }
+          if (user?.role === "teacher") {
+            const teacher = d.teachers.find(t => t.id === user.refId)
+            return teacher?.courseIds.includes(a.targetId || "")
+          }
+          return false
+        }
+
+        return false
+      })
       .sort((a, b) => b.date.localeCompare(a.date))
     
     const notifications = d.notifications
@@ -72,10 +112,18 @@ export function NotificationsPage() {
 
   return (
     <div className="space-y-6 pb-20 sm:pb-0">
-      <PageHeader
-        title="Communications"
-        subtitle="Annonces officielles et notifications personnelles."
-      />
+      <div className="flex items-center justify-between gap-4">
+        <PageHeader
+          title="Communications"
+          subtitle="Annonces officielles et notifications personnelles."
+        />
+        {canCreate && (
+          <Button onClick={() => setDialogOpen(true)} className="gap-2 shrink-0">
+            <Plus className="size-4" />
+            <span className="hidden sm:inline">Créer une annonce</span>
+          </Button>
+        )}
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:max-w-md">
@@ -178,6 +226,8 @@ export function NotificationsPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <AnnouncementDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   )
 }
