@@ -22,10 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { usePageData } from "@/hooks/usePageData"
+import { usePageData, useStore } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
-import { updateGradeStatus } from "@/lib/store"
+import { updateGradeStatus, addGrade } from "@/lib/store"
 import type { Grade } from "@/types"
 
 interface GradeRow extends Grade {
@@ -34,6 +34,7 @@ interface GradeRow extends Grade {
 }
 
 export function TeacherGrades() {
+  const store = useStore()
   const { user } = useAuth()
   const { toast } = useToast()
   const [courseId, setCourseId] = useState<string>("all")
@@ -84,15 +85,33 @@ export function TeacherGrades() {
   const handleAddGrade = () => {
     if (!newGrade.courseId || !newGrade.studentId || !newGrade.score) return
     setIsSubmitting(true)
+
+    const student = store.students.find(s => s.id === newGrade.studentId)
+
     setTimeout(() => {
-      // In a real app, this would call addGrade in store.ts
-      // For now we just mock it
+      addGrade({
+        id: `g-${Date.now()}`,
+        studentId: newGrade.studentId,
+        courseId: newGrade.courseId,
+        promotionId: student?.promotionId || "",
+        score: Number(newGrade.score),
+        status: "pending",
+        session: newGrade.session,
+        type: newGrade.type
+      })
       toast({
         title: "Note ajoutée",
         description: "La note a été enregistrée avec succès.",
       })
       setIsSubmitting(false)
       setAddGradeOpen(false)
+      setNewGrade({
+        courseId: "",
+        studentId: "",
+        score: "",
+        type: "Examen",
+        session: "Janvier 2026",
+      })
     }, 800)
   }
 
@@ -203,8 +222,13 @@ export function TeacherGrades() {
                   <SelectValue placeholder="Sélectionnez un étudiant" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Normally we'd filter students by promotion associated with course */}
-                  {store.students.slice(0, 10).map(s => <SelectItem key={s.id} value={s.id}>{s.firstName} {s.lastName}</SelectItem>)}
+                  {newGrade.courseId ? (
+                    store.students
+                      .filter(s => s.promotionId === store.courses.find(c => c.id === newGrade.courseId)?.promotionId)
+                      .map(s => <SelectItem key={s.id} value={s.id}>{s.firstName} {s.lastName}</SelectItem>)
+                  ) : (
+                    <div className="p-2 text-xs text-muted-foreground">Sélectionnez d'abord un cours</div>
+                  )}
                 </SelectContent>
               </Select>
             </div>

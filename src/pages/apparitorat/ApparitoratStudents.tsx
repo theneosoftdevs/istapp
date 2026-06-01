@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader"
 import { DataTable, type Column } from "@/components/ui/DataTable"
 import { StatusBadge } from "@/components/ui/StatusBadge"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { usePageData } from "@/hooks/usePageData"
 import type { Student } from "@/types"
+import { toast } from "sonner"
 
 interface StudentRow extends Student {
   facultyCode: string
@@ -23,6 +25,7 @@ interface StudentRow extends Student {
 export function ApparitoratStudents() {
   const [query, setQuery] = useState("")
   const [faculty, setFaculty] = useState("all")
+  const [promotion, setPromotion] = useState("all")
   const [status, setStatus] = useState("all")
 
   const { data, loading } = usePageData((d) => {
@@ -31,7 +34,7 @@ export function ApparitoratStudents() {
       facultyCode: d.faculties.find((f) => f.id === s.facultyId)?.code ?? "—",
       promotionName: d.promotions.find((p) => p.id === s.promotionId)?.name ?? "—",
     }))
-    return { students, faculties: d.faculties }
+    return { students, faculties: d.faculties, promotions: d.promotions }
   })
 
   const filtered = useMemo(() => {
@@ -42,10 +45,11 @@ export function ApparitoratStudents() {
         !q ||
         [s.firstName, s.lastName, s.matricule, s.email].join(" ").toLowerCase().includes(q)
       const matchF = faculty === "all" || s.facultyId === faculty
+      const matchP = promotion === "all" || s.promotionId === promotion
       const matchS = status === "all" || s.status === status
-      return matchQ && matchF && matchS
+      return matchQ && matchF && matchP && matchS
     })
-  }, [data, query, faculty, status])
+  }, [data, query, faculty, promotion, status])
 
   const columns: Column<StudentRow>[] = [
     {
@@ -78,6 +82,16 @@ export function ApparitoratStudents() {
         </div>
       ),
     },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      render: (s) => (
+        <Button variant="ghost" size="sm" onClick={() => toast.info(`Modification de ${s.firstName} ${s.lastName}`)}>
+          Modifier
+        </Button>
+      ),
+    },
   ]
 
   return (
@@ -88,7 +102,7 @@ export function ApparitoratStudents() {
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1 sm:max-w-sm">
+        <div className="relative flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={query}
@@ -98,8 +112,8 @@ export function ApparitoratStudents() {
             aria-label="Rechercher un étudiant"
           />
         </div>
-        <Select value={faculty} onValueChange={setFaculty}>
-          <SelectTrigger className="sm:w-48">
+        <Select value={faculty} onValueChange={(v) => { setFaculty(v); setPromotion("all") }}>
+          <SelectTrigger className="sm:w-40">
             <SelectValue placeholder="Faculté" />
           </SelectTrigger>
           <SelectContent>
@@ -111,8 +125,23 @@ export function ApparitoratStudents() {
             ))}
           </SelectContent>
         </Select>
-        <Select value={status} onValueChange={setStatus}>
+        <Select value={promotion} onValueChange={setPromotion}>
           <SelectTrigger className="sm:w-40">
+            <SelectValue placeholder="Promotion" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes les promotions</SelectItem>
+            {data?.promotions
+              .filter(p => faculty === "all" || p.facultyId === faculty)
+              .map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="sm:w-32">
             <SelectValue placeholder="Statut" />
           </SelectTrigger>
           <SelectContent>
