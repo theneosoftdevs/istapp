@@ -17,7 +17,6 @@ import { useApp } from "@/contexts/AppContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useNavigation } from "@/hooks/use-navigation"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { SettingsDialog } from "@/components/SettingsDialog"
 import { useState } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -27,18 +26,13 @@ function initials(firstName: string, lastName: string) {
 }
 
 export function AppLayout() {
-  const { theme, toggleTheme, portal, nav } = useApp()
+  const { theme, toggleTheme, portal } = useApp()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const navMode = useNavigation()
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   const userName = user ? `${user.firstName} ${user.lastName}` : ""
-
-  // Simplified: we would normally get this from a hook or state
-  // But for now let's just use the AppContext or similar if it has it
-  // Since I don't want to add too much overhead, I'll just render the bell
-  // In a real app, I'd get the unread count here.
 
   const handleLogout = () => {
     logout()
@@ -54,23 +48,24 @@ export function AppLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
-          <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
+          {/* Logo only on mobile in header */}
+          <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 sm:hidden">
             <img src="/ista.jpeg" alt="Logo ISTA" className="size-8 shrink-0 rounded-sm object-cover" />
-            <div className="hidden min-w-0 sm:block">
-              <p className="truncate text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
-                Goma
-              </p>
-              <p className="truncate text-sm font-bold text-foreground leading-tight">
-                ISTA
-              </p>
-            </div>
-            <div className="h-6 w-px bg-border hidden sm:block mx-1" />
             <div className="min-w-0">
-              <p className="truncate text-xs font-medium text-muted-foreground sm:text-sm">
-                Portail {portal?.label}
+              <p className="truncate text-xs font-black uppercase tracking-tighter">
+                ISTA PORTAL
               </p>
             </div>
           </Link>
+
+          {/* Title on desktop (no logo here because it's in sidebar) */}
+          <div className="hidden items-center gap-2 sm:flex">
+            <h2 className="text-lg font-black tracking-tighter text-foreground uppercase italic">ISTA PORTAL</h2>
+            <div className="h-4 w-px bg-border mx-1" />
+            <p className="text-xs font-bold uppercase tracking-widest text-primary">
+              {portal?.label}
+            </p>
+          </div>
 
           <div className="ml-auto flex items-center gap-1.5">
             <TooltipProvider delayDuration={300}>
@@ -84,14 +79,13 @@ export function AppLayout() {
                     <Link to="/communications" aria-label="Annonces et Communiqués">
                       <div className="relative">
                         <Bell className="size-5" />
-                        {/* Real unread count would be better, but let's keep it simple */}
-                        <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-destructive" />
+                        <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 rounded-full bg-destructive" />
                       </div>
                     </Link>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Annonces et Communiqués
+                  Annonces
                 </TooltipContent>
               </Tooltip>
 
@@ -107,7 +101,7 @@ export function AppLayout() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {theme === "dark" ? "Thème clair" : "Thème sombre"}
+                  Mode {theme === "dark" ? "Clair" : "Sombre"}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -115,23 +109,23 @@ export function AppLayout() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className="flex items-center gap-2 rounded-full p-0.5 pr-2 transition-colors hover:bg-accent"
+                  className="flex items-center gap-2 rounded-full p-0.5 pr-2 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label="Menu utilisateur"
                 >
                   <Avatar className="size-8">
-                    <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                    <AvatarFallback className="bg-primary/10 text-xs font-black text-primary uppercase">
                       {user ? initials(user.firstName, user.lastName) : "?"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden text-sm font-medium text-foreground sm:inline">
+                  <span className="hidden text-xs font-bold text-foreground sm:inline uppercase tracking-tight">
                     {userName}
                   </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="flex flex-col">
-                  <span className="font-medium">{userName}</span>
-                  <span className="text-xs font-normal text-muted-foreground">
+                  <span className="font-bold uppercase text-xs">{userName}</span>
+                  <span className="text-[10px] font-medium text-muted-foreground">
                     {user?.email}
                   </span>
                 </DropdownMenuLabel>
@@ -140,7 +134,7 @@ export function AppLayout() {
                   <Settings className="size-4" />
                   Paramètres
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout} variant="destructive">
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                   <LogOut className="size-4" />
                   Se déconnecter
                 </DropdownMenuItem>

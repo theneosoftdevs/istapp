@@ -4,6 +4,7 @@ import { CheckCircle2, Plus, Loader2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { DataTable, type Column } from "@/components/ui/DataTable"
 import { StatusBadge } from "@/components/ui/StatusBadge"
+import { Badge } from "@/components/ui/badge"
 import { Loader } from "@/components/ui/Loader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/select"
 import { usePageData, useStore } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import { updateGradeStatus, addGrade } from "@/lib/store"
 import type { Grade } from "@/types"
 
@@ -36,7 +37,6 @@ interface GradeRow extends Grade {
 export function TeacherGrades() {
   const store = useStore()
   const { user } = useAuth()
-  const { toast } = useToast()
   const [courseId, setCourseId] = useState<string>("all")
   const [addGradeOpen, setAddGradeOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -45,74 +45,92 @@ export function TeacherGrades() {
     studentId: "",
     score: "",
     type: "Examen" as const,
-    session: "Janvier 2026",
+    session: "Session Normale",
   })
 
   const { data, loading } = usePageData((d) => {
-    const teacher  = d.teachers.find((t) => t.id === user?.refId) ?? d.teachers[0]
-    const courses  = d.courses.filter((c) => c.teacherId === teacher.id)
+    // Robust teacher lookup
+    const teacherId = user?.refId
+    const teacher = d.teachers.find((t) => t.id === teacherId) || d.teachers[0]
+
+    if (!teacher) return { teacher: null, courses: [], grades: [] }
+
+    const courses = d.courses.filter((c) => c.teacherId === teacher.id)
     const courseIds = new Set(courses.map((c) => c.id))
-    const grades: GradeRow[] = d.grades
+    const grades: GradeRow[] = (d.grades || [])
       .filter((g) => courseIds.has(g.courseId))
       .map((g) => {
         const student = d.students.find((s) => s.id === g.studentId)
         return {
           ...g,
-          studentName: student ? `${student.firstName} ${student.lastName}` : "—",
+          studentName: student ? `${student.firstName} ${student.lastName}` : "Étudiant inconnu",
           matricule:   student?.matricule ?? "—",
         }
       })
     return { teacher, courses, grades }
   })
 
-  const courseName = (id: string) => data?.courses.find((c) => c.id === id)?.name ?? "Cours"
+  const courseName = (id: string) => data?.courses?.find((c) => c.id === id)?.name ?? "Cours"
 
   const filtered = useMemo(() => {
-    if (!data) return []
+    if (!data?.grades) return []
     return courseId === "all"
       ? data.grades
       : data.grades.filter((g) => g.courseId === courseId)
   }, [data, courseId])
 
   const handleValidate = (g: GradeRow) => {
-    updateGradeStatus(g.id, "validated")
-    toast({
-      title: "Note validée",
-      description: `${g.studentName} · ${g.score}/20 en ${courseName(g.courseId)}.`,
-    })
+    try {
+      updateGradeStatus(g.id, "validated")
+      toast.success(`Note validée pour ${g.studentName}`)
+    } catch (e) {
+      toast.error("Erreur lors de la validation")
+    }
   }
 
   const handleAddGrade = () => {
-    if (!newGrade.courseId || !newGrade.studentId || !newGrade.score) return
+    if (!newGrade.courseId || !newGrade.studentId || !newGrade.score) {
+      toast.error("Veuillez remplir tous les champs")
+      return
+    }
+
+    const scoreNum = Number(newGrade.score)
+    if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 20) {
+      toast.error("La note doit être comprise entre 0 et 20")
+      return
+    }
+
     setIsSubmitting(true)
 
     const student = store.students.find(s => s.id === newGrade.studentId)
 
     setTimeout(() => {
-      addGrade({
-        id: `g-${Date.now()}`,
-        studentId: newGrade.studentId,
-        courseId: newGrade.courseId,
-        promotionId: student?.promotionId || "",
-        score: Number(newGrade.score),
-        status: "pending",
-        session: newGrade.session,
-        type: newGrade.type
-      })
-      toast({
-        title: "Note ajoutée",
-        description: "La note a été enregistrée avec succès.",
-      })
-      setIsSubmitting(false)
-      setAddGradeOpen(false)
-      setNewGrade({
-        courseId: "",
-        studentId: "",
-        score: "",
-        type: "Examen",
-        session: "Janvier 2026",
-      })
-    }, 800)
+      try {
+        addGrade({
+          id: `g-${Date.now()}`,
+          studentId: newGrade.studentId,
+          courseId: newGrade.courseId,
+          promotionId: student?.promotionId || "",
+          score: scoreNum,
+          status: "pending",
+          session: newGrade.session,
+          type: newGrade.type
+        })
+        toast.success("Note enregistrée avec succès")
+        setIsSubmitting(false)
+        setAddGradeOpen(false)
+        setNewGrade({
+          courseId: "",
+          studentId: "",
+          score: "",
+          type: "Examen",
+          session: "Session Normale",
+        })
+      } catch (e) {
+        toast.error("Erreur lors de l'enregistrement")
+        setIsSubmitting(false)
+      }
+    }, 500)
   }
 
   const columns: Column<GradeRow>[] = [
@@ -130,7 +148,7 @@ export function TeacherGrades() {
     {
       key: "type",
       header: "Type",
-      render: (g) => <Badge variant="secondary" className="text-[10px]">{g.type}</Badge>
+      render: (g) => <Badge variant="secondary" className="text-[10px]">{g.type || "Examen"}</Badge>
     },
     {
       key: "score",
@@ -153,7 +171,7 @@ export function TeacherGrades() {
           <div className="flex justify-end">
             <Button size="sm" variant="outline" onClick={() => handleValidate(g)}>
               <CheckCircle2 className="size-4" />
-              Valider
+              <span className="hidden sm:inline ml-1">Valider</span>
             </Button>
           </div>
         ) : null,
@@ -163,30 +181,32 @@ export function TeacherGrades() {
   if (loading || !data) return <Loader fullHeight />
 
   return (
-    <>
+    <div className="space-y-6">
       <PageHeader
         title="Saisie des notes"
-        subtitle="Consultez et validez les notes de vos étudiants."
+        subtitle="Gestion des évaluations et validation des cotes."
         action={
-        <div className="flex gap-2">
-          <Select value={courseId} onValueChange={setCourseId}>
-            <SelectTrigger className="w-48 hidden sm:flex">
-              <SelectValue placeholder="Filtrer par cours" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les cours</SelectItem>
-              {data.courses.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button onClick={() => setAddGradeOpen(true)} className="gap-2">
-            <Plus className="size-4" />
-            Saisir une note
-          </Button>
-        </div>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:block">
+              <Select value={courseId} onValueChange={setCourseId}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filtrer par cours" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les cours</SelectItem>
+                  {(data.courses || []).map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={() => setAddGradeOpen(true)} className="gap-2 shadow-sm">
+              <Plus className="size-4" />
+              Saisir une note
+            </Button>
+          </div>
         }
       />
 
@@ -195,7 +215,7 @@ export function TeacherGrades() {
         data={filtered}
         rowKey={(g) => g.id}
         emptyTitle="Aucune note"
-        emptyDescription="Aucune note à afficher pour ce cours."
+        emptyDescription="Aucune cote n'a encore été saisie pour ce cours."
       />
 
       <Dialog open={addGradeOpen} onOpenChange={setAddGradeOpen}>
@@ -206,12 +226,12 @@ export function TeacherGrades() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Cours</Label>
-              <Select value={newGrade.courseId} onValueChange={(v) => setNewGrade({...newGrade, courseId: v})}>
+              <Select value={newGrade.courseId} onValueChange={(v) => setNewGrade({...newGrade, courseId: v, studentId: ""})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez un cours" />
                 </SelectTrigger>
                 <SelectContent>
-                  {data.courses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  {(data.courses || []).map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -219,7 +239,7 @@ export function TeacherGrades() {
               <Label>Étudiant</Label>
               <Select value={newGrade.studentId} onValueChange={(v) => setNewGrade({...newGrade, studentId: v})}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez un étudiant" />
+                  <SelectValue placeholder={newGrade.courseId ? "Sélectionnez un étudiant" : "Choisissez d'abord un cours"} />
                 </SelectTrigger>
                 <SelectContent>
                   {newGrade.courseId ? (
@@ -227,7 +247,7 @@ export function TeacherGrades() {
                       .filter(s => s.promotionId === store.courses.find(c => c.id === newGrade.courseId)?.promotionId)
                       .map(s => <SelectItem key={s.id} value={s.id}>{s.firstName} {s.lastName}</SelectItem>)
                   ) : (
-                    <div className="p-2 text-xs text-muted-foreground">Sélectionnez d'abord un cours</div>
+                    <div className="p-2 text-center text-xs text-muted-foreground italic">Sélectionnez d'abord un cours</div>
                   )}
                 </SelectContent>
               </Select>
@@ -249,7 +269,15 @@ export function TeacherGrades() {
               </div>
               <div className="space-y-2">
                 <Label>Note /20</Label>
-                <Input type="number" step="0.5" min="0" max="20" value={newGrade.score} onChange={e => setNewGrade({...newGrade, score: e.target.value})} />
+                <Input
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  max="20"
+                  placeholder="0.0"
+                  value={newGrade.score}
+                  onChange={e => setNewGrade({...newGrade, score: e.target.value})}
+                />
               </div>
             </div>
           </div>
@@ -262,6 +290,6 @@ export function TeacherGrades() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }

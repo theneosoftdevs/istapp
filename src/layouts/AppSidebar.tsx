@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom"
-import { GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useApp } from "@/contexts/AppContext"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -19,12 +18,12 @@ export function AppSidebar({ mode }: AppSidebarProps) {
         isRail ? "w-20" : "w-64"
       )}
     >
-      <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4", isRail ? "justify-center" : "gap-2.5")}>
-        <img src="/ista.jpeg" alt="Logo ISTA" className="size-9 shrink-0 rounded-lg object-cover" />
+      <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4", isRail ? "justify-center" : "gap-3")}>
+        <img src="/ista.jpeg" alt="Logo ISTA" className="size-9 shrink-0 rounded-lg object-cover shadow-sm" />
         {!isRail && (
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">ISTA-Goma</p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-sm font-black uppercase tracking-tighter text-sidebar-foreground">ISTA PORTAL</p>
+            <p className="truncate text-[10px] font-bold uppercase tracking-widest text-primary">
               {portal?.label ?? "Portail"}
             </p>
           </div>
@@ -40,10 +39,10 @@ export function AppSidebar({ mode }: AppSidebarProps) {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center rounded-lg px-3 py-2.5 text-xs font-bold uppercase tracking-widest transition-all",
                     isRail ? "justify-center" : "gap-3",
                     isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   )
                 }
@@ -59,7 +58,7 @@ export function AppSidebar({ mode }: AppSidebarProps) {
                   <TooltipTrigger asChild>
                     {link}
                   </TooltipTrigger>
-                  <TooltipContent side="right">
+                  <TooltipContent side="right" className="font-bold uppercase text-[10px] tracking-widest">
                     {item.label}
                   </TooltipContent>
                 </Tooltip>
@@ -73,8 +72,8 @@ export function AppSidebar({ mode }: AppSidebarProps) {
 
       {!isRail && (
         <div className="border-t border-sidebar-border p-4">
-          <p className="text-xs text-muted-foreground">
-            ISTA-Goma · 2024
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            ISTA PORTAL · 2024
           </p>
         </div>
       )}

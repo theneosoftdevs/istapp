@@ -1,7 +1,7 @@
 {
-  "name": "ISTA-Goma PWA",
-  "short_name": "ISTA-Goma",
-  "description": "Système de Gestion Universitaire ISTA-Goma",
+  "name": "ISTA PORTAL",
+  "short_name": "ISTA",
+  "description": "Plateforme de Gestion Universitaire ISTA",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
