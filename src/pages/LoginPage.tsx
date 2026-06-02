@@ -1,7 +1,7 @@
 // src/pages/LoginPage.tsx
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Moon, Sun, ArrowRight, Mail, Lock, Loader2, ChevronLeft } from "lucide-react"
+import { Moon, Sun, ArrowRight, Mail, Lock, Loader2, ChevronLeft, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -22,6 +22,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showForgot, setShowForgot] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,7 +64,13 @@ export function LoginPage() {
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Management</span>
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          className="rounded-full"
+          aria-label={theme === "dark" ? "Passer au thème clair" : "Passer au thème sombre"}
+        >
           {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
         </Button>
       </header>
@@ -184,12 +191,22 @@ export function LoginPage() {
                           <Lock className="absolute left-3 top-3 size-4 text-muted-foreground" />
                           <Input
                             id="password"
-                            type="password"
-                            className="pl-10 h-11 border-muted-foreground/20 bg-muted/10 focus:bg-background transition-colors"
+                            type={showPassword ? "text" : "password"}
+                            className="pl-10 pr-10 h-11 border-muted-foreground/20 bg-muted/10 focus:bg-background transition-colors"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                           />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            className="absolute right-1.5 top-1.5 h-8 w-8 text-muted-foreground hover:text-foreground"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                          >
+                            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                          </Button>
                         </div>
                       </div>
                     )}
