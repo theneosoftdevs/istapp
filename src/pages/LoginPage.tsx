@@ -1,7 +1,7 @@
 // src/pages/LoginPage.tsx
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Moon, Sun, ArrowRight, Mail, Lock, Loader2, ChevronLeft, Eye, EyeOff } from "lucide-react"
+import { Moon, Sun, ArrowRight, Mail, Lock, Loader2, ChevronLeft, Eye, EyeOff, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { useApp } from "@/contexts/AppContext"
 import { PORTALS } from "@/lib/portals"
 import type { Role } from "@/types"
 import { toast } from "sonner"
+import locales from "@/lib/locales.json"
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -23,11 +24,36 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showForgot, setShowForgot] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+    }
+    window.addEventListener("beforeinstallprompt", handler)
+    return () => window.removeEventListener("beforeinstallprompt", handler)
+  }, [])
+
+  const handleInstall = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!deferredPrompt) {
+      toast.info("L'application est déjà installée ou votre navigateur ne supporte pas l'installation.")
+      return
+    }
+    deferredPrompt.prompt()
+    deferredPrompt.userChoice.then((choiceResult: { outcome: string }) => {
+      if (choiceResult.outcome === "accepted") {
+        toast.success("Merci d'avoir installé ISTA PORTAL")
+      }
+      setDeferredPrompt(null)
+    })
+  }
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedRole) {
-      toast.error("Veuillez sélectionner un portail")
+      toast.error(locales.common.error_portal)
       return
     }
     setIsLoading(true)
@@ -35,21 +61,21 @@ export function LoginPage() {
       login(selectedRole)
       setIsLoading(false)
       navigate("/", { replace: true })
-      toast.success("Connexion réussie")
+      toast.success(locales.common.success_login)
     }, 800)
   }
 
   const handleForgotPassword = (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) {
-      toast.error("Veuillez entrer votre adresse email")
+      toast.error(locales.common.error_email)
       return
     }
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
       setShowForgot(false)
-      toast.success("Un email de réinitialisation a été envoyé")
+      toast.success(locales.common.success_reset)
     }, 1000)
   }
 
@@ -69,7 +95,7 @@ export function LoginPage() {
           size="icon"
           onClick={toggleTheme}
           className="rounded-full"
-          aria-label={theme === "dark" ? "Passer au thème clair" : "Passer au thème sombre"}
+          aria-label={theme === "dark" ? locales.common.light_mode : locales.common.dark_mode}
         >
           {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
         </Button>
@@ -81,10 +107,10 @@ export function LoginPage() {
             <div className="space-y-12">
               <div className="mx-auto max-w-2xl text-center space-y-4">
                 <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl uppercase italic">
-                  Bienvenue
+                  {locales.common.welcome}
                 </h1>
                 <p className="text-lg font-medium text-muted-foreground">
-                  Sélectionnez votre espace pour accéder à vos services académiques.
+                  {locales.common.select_portal}
                 </p>
               </div>
 
@@ -104,17 +130,28 @@ export function LoginPage() {
                     className="group relative overflow-hidden transition-all hover:border-primary/50 hover:shadow-xl active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary outline-none cursor-pointer"
                   >
                     <CardHeader className="pb-4">
-                      <div className={cn("mb-3 flex size-12 items-center justify-center rounded-2xl bg-muted/50 transition-colors group-hover:bg-primary/10", portal.color)}>
-                        <portal.icon className="size-6" />
+                      <div className="flex items-start justify-between">
+                        <div className={cn("mb-3 flex size-12 items-center justify-center rounded-2xl bg-muted/50 transition-colors group-hover:bg-primary/10", portal.color)}>
+                          <portal.icon className="size-6" />
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 gap-1.5 text-[10px] font-bold uppercase tracking-widest"
+                          onClick={handleInstall}
+                        >
+                          <Download className="size-3.5" />
+                          {locales.common.install}
+                        </Button>
                       </div>
-                      <CardTitle className="text-xl font-bold">{portal.label}</CardTitle>
+                      <CardTitle className="text-xl font-bold">{locales.portals[portal.role as keyof typeof locales.portals]}</CardTitle>
                       <CardDescription className="line-clamp-2 leading-relaxed">
                         {portal.description}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-0">
                       <div className="flex items-center gap-1.5 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        Accéder au portail
+                        {locales.common.access_portal}
                         <ArrowRight className="size-4" />
                       </div>
                     </CardContent>
@@ -139,27 +176,27 @@ export function LoginPage() {
                       className="-ml-2 h-8 gap-1 text-muted-foreground hover:text-foreground"
                     >
                       <ChevronLeft className="size-4" />
-                      Retour
+                      {locales.common.back}
                     </Button>
                     {selectedRole && (
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/5 px-2 py-1 rounded-md">
-                        {PORTALS.find(p => p.role === selectedRole)?.label}
+                        {locales.portals[selectedRole as keyof typeof locales.portals]}
                       </span>
                     )}
                   </div>
                   <CardTitle className="text-2xl font-black uppercase italic tracking-tight">
-                    {showForgot ? "Mot de passe oublié" : "Identification"}
+                    {showForgot ? locales.common.forgot_password_title : locales.common.identification}
                   </CardTitle>
                   <CardDescription>
                     {showForgot
-                      ? "Un lien de récupération vous sera envoyé."
-                      : "Entrez vos accès pour ouvrir votre session."}
+                      ? locales.common.forgot_password_desc
+                      : locales.common.login_desc}
                   </CardDescription>
                 </CardHeader>
                 <form onSubmit={showForgot ? handleForgotPassword : handleLogin}>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="font-bold uppercase text-[10px] tracking-widest">Email académique</Label>
+                      <Label htmlFor="email" className="font-bold uppercase text-[10px] tracking-widest">{locales.common.academic_email}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-3 size-4 text-muted-foreground" />
                         <Input
@@ -176,14 +213,14 @@ export function LoginPage() {
                     {!showForgot && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="password" title="Mot de passe" className="font-bold uppercase text-[10px] tracking-widest">Mot de passe</Label>
+                          <Label htmlFor="password" title={locales.common.password} className="font-bold uppercase text-[10px] tracking-widest">{locales.common.password}</Label>
                           <Button
                             variant="link"
                             className="h-auto p-0 text-[10px] font-bold uppercase tracking-widest text-primary"
                             type="button"
                             onClick={() => setShowForgot(true)}
                           >
-                            Oublié ?
+                            {locales.common.forgot_link}
                           </Button>
                         </div>
                         <div className="relative">
@@ -202,7 +239,7 @@ export function LoginPage() {
                             size="icon-sm"
                             className="absolute right-1.5 top-1.5 h-8 w-8 text-muted-foreground hover:text-foreground"
                             onClick={() => setShowPassword(!showPassword)}
-                            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            aria-label={showPassword ? locales.common.hide_password : locales.common.show_password}
                           >
                             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                           </Button>
@@ -212,7 +249,7 @@ export function LoginPage() {
                   </CardContent>
                   <CardFooter className="flex flex-col gap-4 pt-2">
                     <Button className="w-full h-11 font-bold uppercase tracking-widest shadow-lg shadow-primary/20" type="submit" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : (showForgot ? "Réinitialiser" : "Connexion")}
+                      {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : (showForgot ? locales.common.reset_button : locales.common.login_button)}
                     </Button>
                   </CardFooter>
                 </form>

@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { SettingsDialog } from "@/components/SettingsDialog"
 import { useState } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import locales from "@/lib/locales.json"
 
 function initials(firstName: string, lastName: string) {
   return (firstName[0] || "") + (lastName[0] || "")
@@ -47,16 +48,13 @@ export function AppLayout() {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-30 flex min-h-16 h-auto py-2 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6 sm:h-16 sm:py-0">
           {/* Logo only on mobile in header */}
           <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 sm:hidden">
-            <img src="/ista.jpeg" alt="Logo ISTA" className="size-9 shrink-0 rounded-sm object-cover" />
-            <div className="flex flex-col leading-none">
-              <p className="text-[10px] font-black uppercase tracking-tighter">
-                ISTA
-              </p>
-              <p className="text-[10px] font-black uppercase tracking-tighter text-primary">
-                PORTAL
+            <img src="/ista.jpeg" alt="Logo ISTA" className="size-8 shrink-0 rounded-sm object-cover" />
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-tighter leading-none">
+                ISTA<br />PORTAL
               </p>
             </div>
           </Link>
@@ -66,7 +64,7 @@ export function AppLayout() {
             <h2 className="text-lg font-black tracking-tighter text-foreground uppercase italic">ISTA PORTAL</h2>
             <div className="h-4 w-px bg-border mx-1" />
             <p className="text-xs font-bold uppercase tracking-widest text-primary">
-              {portal?.label}
+              {portal?.role && locales.portals[portal.role as keyof typeof locales.portals]}
             </p>
           </div>
 
@@ -79,7 +77,7 @@ export function AppLayout() {
                     size="icon"
                     asChild
                   >
-                    <Link to="/communications" aria-label="Annonces et Communiqués">
+                    <Link to="/communications" aria-label={locales.common.announcements}>
                       <div className="relative">
                         <Bell className="size-5" />
                         <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 rounded-full bg-destructive" />
@@ -88,7 +86,7 @@ export function AppLayout() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Annonces
+                  {locales.common.announcements}
                 </TooltipContent>
               </Tooltip>
 
@@ -98,13 +96,13 @@ export function AppLayout() {
                     variant="ghost"
                     size="icon"
                     onClick={toggleTheme}
-                    aria-label={theme === "dark" ? "Passer au thème clair" : "Passer au thème sombre"}
+                    aria-label={theme === "dark" ? locales.common.light_mode : locales.common.dark_mode}
                   >
                     {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Mode {theme === "dark" ? "Clair" : "Sombre"}
+                  {theme === "dark" ? locales.common.light_mode : locales.common.dark_mode}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -113,7 +111,7 @@ export function AppLayout() {
               <DropdownMenuTrigger asChild>
                 <button
                   className="flex items-center gap-2 rounded-full p-0.5 pr-2 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  aria-label="Menu utilisateur"
+                  aria-label={locales.common.user_menu}
                 >
                   <Avatar className="size-8">
                     <AvatarFallback className="bg-primary/10 text-xs font-black text-primary uppercase">
@@ -135,11 +133,11 @@ export function AppLayout() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                   <Settings className="size-4" />
-                  Paramètres
+                  {locales.settings.settings_title}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                   <LogOut className="size-4" />
-                  Se déconnecter
+                  {locales.settings.logout}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
