@@ -103,7 +103,6 @@ export function LoginPage() {
                     }}
                     className="group relative overflow-hidden transition-all hover:border-primary/50 hover:shadow-xl active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary outline-none cursor-pointer"
                   >
-                    <div className={cn("absolute inset-y-0 left-0 w-1 bg-muted group-hover:bg-primary transition-colors", portal.color.replace("text-", "bg-"))} />
                     <CardHeader className="pb-4">
                       <div className={cn("mb-3 flex size-12 items-center justify-center rounded-2xl bg-muted/50 transition-colors group-hover:bg-primary/10", portal.color)}>
                         <portal.icon className="size-6" />
@@ -144,7 +143,7 @@ export function LoginPage() {
                     </Button>
                     {selectedRole && (
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/5 px-2 py-1 rounded-md">
-                        Portail {PORTALS.find(p => p.role === selectedRole)?.label}
+                        {PORTALS.find(p => p.role === selectedRole)?.label}
                       </span>
                     )}
                   </div>
