@@ -50,10 +50,13 @@ export function AppLayout() {
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
           {/* Logo only on mobile in header */}
           <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 sm:hidden">
-            <img src="/ista.jpeg" alt="Logo ISTA" className="size-8 shrink-0 rounded-sm object-cover" />
-            <div className="min-w-0">
-              <p className="truncate text-xs font-black uppercase tracking-tighter">
-                ISTA PORTAL
+            <img src="/ista.jpeg" alt="Logo ISTA" className="size-9 shrink-0 rounded-sm object-cover" />
+            <div className="flex flex-col leading-none">
+              <p className="text-[10px] font-black uppercase tracking-tighter">
+                ISTA
+              </p>
+              <p className="text-[10px] font-black uppercase tracking-tighter text-primary">
+                PORTAL
               </p>
             </div>
           </Link>
