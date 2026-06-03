@@ -52,7 +52,7 @@ export function StudentDashboard() {
           colorClass="bg-chart-2/10 text-chart-2"
         />
         <KPICard
-          title="Notes validées"
+          title={locales.rectorat.validated_grades_label}
           value={`${validated}/${grades.length}`}
           subtitle="Résultats publiés"
           icon={Award}

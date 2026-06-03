@@ -1,5 +1,5 @@
 // src/pages/LoginPage.tsx
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Moon, Sun, ArrowRight, Mail, Lock, Loader2, ChevronLeft, Eye, EyeOff, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -24,29 +24,20 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showForgot, setShowForgot] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault()
-      setDeferredPrompt(e)
-    }
-    window.addEventListener("beforeinstallprompt", handler)
-    return () => window.removeEventListener("beforeinstallprompt", handler)
-  }, [])
 
   const handleInstall = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!deferredPrompt) {
+    const prompt = (window as any).deferredPrompt
+    if (!prompt) {
       toast.info("L'application est déjà installée ou votre navigateur ne supporte pas l'installation.")
       return
     }
-    deferredPrompt.prompt()
-    deferredPrompt.userChoice.then((choiceResult: { outcome: string }) => {
+    prompt.prompt()
+    prompt.userChoice.then((choiceResult: { outcome: string }) => {
       if (choiceResult.outcome === "accepted") {
         toast.success("Merci d'avoir installé ISTA PORTAL")
       }
-      setDeferredPrompt(null)
+      (window as any).deferredPrompt = null
     })
   }
 
