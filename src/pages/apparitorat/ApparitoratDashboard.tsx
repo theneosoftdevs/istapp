@@ -10,6 +10,7 @@ import { InscriptionDialog } from "@/pages/apparitorat/InscriptionDialog"
 import { usePageData } from "@/hooks/usePageData"
 import type { Student } from "@/types"
 import locales from "@/lib/locales.json"
+import { getApparitoratStats, enrichStudent } from "@/lib/selectors"
 
 interface PendingRow extends Student {
   facultyCode: string
@@ -18,23 +19,10 @@ interface PendingRow extends Student {
 
 export function ApparitoratDashboard() {
   const { data, loading } = usePageData((d) => {
-    const totalMax = 1000 // Total capacity mock
-    const counts = {
-      total: d.students.length,
-      active: d.students.filter((s) => s.status === "active").length,
-      pending: d.students.filter((s) => s.status === "pending").length,
-      suspended: d.students.filter((s) => s.status === "suspended").length,
-      girls: d.students.filter(s => s.gender === "F").length,
-      boys: d.students.filter(s => s.gender === "M").length,
-      totalMax
-    }
+    const counts = getApparitoratStats(d)
     const pending: PendingRow[] = d.students
       .filter((s) => s.status === "pending")
-      .map((s) => ({
-        ...s,
-        facultyCode: d.faculties.find((f) => f.id === s.facultyId)?.code ?? "—",
-        promotionName: d.promotions.find((p) => p.id === s.promotionId)?.name ?? "—",
-      }))
+      .map((s) => enrichStudent(d, s))
     const byFaculty = d.faculties.map((f) => ({
       name: f.name,
       code: f.code,

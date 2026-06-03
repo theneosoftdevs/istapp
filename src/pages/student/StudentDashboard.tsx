@@ -9,21 +9,14 @@ import { AnnouncementList } from "@/components/AnnouncementList"
 import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import locales from "@/lib/locales.json"
+import { getStudentDashboardData } from "@/lib/selectors"
 
 export function StudentDashboard() {
   const { user } = useAuth()
 
-  const { data, loading } = usePageData((d) => {
-    const student  = d.students.find((s) => s.id === user?.refId) ?? d.students[0]
-    const courses  = d.courses.filter((c) => c.promotionId === student.promotionId)
-    const schedules = d.schedules.filter((s) => s.promotionId === student.promotionId)
-    const grades   = d.grades.filter((g) => g.studentId === student.id)
-    const announcements = d.announcements
-      .filter((a) => a.audience === "all" || a.audience === "student")
-      .sort((a, b) => b.date.localeCompare(a.date))
-    const validated = grades.filter((g) => g.status === "validated").length
-    return { student, courses, schedules, announcements, grades, validated }
-  })
+  const { data, loading } = usePageData((d) =>
+    getStudentDashboardData(d, user?.refId ?? d.students[0]?.id)
+  )
 
   if (loading || !data) return <Loader fullHeight />
 
