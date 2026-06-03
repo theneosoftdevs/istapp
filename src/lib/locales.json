@@ -35,11 +35,17 @@
   },
   "portals": {
     "student": "PORTAL ÉTUDIANT",
+    "student_desc": "Cours, notes et horaire.",
     "teacher": "PORTAL ENSEIGNANT",
+    "teacher_desc": "Gestion des cours et notes.",
     "apparitorat": "PORTAL APPARITORAT",
+    "apparitorat_desc": "Inscriptions et étudiants.",
     "secretariat_faculte": "PORTAL SECRÉTARIAT FACULTÉ",
+    "secretariat_faculte_desc": "Gestion académique.",
     "secretariat_general": "PORTAL SECRÉTARIAT GÉNÉRAL",
-    "rectorat": "PORTAL RECTORAT"
+    "secretariat_general_desc": "Coordination et résultats.",
+    "rectorat": "PORTAL RECTORAT",
+    "rectorat_desc": "Pilotage et statistiques."
   },
   "settings": {
     "settings_title": "Paramètres",
@@ -67,5 +73,21 @@
     "total_students": "Total étudiants",
     "pending_grades": "Notes en attente",
     "today_schedule": "Mon horaire aujourd'hui"
+  },
+  "rectorat": {
+    "title_desc": "Vue institutionnelle consolidée — Rectorat.",
+    "students": "Étudiants",
+    "active_students": "actifs",
+    "faculties": "Facultés",
+    "academic_entities": "Entités académiques",
+    "active_courses": "Cours actifs",
+    "pending_grades": "Notes en attente",
+    "validated": "validées",
+    "students_by_faculty": "Effectifs par faculté",
+    "students_enrolled": "Nombre d'étudiants inscrits",
+    "key_indicators": "Indicateurs clés",
+    "active_students_label": "Étudiants actifs",
+    "validated_grades_label": "Notes validées",
+    "fallback_name": "Madame / Monsieur le Recteur"
   }
 }
