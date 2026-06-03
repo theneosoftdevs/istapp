@@ -1,0 +1,71 @@
+{
+  "common": {
+    "welcome": "Bienvenue",
+    "select_portal": "Sélectionnez votre espace pour accéder à vos services académiques.",
+    "access_portal": "Accéder au portail",
+    "install": "Installer",
+    "back": "Retour",
+    "identification": "Identification",
+    "forgot_password_title": "Mot de passe oublié",
+    "forgot_password_desc": "Un lien de récupération vous sera envoyé.",
+    "login_desc": "Entrez vos accès pour ouvrir votre session.",
+    "academic_email": "Email académique",
+    "password": "Mot de passe",
+    "forgot_link": "Oublié ?",
+    "login_button": "Connexion",
+    "reset_button": "Réinitialiser",
+    "success_login": "Connexion réussie",
+    "error_portal": "Veuillez sélectionner un portail",
+    "error_email": "Veuillez entrer votre adresse email",
+    "success_reset": "Un email de réinitialisation a été envoyé",
+    "success_update": "Paramètres mis à jour avec succès",
+    "success_logout": "Déconnexion réussie",
+    "show_password": "Afficher le mot de passe",
+    "hide_password": "Masquer le mot de passe",
+    "change_theme": "Changer le thème",
+    "announcements": "Annonces",
+    "announcements_desc": "Annonces et Communiqués",
+    "user_menu": "Menu utilisateur",
+    "light_mode": "Passer au thème clair",
+    "dark_mode": "Passer au thème sombre",
+    "greeting": "Bonjour",
+    "academic_year": "Année académique",
+    "semester": "Semestre",
+    "session_in_progress": "Session en cours"
+  },
+  "portals": {
+    "student": "PORTAL ÉTUDIANT",
+    "teacher": "PORTAL ENSEIGNANT",
+    "apparitorat": "PORTAL APPARITORAT",
+    "secretariat_faculte": "PORTAL SECRÉTARIAT FACULTÉ",
+    "secretariat_general": "PORTAL SECRÉTARIAT GÉNÉRAL",
+    "rectorat": "PORTAL RECTORAT"
+  },
+  "settings": {
+    "settings_title": "Paramètres",
+    "profile_settings": "Paramètres du profil",
+    "profile_desc": "Mettez à jour vos informations personnelles ici.",
+    "email_label": "Adresse e-mail",
+    "phone_label": "Numéro de téléphone",
+    "new_password_label": "Nouveau mot de passe",
+    "password_placeholder": "Laissez vide pour ne pas changer",
+    "save_changes": "Enregistrer les modifications",
+    "logout": "Se déconnecter"
+  },
+  "student": {
+    "courses_enrolled": "Cours inscrits",
+    "general_average": "Moyenne générale",
+    "attendance": "Présence au cours",
+    "current_semester": "Ce semestre",
+    "schedule": "Horaire du jour",
+    "no_classes": "Pas de cours aujourd'hui",
+    "assignments": "Travaux à rendre",
+    "resources": "Ressources récentes"
+  },
+  "teacher": {
+    "active_courses": "Cours actifs",
+    "total_students": "Total étudiants",
+    "pending_grades": "Notes en attente",
+    "today_schedule": "Mon horaire aujourd'hui"
+  }
+}

@@ -8,6 +8,7 @@ import { ScheduleGrid } from "@/components/ScheduleGrid"
 import { AnnouncementList } from "@/components/AnnouncementList"
 import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
+import locales from "@/lib/locales.json"
 
 export function StudentDashboard() {
   const { user } = useAuth()
@@ -31,22 +32,22 @@ export function StudentDashboard() {
   return (
     <>
       <PageHeader
-        title={`Bonjour, ${student.firstName}`}
+        title={`${locales.common.greeting}, ${student.firstName}`}
         subtitle={`${student.matricule} · ${student.promotionId.toUpperCase()}`}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
-          title="Cours inscrits"
+          title={locales.student.courses_enrolled}
           value={courses.length}
-          subtitle="Ce semestre"
+          subtitle={locales.student.current_semester}
           icon={BookOpen}
           colorClass="bg-chart-1/10 text-chart-1"
         />
         <KPICard
-          title="Moyenne générale"
+          title={locales.student.general_average}
           value={`${student.average.toFixed(1)}/20`}
-          subtitle="Session en cours"
+          subtitle={locales.common.session_in_progress}
           icon={GaugeCircle}
           colorClass="bg-chart-2/10 text-chart-2"
         />

@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { useApp } from "@/contexts/AppContext"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import locales from "@/lib/locales.json"
 
 interface AppSidebarProps {
   mode: "desktop" | "tablet"
@@ -24,7 +25,7 @@ export function AppSidebar({ mode }: AppSidebarProps) {
           <div className="min-w-0">
             <p className="truncate text-sm font-black uppercase tracking-tighter text-sidebar-foreground">ISTA PORTAL</p>
             <p className="truncate text-[10px] font-bold uppercase tracking-widest text-primary">
-              {portal?.label ?? "Portail"}
+              {portal?.role && locales.portals[portal.role as keyof typeof locales.portals]}
             </p>
           </div>
         )}
