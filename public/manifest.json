@@ -1,7 +1,7 @@
 {
   "name": "ISTA PORTAL",
   "short_name": "ISTA",
-  "description": "Plateforme de Gestion Universitaire ISTA",
+  "description": "Plateforme de Gestion Universitaire ISTA-GOMA",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -33,5 +33,44 @@
     }
   ],
   "orientation": "any",
-  "scope": "/"
+  "scope": "/",
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "PORTAL ÉTUDIANT",
+      "short_name": "Étudiant",
+      "url": "/student/dashboard",
+      "icons": [{ "src": "/ista.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "PORTAL ENSEIGNANT",
+      "short_name": "Enseignant",
+      "url": "/teacher/dashboard",
+      "icons": [{ "src": "/ista.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "PORTAL APPARITORAT",
+      "short_name": "Apparitorat",
+      "url": "/apparitorat/dashboard",
+      "icons": [{ "src": "/ista.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "PORTAL SECRÉTARIAT FACULTÉ",
+      "short_name": "Faculté",
+      "url": "/secretariat_faculte/dashboard",
+      "icons": [{ "src": "/ista.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "PORTAL SECRÉTARIAT GÉNÉRAL",
+      "short_name": "S.G.",
+      "url": "/secretariat_general/dashboard",
+      "icons": [{ "src": "/ista.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "PORTAL RECTORAT",
+      "short_name": "Rectorat",
+      "url": "/rectorat/dashboard",
+      "icons": [{ "src": "/ista.jpeg", "sizes": "192x192" }]
+    }
+  ]
 }

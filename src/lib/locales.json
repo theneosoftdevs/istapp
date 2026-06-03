@@ -31,7 +31,8 @@
     "greeting": "Bonjour",
     "academic_year": "Année académique",
     "semester": "Semestre",
-    "session_in_progress": "Session en cours"
+    "session_in_progress": "Session en cours",
+    "active": "actifs"
   },
   "portals": {
     "student": "PORTAL ÉTUDIANT",
@@ -66,13 +67,74 @@
     "schedule": "Horaire du jour",
     "no_classes": "Pas de cours aujourd'hui",
     "assignments": "Travaux à rendre",
-    "resources": "Ressources récentes"
+    "resources": "Ressources récentes",
+    "next_courses": "Prochains cours",
+    "latest_announcements": "Dernières annonces"
   },
   "teacher": {
     "active_courses": "Cours actifs",
     "total_students": "Total étudiants",
     "pending_grades": "Notes en attente",
-    "today_schedule": "Mon horaire aujourd'hui"
+    "today_schedule": "Mon horaire aujourd'hui",
+    "all_promotions": "Toutes promotions",
+    "to_validate": "À valider",
+    "taught_courses": "Cours enseignés",
+    "weekly_sessions": "Séances / semaine",
+    "schedule_overview": "Aperçu de la semaine",
+    "my_courses": "Mes cours",
+    "courses_charge": "Cours dont vous avez la charge",
+    "credits": "cr."
+  },
+  "apparitorat": {
+    "dashboard_title": "Tableau de bord Apparitorat",
+    "dashboard_subtitle": "Suivi des inscriptions et des dossiers étudiants.",
+    "total_effectif": "Effectif Total",
+    "girls": "Filles",
+    "boys": "Garçons",
+    "pending": "En attente",
+    "capacity_max": "Capacité max",
+    "pending_folders": "Dossiers en attente",
+    "pending_folders_desc": "Inscriptions à finaliser ou valider",
+    "faculty_distribution": "Répartition par faculté",
+    "matricule": "Matricule",
+    "student": "Étudiant",
+    "faculty": "Faculté",
+    "promotion": "Promotion",
+    "status": "Statut",
+    "empty_pending": "Aucun dossier en attente",
+    "empty_pending_desc": "Toutes les inscriptions sont à jour."
+  },
+  "secretariat_faculte": {
+    "dashboard_title": "Tableau de bord Faculté",
+    "dean": "Doyen",
+    "faculty_select": "Faculté",
+    "students": "Étudiants",
+    "promotions": "Promotions",
+    "courses": "Cours",
+    "teachers": "Enseignants",
+    "promotions_effectifs": "Effectifs par promotion",
+    "level": "Niveau",
+    "faculty_teachers": "Corps enseignant",
+    "faculty_teachers_desc": "Enseignants de la faculté",
+    "matricule": "Matricule"
+  },
+  "secretariat_general": {
+    "dashboard_title": "Tableau de bord — Secrétariat Général",
+    "dashboard_subtitle": "Vue d'ensemble de l'institution.",
+    "enrolled_students": "Étudiants inscrits",
+    "faculties": "Facultés",
+    "teachers": "Enseignants",
+    "courses": "Cours",
+    "academic_entities": "Entités académiques",
+    "teaching_staff": "Corps enseignant",
+    "teaching_units": "Unités d'enseignement",
+    "faculty_distribution": "Répartition par faculté",
+    "faculty_dist_desc": "Effectifs étudiants et ressources pédagogiques",
+    "faculty_col": "Faculté",
+    "students_col": "Étudiants",
+    "courses_col": "Cours",
+    "teachers_col": "Enseignants",
+    "recent_announcements": "Annonces récentes"
   },
   "rectorat": {
     "title_desc": "Vue institutionnelle consolidée — Rectorat.",

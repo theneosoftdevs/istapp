@@ -29,13 +29,18 @@ export function LoginPage() {
     e.stopPropagation()
     const prompt = (window as any).deferredPrompt
     if (!prompt) {
-      toast.info("L'application est déjà installée ou votre navigateur ne supporte pas l'installation.")
+      // Check if already in standalone mode
+      if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+        toast.info("ISTA PORTAL est déjà installé sur votre appareil.")
+      } else {
+        toast.info("Pour installer : utilisez l'option 'Ajouter à l'écran d'accueil' de votre navigateur.")
+      }
       return
     }
     prompt.prompt()
     prompt.userChoice.then((choiceResult: { outcome: string }) => {
       if (choiceResult.outcome === "accepted") {
-        toast.success("Merci d'avoir installé ISTA PORTAL")
+        toast.success("Installation d'ISTA PORTAL réussie !")
       }
       (window as any).deferredPrompt = null
     })

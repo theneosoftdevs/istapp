@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Loader } from "@/components/ui/Loader"
 import { AnnouncementList } from "@/components/AnnouncementList"
 import { usePageData } from "@/hooks/usePageData"
+import locales from "@/lib/locales.json"
 
 export function SecretariatGeneralDashboard() {
   const { data, loading } = usePageData((d) => {
@@ -39,36 +40,36 @@ export function SecretariatGeneralDashboard() {
   return (
     <>
       <PageHeader
-        title="Tableau de bord — Secrétariat Général"
-        subtitle="Vue d'ensemble de l'institution."
+        title={locales.secretariat_general.dashboard_title}
+        subtitle={locales.secretariat_general.dashboard_subtitle}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
-          title="Étudiants inscrits"
+          title={locales.secretariat_general.enrolled_students}
           value={data.totalStudents}
-          subtitle={`${data.activeStudents} actifs`}
+          subtitle={`${data.activeStudents} ${locales.common.active}`}
           icon={Users}
           colorClass="bg-chart-1/10 text-chart-1"
         />
         <KPICard
-          title="Facultés"
+          title={locales.secretariat_general.faculties}
           value={data.totalFaculties}
-          subtitle="Entités académiques"
+          subtitle={locales.secretariat_general.academic_entities}
           icon={Building2}
           colorClass="bg-chart-5/10 text-chart-5"
         />
         <KPICard
-          title="Enseignants"
+          title={locales.secretariat_general.teachers}
           value={data.totalTeachers}
-          subtitle="Corps enseignant"
+          subtitle={locales.secretariat_general.teaching_staff}
           icon={UserSquare2}
           colorClass="bg-chart-3/15 text-chart-3"
         />
         <KPICard
-          title="Cours"
+          title={locales.secretariat_general.courses}
           value={data.totalCourses}
-          subtitle="Unités d'enseignement"
+          subtitle={locales.secretariat_general.teaching_units}
           icon={BookOpen}
           colorClass="bg-chart-4/10 text-chart-4"
         />
@@ -77,18 +78,18 @@ export function SecretariatGeneralDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Répartition par faculté</CardTitle>
-            <CardDescription>Effectifs étudiants et ressources pédagogiques</CardDescription>
+            <CardTitle>{locales.secretariat_general.faculty_distribution}</CardTitle>
+            <CardDescription>{locales.secretariat_general.faculty_dist_desc}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="pb-3 text-left font-medium text-muted-foreground">Faculté</th>
-                    <th className="pb-3 text-center font-medium text-muted-foreground">Étudiants</th>
-                    <th className="pb-3 text-center font-medium text-muted-foreground">Cours</th>
-                    <th className="pb-3 text-right font-medium text-muted-foreground">Enseignants</th>
+                    <th className="pb-3 text-left font-medium text-muted-foreground">{locales.secretariat_general.faculty_col}</th>
+                    <th className="pb-3 text-center font-medium text-muted-foreground">{locales.secretariat_general.students_col}</th>
+                    <th className="pb-3 text-center font-medium text-muted-foreground">{locales.secretariat_general.courses_col}</th>
+                    <th className="pb-3 text-right font-medium text-muted-foreground">{locales.secretariat_general.teachers_col}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -111,7 +112,7 @@ export function SecretariatGeneralDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Annonces récentes</CardTitle>
+            <CardTitle>{locales.secretariat_general.recent_announcements}</CardTitle>
           </CardHeader>
           <CardContent>
             <AnnouncementList items={data.recentAnnouncements} />

@@ -8,6 +8,7 @@ import { ScheduleGrid } from "@/components/ScheduleGrid"
 import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import { WEEK_DAYS_FULL } from "@/lib/constants"
+import locales from "@/lib/locales.json"
 
 export function TeacherDashboard() {
   const { user } = useAuth()
@@ -35,36 +36,36 @@ export function TeacherDashboard() {
   return (
     <>
       <PageHeader
-        title={`Bonjour, ${teacher.title} ${teacher.lastName}`}
-        subtitle={`${teacher.matricule} · ${courses.length} cours assignés`}
+        title={`${locales.common.greeting}, ${teacher.title} ${teacher.lastName}`}
+        subtitle={`${teacher.matricule} · ${courses.length} ${locales.teacher.active_courses.toLowerCase()}`}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
-          title="Étudiants"
+          title={locales.teacher.total_students}
           value={students.length}
-          subtitle="Toutes promotions"
+          subtitle={locales.teacher.all_promotions}
           icon={Users}
           colorClass="bg-chart-1/10 text-chart-1"
         />
         <KPICard
-          title="Notes en attente"
+          title={locales.teacher.pending_grades}
           value={pendingGrades.length}
-          subtitle="À valider"
+          subtitle={locales.teacher.to_validate}
           icon={FileClock}
           colorClass="bg-chart-3/15 text-chart-3"
         />
         <KPICard
-          title="Cours enseignés"
+          title={locales.teacher.taught_courses}
           value={courses.length}
-          subtitle="Ce semestre"
+          subtitle={locales.student.current_semester}
           icon={BookOpen}
           colorClass="bg-chart-2/10 text-chart-2"
         />
         <KPICard
-          title="Séances / semaine"
+          title={locales.teacher.weekly_sessions}
           value={schedules.length}
-          subtitle="Emploi du temps"
+          subtitle={locales.teacher.today_schedule}
           icon={CalendarDays}
           colorClass="bg-chart-4/10 text-chart-4"
         />
@@ -73,11 +74,11 @@ export function TeacherDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Emploi du temps du jour</CardTitle>
+            <CardTitle>{locales.teacher.today_schedule}</CardTitle>
             <CardDescription>
               {hasToday
-                ? `Séances de ${todayName.toLowerCase()}`
-                : `Aucun cours aujourd'hui (${todayName.toLowerCase()}) — aperçu de la semaine`}
+                ? `${locales.student.schedule} ${todayName.toLowerCase()}`
+                : `${locales.student.no_classes} (${todayName.toLowerCase()}) — ${locales.teacher.schedule_overview}`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -91,8 +92,8 @@ export function TeacherDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Mes cours</CardTitle>
-            <CardDescription>Cours dont vous avez la charge</CardDescription>
+            <CardTitle>{locales.teacher.my_courses}</CardTitle>
+            <CardDescription>{locales.teacher.courses_charge}</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="divide-y divide-border">
@@ -106,7 +107,7 @@ export function TeacherDashboard() {
                     <p className="font-mono text-xs text-muted-foreground">{c.code}</p>
                   </div>
                   <span className="shrink-0 rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                    {c.credits} cr.
+                    {c.credits} {locales.teacher.credits}
                   </span>
                 </li>
               ))}
