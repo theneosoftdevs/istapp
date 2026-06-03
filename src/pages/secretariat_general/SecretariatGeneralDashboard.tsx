@@ -5,14 +5,25 @@ import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Loader } from "@/components/ui/Loader"
 import { AnnouncementList } from "@/components/AnnouncementList"
+import { DataTable, type Column } from "@/components/ui/DataTable"
 import { usePageData } from "@/hooks/usePageData"
 import locales from "@/lib/locales.json"
+
+interface FacultyRow {
+  id: string
+  name: string
+  code: string
+  dean: string
+  studentCount: number
+  courseCount: number
+  teacherCount: number
+}
 
 export function SecretariatGeneralDashboard() {
   const { data, loading } = usePageData((d) => {
     const totalStudents = d.students.length
     const activeStudents = d.students.filter((s) => s.status === "active").length
-    const byFaculty = d.faculties.map((f) => ({
+    const byFaculty: FacultyRow[] = d.faculties.map((f) => ({
       id: f.id,
       name: f.name,
       code: f.code,
@@ -34,6 +45,37 @@ export function SecretariatGeneralDashboard() {
       recentAnnouncements,
     }
   })
+
+  const columns: Column<FacultyRow>[] = [
+    {
+      key: "name",
+      header: locales.secretariat_general.faculty_col,
+      render: (f) => (
+        <div>
+          <p className="font-medium text-foreground">{f.name}</p>
+          <p className="font-mono text-xs text-muted-foreground">{f.code}</p>
+        </div>
+      ),
+    },
+    {
+      key: "studentCount",
+      header: locales.secretariat_general.students_col,
+      align: "center",
+      render: (f) => <span className="font-semibold text-foreground">{f.studentCount}</span>,
+    },
+    {
+      key: "courseCount",
+      header: locales.secretariat_general.courses_col,
+      align: "center",
+      className: "text-muted-foreground",
+    },
+    {
+      key: "teacherCount",
+      header: locales.secretariat_general.teachers_col,
+      align: "right",
+      className: "text-muted-foreground",
+    },
+  ]
 
   if (loading || !data) return <Loader fullHeight />
 
@@ -82,31 +124,11 @@ export function SecretariatGeneralDashboard() {
             <CardDescription>{locales.secretariat_general.faculty_dist_desc}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="pb-3 text-left font-medium text-muted-foreground">{locales.secretariat_general.faculty_col}</th>
-                    <th className="pb-3 text-center font-medium text-muted-foreground">{locales.secretariat_general.students_col}</th>
-                    <th className="pb-3 text-center font-medium text-muted-foreground">{locales.secretariat_general.courses_col}</th>
-                    <th className="pb-3 text-right font-medium text-muted-foreground">{locales.secretariat_general.teachers_col}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.byFaculty.map((f) => (
-                    <tr key={f.id} className="border-b border-border last:border-0">
-                      <td className="py-3">
-                        <p className="font-medium text-foreground">{f.name}</p>
-                        <p className="font-mono text-xs text-muted-foreground">{f.code}</p>
-                      </td>
-                      <td className="py-3 text-center font-semibold text-foreground">{f.studentCount}</td>
-                      <td className="py-3 text-center text-muted-foreground">{f.courseCount}</td>
-                      <td className="py-3 text-right text-muted-foreground">{f.teacherCount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              columns={columns}
+              data={data.byFaculty}
+              rowKey={(f) => f.id}
+            />
           </CardContent>
         </Card>
 

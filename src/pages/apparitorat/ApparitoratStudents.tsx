@@ -16,6 +16,7 @@ import {
 import { usePageData } from "@/hooks/usePageData"
 import type { Student } from "@/types"
 import { toast } from "sonner"
+import locales from "@/lib/locales.json"
 
 interface StudentRow extends Student {
   facultyCode: string
@@ -54,12 +55,12 @@ export function ApparitoratStudents() {
   const columns: Column<StudentRow>[] = [
     {
       key: "matricule",
-      header: "Matricule",
+      header: locales.apparitorat.matricule,
       render: (s) => <span className="font-mono text-xs">{s.matricule}</span>,
     },
     {
       key: "name",
-      header: "Étudiant",
+      header: locales.apparitorat.student_label,
       render: (s) => (
         <div className="min-w-0">
           <p className="font-medium text-foreground">
@@ -69,12 +70,12 @@ export function ApparitoratStudents() {
         </div>
       ),
     },
-    { key: "phone", header: "Téléphone", render: (s) => s.phone },
-    { key: "faculty", header: "Faculté", render: (s) => s.facultyCode },
-    { key: "promotion", header: "Promotion", render: (s) => s.promotionName },
+    { key: "phone", header: locales.apparitorat.phone_label, render: (s) => s.phone },
+    { key: "faculty", header: locales.apparitorat.faculty, render: (s) => s.facultyCode },
+    { key: "promotion", header: locales.apparitorat.promotion, render: (s) => s.promotionName },
     {
       key: "status",
-      header: "Statut",
+      header: locales.apparitorat.status,
       align: "right",
       render: (s) => (
         <div className="flex justify-end">
@@ -87,8 +88,8 @@ export function ApparitoratStudents() {
       header: "",
       align: "right",
       render: (s) => (
-        <Button variant="ghost" size="sm" onClick={() => toast.info(`Modification de ${s.firstName} ${s.lastName}`)}>
-          Modifier
+        <Button variant="ghost" size="sm" onClick={() => toast.info(`${locales.apparitorat.modifying_toast} ${s.firstName} ${s.lastName}`)}>
+          {locales.apparitorat.modify_button}
         </Button>
       ),
     },
@@ -97,8 +98,8 @@ export function ApparitoratStudents() {
   return (
     <>
       <PageHeader
-        title="Étudiants"
-        subtitle="Annuaire complet des étudiants inscrits."
+        title={locales.apparitorat.students_title}
+        subtitle={locales.apparitorat.students_subtitle}
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -107,17 +108,17 @@ export function ApparitoratStudents() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher..."
+            placeholder={locales.apparitorat.search_placeholder}
             className="pl-9"
-            aria-label="Rechercher un étudiant"
+            aria-label={locales.apparitorat.search_aria}
           />
         </div>
         <Select value={faculty} onValueChange={(v) => { setFaculty(v); setPromotion("all") }}>
           <SelectTrigger className="sm:w-40">
-            <SelectValue placeholder="Faculté" />
+            <SelectValue placeholder={locales.apparitorat.faculty} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les facultés</SelectItem>
+            <SelectItem value="all">{locales.apparitorat.all_faculties}</SelectItem>
             {data?.faculties.map((f) => (
               <SelectItem key={f.id} value={f.id}>
                 {f.name}
@@ -127,10 +128,10 @@ export function ApparitoratStudents() {
         </Select>
         <Select value={promotion} onValueChange={setPromotion}>
           <SelectTrigger className="sm:w-40">
-            <SelectValue placeholder="Promotion" />
+            <SelectValue placeholder={locales.apparitorat.promotion} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les promotions</SelectItem>
+            <SelectItem value="all">{locales.apparitorat.all_promotions}</SelectItem>
             {data?.promotions
               .filter(p => faculty === "all" || p.facultyId === faculty)
               .map((p) => (
@@ -142,13 +143,13 @@ export function ApparitoratStudents() {
         </Select>
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="sm:w-32">
-            <SelectValue placeholder="Statut" />
+            <SelectValue placeholder={locales.apparitorat.status} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tous les statuts</SelectItem>
-            <SelectItem value="active">Actif</SelectItem>
-            <SelectItem value="pending">En attente</SelectItem>
-            <SelectItem value="suspended">Suspendu</SelectItem>
+            <SelectItem value="all">{locales.apparitorat.all_status}</SelectItem>
+            <SelectItem value="active">{locales.apparitorat.status_active}</SelectItem>
+            <SelectItem value="pending">{locales.apparitorat.status_pending}</SelectItem>
+            <SelectItem value="suspended">{locales.apparitorat.status_suspended}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -158,8 +159,8 @@ export function ApparitoratStudents() {
         data={filtered}
         rowKey={(s) => s.id}
         loading={loading}
-        emptyTitle="Aucun étudiant trouvé"
-        emptyDescription="Modifiez vos filtres pour afficher des résultats."
+        emptyTitle={locales.apparitorat.no_student_found}
+        emptyDescription={locales.apparitorat.no_student_found_desc}
       />
     </>
   )

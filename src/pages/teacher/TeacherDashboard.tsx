@@ -9,24 +9,15 @@ import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import { WEEK_DAYS_FULL } from "@/lib/constants"
 import locales from "@/lib/locales.json"
+import { getTeacherDashboardData } from "@/lib/selectors"
 
 export function TeacherDashboard() {
   const { user } = useAuth()
   const todayName = WEEK_DAYS_FULL[new Date().getDay()]
 
-  const { data, loading } = usePageData((d) => {
-    const teacher = d.teachers.find((t) => t.id === user?.refId) ?? d.teachers[0]
-    const courses = d.courses.filter((c) => c.teacherId === teacher.id)
-    const promotionIds = new Set(courses.map((c) => c.promotionId))
-    const students = d.students.filter((s) => promotionIds.has(s.promotionId))
-    const courseIds = new Set(courses.map((c) => c.id))
-    const pendingGrades = d.grades.filter(
-      (g) => courseIds.has(g.courseId) && g.status === "pending",
-    )
-    const schedules = d.schedules.filter((s) => s.teacherId === teacher.id)
-    const todaySlots = schedules.filter((s) => s.day === todayName)
-    return { teacher, courses, students, pendingGrades, schedules, todaySlots }
-  })
+  const { data, loading } = usePageData((d) =>
+    getTeacherDashboardData(d, user?.refId ?? d.teachers[0]?.id, todayName)
+  )
 
   if (loading || !data) return <Loader fullHeight />
 

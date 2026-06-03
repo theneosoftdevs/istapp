@@ -34,10 +34,9 @@ function clampScore(n: number): number {
 // every required array exists even if the JSON is extended incrementally.
 
 function initState(): AppData {
-  const raw = structuredClone(rawData) as any
+  const raw = structuredClone(rawData) as Partial<AppData> & { users?: any[] }
 
-  // Adapt old data format to new one if necessary
-  const users = (raw.users || []).map((u: any) => {
+  const users = (raw.users || []).map((u) => {
     if (u.name && !u.firstName) {
       const parts = u.name.split(" ")
       return {
@@ -45,31 +44,31 @@ function initState(): AppData {
         firstName: parts[0] || "",
         lastName: parts[parts.length - 1] || "",
         middleName: parts.slice(1, -1).join(" ") || ""
-      }
+      } as User
     }
-    return u
+    return u as User
   })
 
-  const students = (raw.students || []).map((s: any) => ({
+  const students = (raw.students || []).map((s) => ({
     ...s,
     middleName: s.middleName || "",
     birthDate: s.birthDate || "2000-01-01"
-  }))
+  } as Student))
 
-  const teachers = (raw.teachers || []).map((t: any) => ({
+  const teachers = (raw.teachers || []).map((t) => ({
     ...t,
     middleName: t.middleName || ""
-  }))
+  } as Teacher))
 
-  const announcements = (raw.announcements || []).map((a: any) => ({
+  const announcements = (raw.announcements || []).map((a) => ({
     ...a,
     scope: a.scope || "global"
-  }))
+  } as Announcement))
 
-  const grades = (raw.grades || []).map((g: any) => ({
+  const grades = (raw.grades || []).map((g) => ({
     ...g,
     type: g.type || "Examen"
-  }))
+  } as Grade))
 
   return {
     ...raw,
@@ -78,6 +77,10 @@ function initState(): AppData {
     teachers,
     announcements,
     grades,
+    faculties:        raw.faculties        ?? [],
+    promotions:       raw.promotions       ?? [],
+    courses:          raw.courses          ?? [],
+    schedules:        raw.schedules        ?? [],
     teacherTitles:    raw.teacherTitles    ?? [],
     assignments:      raw.assignments      ?? [],
     submissions:      raw.submissions      ?? [],
@@ -85,7 +88,7 @@ function initState(): AppData {
     courseResources:  raw.courseResources  ?? [],
     notifications:    raw.notifications    ?? [],
     rooms:            raw.rooms            ?? [],
-  }
+  } as AppData
 }
 
 let state: AppData = initState()
