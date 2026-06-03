@@ -146,7 +146,7 @@ export function LoginPage() {
                       </div>
                       <CardTitle className="text-xl font-bold">{locales.portals[portal.role as keyof typeof locales.portals]}</CardTitle>
                       <CardDescription className="line-clamp-2 leading-relaxed">
-                        {portal.description}
+                        {locales.portals[`${portal.role}_desc` as keyof typeof locales.portals]}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-0">

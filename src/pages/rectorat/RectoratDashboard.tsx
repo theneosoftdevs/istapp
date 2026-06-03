@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Loader } from "@/components/ui/Loader"
 import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
+import locales from "@/lib/locales.json"
+import { cn } from "@/lib/utils"
 import {
   BarChart,
   Bar,
@@ -14,7 +16,10 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Cell,
 } from "recharts"
+
+const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"]
 
 export function RectoratDashboard() {
   const { user } = useAuth()
@@ -33,16 +38,18 @@ export function RectoratDashboard() {
 
     const recentActivity = [
       {
-        label: "Notes validées",
+        label: locales.rectorat.validated_grades_label,
         value: validatedGrades,
         total: d.grades.length,
         percent: d.grades.length ? Math.round((validatedGrades / d.grades.length) * 100) : 0,
+        color: "bg-chart-3",
       },
       {
-        label: "Étudiants actifs",
+        label: locales.rectorat.active_students_label,
         value: activeStudents,
         total: totalStudents,
         percent: totalStudents ? Math.round((activeStudents / totalStudents) * 100) : 0,
+        color: "bg-chart-1",
       },
     ]
 
@@ -60,41 +67,41 @@ export function RectoratDashboard() {
 
   if (loading || !data) return <Loader fullHeight />
 
-  const userName = user ? `${user.firstName} ${user.lastName}` : "Madame / Monsieur le Recteur"
+  const userName = user ? `${user.firstName} ${user.lastName}` : locales.rectorat.fallback_name
 
   return (
     <>
       <PageHeader
-        title={`Bonjour, ${userName}`}
-        subtitle="Vue institutionnelle consolidée — Rectorat."
+        title={`${locales.common.greeting}, ${userName}`}
+        subtitle={locales.rectorat.title_desc}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
-          title="Étudiants"
+          title={locales.rectorat.students}
           value={data.totalStudents}
-          subtitle={`${data.activeStudents} actifs`}
+          subtitle={`${data.activeStudents} ${locales.rectorat.active_students}`}
           icon={Users}
           colorClass="bg-chart-1/10 text-chart-1"
         />
         <KPICard
-          title="Facultés"
+          title={locales.rectorat.faculties}
           value={data.totalFaculties}
-          subtitle="Entités académiques"
+          subtitle={locales.rectorat.academic_entities}
           icon={GraduationCap}
           colorClass="bg-chart-2/10 text-chart-2"
         />
         <KPICard
-          title="Cours actifs"
+          title={locales.rectorat.active_courses}
           value={data.totalCourses}
-          subtitle="Ce semestre"
+          subtitle={locales.common.semester}
           icon={BookOpen}
           colorClass="bg-chart-4/10 text-chart-4"
         />
         <KPICard
-          title="Notes en attente"
+          title={locales.rectorat.pending_grades}
           value={data.pendingGrades}
-          subtitle={`${data.validatedGrades} validées`}
+          subtitle={`${data.validatedGrades} ${locales.rectorat.validated}`}
           icon={TrendingUp}
           colorClass="bg-chart-3/15 text-chart-3"
         />
@@ -103,8 +110,8 @@ export function RectoratDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Effectifs par faculté</CardTitle>
-            <CardDescription>Nombre d'étudiants inscrits</CardDescription>
+            <CardTitle>{locales.rectorat.students_by_faculty}</CardTitle>
+            <CardDescription>{locales.rectorat.students_enrolled}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
@@ -128,7 +135,11 @@ export function RectoratDashboard() {
                     return item?.fullName ?? label
                   }}
                 />
-                <Bar dataKey="etudiants" name="Étudiants" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="etudiants" name={locales.rectorat.students} radius={[4, 4, 0, 0]}>
+                  {data.byFaculty.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -136,7 +147,7 @@ export function RectoratDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Indicateurs clés</CardTitle>
+            <CardTitle>{locales.rectorat.key_indicators}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {data.recentActivity.map((item) => (
@@ -149,7 +160,7 @@ export function RectoratDashboard() {
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className="h-full rounded-full bg-primary"
+                    className={cn("h-full rounded-full", item.color)}
                     style={{ width: `${item.percent}%` }}
                   />
                 </div>

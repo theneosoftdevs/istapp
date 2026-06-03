@@ -8,14 +8,18 @@
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "ista.jpeg",
+      "src": "/ista.jpeg",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     },
     {
-      "src": "ista.jpeg",
+      "src": "/ista.jpeg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "orientation": "any",
+  "scope": "/"
 }
