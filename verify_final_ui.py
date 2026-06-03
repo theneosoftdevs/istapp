@@ -13,16 +13,21 @@ async def main():
 
         # 2. Login and check Sidebar/Header
         await page.click("text=Étudiant")
-        await page.fill('input[type="email"]', "test@example.com")
+        # Wait for identification form
+        await page.wait_for_selector("text=Identification")
+        await page.fill('input[type="email"]', "student@ista-portal.cd")
         await page.fill('input[type="password"]', "password")
         await page.click('button:has-text("Connexion")')
 
         await page.wait_for_url("**/student/dashboard")
-        await page.wait_for_selector("aside >> text=ISTA PORTAL")
+        # Wait for data to load (more than the 600ms artificial delay)
+        await asyncio.sleep(2)
+        await page.wait_for_selector("text=Cours inscrits")
         await page.screenshot(path="final_dashboard_desktop.png")
 
         # 3. Check mobile view
         await page.set_viewport_size({"width": 375, "height": 812})
+        await asyncio.sleep(1)
         await page.screenshot(path="final_dashboard_mobile.png")
 
         print("Final verification completed.")

@@ -1,5 +1,5 @@
 // src/pages/apparitorat/ApparitoratDashboard.tsx
-import { Users, UserCheck, UserCog, UserX, Venus, Mars } from "lucide-react"
+import { Users, UserCog, Venus, Mars } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { KPICard } from "@/components/ui/KPICard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge"
 import { InscriptionDialog } from "@/pages/apparitorat/InscriptionDialog"
 import { usePageData } from "@/hooks/usePageData"
 import type { Student } from "@/types"
+import locales from "@/lib/locales.json"
 
 interface PendingRow extends Student {
   facultyCode: string
@@ -47,23 +48,23 @@ export function ApparitoratDashboard() {
   const columns: Column<PendingRow>[] = [
     {
       key: "matricule",
-      header: "Matricule",
+      header: locales.apparitorat.matricule,
       render: (s) => <span className="font-mono text-xs">{s.matricule}</span>,
     },
     {
       key: "name",
-      header: "Étudiant",
+      header: locales.apparitorat.student,
       render: (s) => (
         <span className="font-medium text-foreground">
           {s.firstName} {s.lastName}
         </span>
       ),
     },
-    { key: "faculty", header: "Faculté", render: (s) => s.facultyCode },
-    { key: "promotion", header: "Promotion", render: (s) => s.promotionName },
+    { key: "faculty", header: locales.apparitorat.faculty, render: (s) => s.facultyCode },
+    { key: "promotion", header: locales.apparitorat.promotion, render: (s) => s.promotionName },
     {
       key: "status",
-      header: "Statut",
+      header: locales.apparitorat.status,
       align: "right",
       render: (s) => (
         <div className="flex justify-end">
@@ -76,38 +77,38 @@ export function ApparitoratDashboard() {
   return (
     <>
       <PageHeader
-        title="Tableau de bord Apparitorat"
-        subtitle="Suivi des inscriptions et des dossiers étudiants."
+        title={locales.apparitorat.dashboard_title}
+        subtitle={locales.apparitorat.dashboard_subtitle}
         action={<InscriptionDialog />}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KPICard title="Effectif Total" value={data.counts.total} icon={Users} colorClass="bg-chart-1/10 text-chart-1" subtitle={`Capacité max: ${data.counts.totalMax}`} />
-        <KPICard title="Filles" value={data.counts.girls} icon={Venus} colorClass="bg-chart-4/10 text-chart-4" />
-        <KPICard title="Garçons" value={data.counts.boys} icon={Mars} colorClass="bg-chart-5/10 text-chart-5" />
-        <KPICard title="En attente" value={data.counts.pending} icon={UserCog} colorClass="bg-chart-3/15 text-chart-3" />
+        <KPICard title={locales.apparitorat.total_effectif} value={data.counts.total} icon={Users} colorClass="bg-chart-1/10 text-chart-1" subtitle={`${locales.apparitorat.capacity_max}: ${data.counts.totalMax}`} />
+        <KPICard title={locales.apparitorat.girls} value={data.counts.girls} icon={Venus} colorClass="bg-chart-4/10 text-chart-4" />
+        <KPICard title={locales.apparitorat.boys} value={data.counts.boys} icon={Mars} colorClass="bg-chart-5/10 text-chart-5" />
+        <KPICard title={locales.apparitorat.pending} value={data.counts.pending} icon={UserCog} colorClass="bg-chart-3/15 text-chart-3" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Dossiers en attente</CardTitle>
-            <CardDescription>Inscriptions à finaliser ou valider</CardDescription>
+            <CardTitle>{locales.apparitorat.pending_folders}</CardTitle>
+            <CardDescription>{locales.apparitorat.pending_folders_desc}</CardDescription>
           </CardHeader>
           <CardContent>
             <DataTable
               columns={columns}
               data={data.pending}
               rowKey={(s) => s.id}
-              emptyTitle="Aucun dossier en attente"
-              emptyDescription="Toutes les inscriptions sont à jour."
+              emptyTitle={locales.apparitorat.empty_pending}
+              emptyDescription={locales.apparitorat.empty_pending_desc}
             />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Répartition par faculté</CardTitle>
+            <CardTitle>{locales.apparitorat.faculty_distribution}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="divide-y divide-border">

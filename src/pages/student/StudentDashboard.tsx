@@ -22,7 +22,7 @@ export function StudentDashboard() {
       .filter((a) => a.audience === "all" || a.audience === "student")
       .sort((a, b) => b.date.localeCompare(a.date))
     const validated = grades.filter((g) => g.status === "validated").length
-    return { student, courses, schedules, grades, announcements, validated }
+    return { student, courses, schedules, announcements, grades, validated }
   })
 
   if (loading || !data) return <Loader fullHeight />
@@ -54,14 +54,14 @@ export function StudentDashboard() {
         <KPICard
           title={locales.rectorat.validated_grades_label}
           value={`${validated}/${grades.length}`}
-          subtitle="Résultats publiés"
+          subtitle={locales.rectorat.validated}
           icon={Award}
           colorClass="bg-chart-3/15 text-chart-3"
         />
         <KPICard
-          title="Séances / semaine"
+          title={locales.teacher.weekly_sessions}
           value={schedules.length}
-          subtitle="Emploi du temps"
+          subtitle={locales.student.schedule}
           icon={CalendarClock}
           colorClass="bg-chart-4/10 text-chart-4"
         />
@@ -70,7 +70,7 @@ export function StudentDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Prochains cours</CardTitle>
+            <CardTitle>{locales.student.next_courses}</CardTitle>
           </CardHeader>
           <CardContent>
             <ScheduleGrid slots={schedules} courses={courses} />
@@ -79,7 +79,7 @@ export function StudentDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Dernières annonces</CardTitle>
+            <CardTitle>{locales.student.latest_announcements}</CardTitle>
           </CardHeader>
           <CardContent>
             <AnnouncementList items={announcements.slice(0, 3)} />
