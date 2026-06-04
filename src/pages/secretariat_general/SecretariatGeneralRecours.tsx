@@ -25,6 +25,7 @@ import {
 import { useStore } from "@/hooks/usePageData"
 import { resolveGradeAppeal } from "@/lib/store"
 import type { GradeAppeal } from "@/types"
+import locales from "@/lib/locales.json"
 
 interface AppealRow extends GradeAppeal {
   studentName: string
@@ -73,23 +74,19 @@ export function SecretariatGeneralRecours() {
 
   return (
     <>
-      <PageHeader
-        title="Recours sur les notes"
-        subtitle="Examinez et traitez les contestations de notes soumises par les étudiants."
-        action={
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous</SelectItem>
-              <SelectItem value="pending">En attente</SelectItem>
-              <SelectItem value="approved">Approuvés</SelectItem>
-              <SelectItem value="rejected">Rejetés</SelectItem>
-            </SelectContent>
-          </Select>
-        }
-      />
+      <div className="flex flex-wrap gap-3 items-center">
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+          <SelectTrigger className="flex-1 sm:w-48 sm:flex-none">
+            <SelectValue placeholder={locales.apparitorat.all_status} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{locales.apparitorat.all_status}</SelectItem>
+            <SelectItem value="pending">{locales.apparitorat.status_pending}</SelectItem>
+            <SelectItem value="approved">Approuvés</SelectItem>
+            <SelectItem value="rejected">Rejetés</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KPICard

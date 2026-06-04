@@ -38,9 +38,8 @@ import { SecretariatGeneralDashboard }     from "@/pages/secretariat_general/Sec
 import { SecretariatGeneralFaculties }     from "@/pages/secretariat_general/SecretariatGeneralFaculties"
 import { SecretariatGeneralPromotions }    from "@/pages/secretariat_general/SecretariatGeneralPromotions"
 import { SecretariatGeneralTeachers }      from "@/pages/secretariat_general/SecretariatGeneralTeachers"
-import { SecretariatGeneralResults }       from "@/pages/secretariat_general/SecretariatGeneralResults"
-import { SecretariatGeneralRecours }       from "@/pages/secretariat_general/SecretariatGeneralRecours"
 import { SecretariatGeneralStudents }      from "@/pages/secretariat_general/SecretariatGeneralStudents"
+import { SecretariatGeneralAcademic }      from "@/pages/secretariat_general/SecretariatGeneralAcademic"
 
 // ─── Rectorat ─────────────────────────────────────────────────────────────────
 import { RectoratDashboard } from "@/pages/rectorat/RectoratDashboard"
@@ -130,8 +129,7 @@ export default function App() {
           <Route path="/secretariat_general/promotions"    element={<SecretariatGeneralPromotions />} />
           <Route path="/secretariat_general/students"      element={<SecretariatGeneralStudents />} />
           <Route path="/secretariat_general/teachers"      element={<SecretariatGeneralTeachers />} />
-          <Route path="/secretariat_general/results"       element={<SecretariatGeneralResults />} />
-          <Route path="/secretariat_general/recours"       element={<SecretariatGeneralRecours />} />
+          <Route path="/secretariat_general/academic"      element={<SecretariatGeneralAcademic />} />
           <Route path="/secretariat_general/notifications" element={<Navigate to="/communications" replace />} />
           <Route path="/secretariat_general/announcements" element={<Navigate to="/communications" replace />} />
         </Route>

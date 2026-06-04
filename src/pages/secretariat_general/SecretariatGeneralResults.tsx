@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { useStore } from "@/hooks/usePageData"
 import type { Student } from "@/types"
+import locales from "@/lib/locales.json"
 
 interface StudentRow extends Student {
   promotionName: string
@@ -73,7 +74,7 @@ export function SecretariatGeneralResults() {
   const columns: Column<StudentRow>[] = [
     {
       key: "name",
-      header: "Étudiant",
+      header: locales.apparitorat.student_label,
       render: (s) => (
         <div className="min-w-0">
           <p className="font-medium text-foreground">
@@ -85,7 +86,7 @@ export function SecretariatGeneralResults() {
     },
     {
       key: "promotion",
-      header: "Promotion",
+      header: locales.apparitorat.promotion,
       render: (s) => (
         <div>
           <p className="text-sm text-foreground">{s.promotionName}</p>
@@ -121,46 +122,40 @@ export function SecretariatGeneralResults() {
 
   return (
     <>
-      <PageHeader
-        title="Résultats des étudiants"
-        subtitle="Consultez les résultats académiques de tous les étudiants inscrits."
-        action={
-          <div className="flex gap-2">
-            <Select
-              value={facultyFilter}
-              onValueChange={(v) => {
-                setFacultyFilter(v)
-                setPromotionFilter("all")
-              }}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Toutes les facultés" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les facultés</SelectItem>
-                {store.faculties.map((f) => (
-                  <SelectItem key={f.id} value={f.id}>
-                    {f.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={promotionFilter} onValueChange={setPromotionFilter}>
-              <SelectTrigger className="w-44">
-                <SelectValue placeholder="Toutes les promotions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les promotions</SelectItem>
-                {filteredPromotions.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        }
-      />
+      <div className="flex flex-wrap gap-3 items-center">
+        <Select
+          value={facultyFilter}
+          onValueChange={(v) => {
+            setFacultyFilter(v)
+            setPromotionFilter("all")
+          }}
+        >
+          <SelectTrigger className="flex-1 sm:w-56 sm:flex-none">
+            <SelectValue placeholder={locales.apparitorat.all_faculties} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{locales.apparitorat.all_faculties}</SelectItem>
+            {store.faculties.map((f) => (
+              <SelectItem key={f.id} value={f.id}>
+                {f.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={promotionFilter} onValueChange={setPromotionFilter}>
+          <SelectTrigger className="flex-1 sm:w-56 sm:flex-none">
+            <SelectValue placeholder={locales.apparitorat.all_promotions} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{locales.apparitorat.all_promotions}</SelectItem>
+            {filteredPromotions.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
