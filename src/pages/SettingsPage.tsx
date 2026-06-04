@@ -9,9 +9,19 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/PageHeader"
 import locales from "@/lib/locales.json"
+import { usePageData } from "@/hooks/usePageData"
+import { Badge } from "@/components/ui/badge"
+import { User, Shield, GraduationCap, BookOpen, Briefcase } from "lucide-react"
 
 export function SettingsPage() {
   const { user } = useAuth()
+  const { data } = usePageData((d) => d)
+
+  const student = user?.role === "student" ? data?.students.find(s => s.id === user.refId) : null
+  const teacher = user?.role === "teacher" ? data?.teachers.find(t => t.id === user.refId) : null
+  const faculty = (student || teacher) ? data?.faculties.find(f => f.id === (student?.facultyId || teacher?.facultyId)) : null
+  const promotion = student ? data?.promotions.find(p => p.id === student.promotionId) : null
+
   const [email, setEmail] = useState(user?.email || "")
   const [phone, setPhone] = useState(user?.phone || "")
   const [password, setPassword] = useState("")
@@ -35,14 +45,76 @@ export function SettingsPage() {
         subtitle={locales.settings.profile_desc}
       />
 
-      <Card className="max-w-2xl">
-        <CardHeader>
-          <CardTitle>{locales.settings.profile_settings}</CardTitle>
-          <CardDescription>
-            {locales.settings.profile_desc}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>Informations Professionnelles</CardTitle>
+            <CardDescription>
+              Détails liés à votre statut au sein de l'institution.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+                {user?.role === "student" ? <GraduationCap className="size-10" /> :
+                 user?.role === "teacher" ? <BookOpen className="size-10" /> :
+                 <Shield className="size-10" />}
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-bold uppercase italic">{user?.firstName} {user?.lastName}</h3>
+                <Badge variant="secondary" className="mt-1 font-bold uppercase tracking-widest text-[10px]">
+                  {locales.portals[user?.role as keyof typeof locales.portals]}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="space-y-4 rounded-xl bg-muted/30 p-4">
+              {student && (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Matricule</span>
+                    <span className="font-mono text-sm font-bold">{student.matricule}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Promotion</span>
+                    <span className="text-sm font-bold uppercase">{promotion?.name || student.promotionId}</span>
+                  </div>
+                </>
+              )}
+              {teacher && (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Matricule</span>
+                    <span className="font-mono text-sm font-bold">{teacher.matricule}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Titre</span>
+                    <span className="text-sm font-bold uppercase">{teacher.title}</span>
+                  </div>
+                </>
+              )}
+              {faculty && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Faculté</span>
+                  <span className="text-sm font-bold uppercase">{faculty.name}</span>
+                </div>
+              )}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Identifiant Système</span>
+                <span className="font-mono text-[10px]">{user?.id}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>{locales.settings.profile_settings}</CardTitle>
+            <CardDescription>
+              {locales.settings.profile_desc}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
           <form onSubmit={handleSave} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="space-y-2">
@@ -100,8 +172,9 @@ export function SettingsPage() {
               {locales.settings.save_changes}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

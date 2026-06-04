@@ -141,6 +141,7 @@ export default function App() {
           <Route path="/rectorat/dashboard" element={<RectoratDashboard />} />
           <Route path="/rectorat/stats"     element={<RectoratStats />} />
           <Route path="/rectorat/faculties" element={<RectoratFaculties />} />
+          <Route path="/rectorat/academic"  element={<SecretariatGeneralAcademic />} />
         </Route>
 
       </Route>
