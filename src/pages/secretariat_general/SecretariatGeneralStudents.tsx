@@ -1,6 +1,6 @@
-// src/pages/apparitorat/ApparitoratStudents.tsx
+// src/pages/secretariat_general/SecretariatGeneralStudents.tsx
 import { useMemo, useState } from "react"
-import { Search, FileDown, FileSpreadsheet } from "lucide-react"
+import { Search, Users } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { DataTable, type Column } from "@/components/ui/DataTable"
 import { StatusBadge } from "@/components/ui/StatusBadge"
@@ -15,19 +15,15 @@ import {
 } from "@/components/ui/select"
 import { usePageData } from "@/hooks/usePageData"
 import type { Student } from "@/types"
-import { toast } from "sonner"
-import { EditStudentDialog } from "./EditStudentDialog"
+import { EditStudentDialog } from "@/pages/apparitorat/EditStudentDialog"
 import locales from "@/lib/locales.json"
-import { jsPDF } from "jspdf"
-import "jspdf-autotable"
-import * as XLSX from "xlsx"
 
 interface StudentRow extends Student {
   facultyCode: string
   promotionName: string
 }
 
-export function ApparitoratStudents() {
+export function SecretariatGeneralStudents() {
   const [query, setQuery] = useState("")
   const [faculty, setFaculty] = useState("all")
   const [promotion, setPromotion] = useState("all")
@@ -57,112 +53,6 @@ export function ApparitoratStudents() {
     })
   }, [data, query, faculty, promotion, status])
 
-  const exportToPDF = () => {
-    const doc = new jsPDF()
-    const promotionName = promotion !== "all"
-      ? data?.promotions.find(p => p.id === promotion)?.name
-      : locales.apparitorat.list_type_all
-    const facultyName = faculty !== "all"
-      ? data?.faculties.find(f => f.id === faculty)?.name
-      : locales.apparitorat.all_faculties
-
-    // Header
-    const img = new Image()
-    img.src = "/ista.jpeg"
-    img.onload = () => {
-      doc.addImage(img, "JPEG", 14, 10, 25, 25)
-      finalizePDF(doc, promotionName, facultyName)
-    }
-    img.onerror = () => {
-      finalizePDF(doc, promotionName, facultyName)
-    }
-  }
-
-  const finalizePDF = (doc: jsPDF, promotionName: string, facultyName: string) => {
-    doc.setFontSize(20)
-    doc.setTextColor(0, 102, 204)
-    doc.text(locales.apparitorat.university_name, 50, 20)
-
-    doc.setFontSize(10)
-    doc.setTextColor(100)
-    doc.text("INSTITUT SUPÉRIEUR DES TECHNIQUES APPLIQUÉES", 50, 26)
-
-    doc.setDrawColor(0, 102, 204)
-    doc.line(14, 35, 196, 35)
-
-    doc.setFontSize(14)
-    doc.setTextColor(0)
-    doc.text(locales.apparitorat.student_list.toUpperCase(), 14, 45)
-
-    doc.setFontSize(11)
-    doc.text(`${locales.apparitorat.faculty}: ${facultyName}`, 14, 52)
-    doc.text(`${locales.apparitorat.promotion}: ${promotionName}`, 14, 58)
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 64)
-
-    const tableData = filtered.map(s => [
-      s.matricule,
-      `${s.firstName} ${s.lastName}`,
-      s.facultyCode,
-      s.promotionName,
-      s.phone,
-      s.status
-    ])
-
-    ;(doc as any).autoTable({
-      startY: 70,
-      head: [[
-        locales.apparitorat.matricule,
-        locales.apparitorat.student_label,
-        locales.apparitorat.faculty,
-        locales.apparitorat.promotion,
-        locales.apparitorat.phone_label,
-        locales.apparitorat.status
-      ]],
-      body: tableData,
-    })
-
-    doc.save(`liste_etudiants_${promotionName}.pdf`)
-    toast.success("PDF généré avec succès")
-  }
-
-  const exportToExcel = () => {
-    const promotionName = promotion !== "all"
-      ? data?.promotions.find(p => p.id === promotion)?.name
-      : locales.apparitorat.list_type_all
-    const facultyName = faculty !== "all"
-      ? data?.faculties.find(f => f.id === faculty)?.name
-      : locales.apparitorat.all_faculties
-
-    // Prepare header rows
-    const headerData = [
-      [locales.apparitorat.university_name],
-      ["INSTITUT SUPÉRIEUR DES TECHNIQUES APPLIQUÉES"],
-      [],
-      [locales.apparitorat.student_list.toUpperCase()],
-      [`${locales.apparitorat.faculty}: ${facultyName}`],
-      [`${locales.apparitorat.promotion}: ${promotionName}`],
-      [`Date: ${new Date().toLocaleDateString()}`],
-      []
-    ]
-
-    const tableData = filtered.map(s => ({
-      [locales.apparitorat.matricule]: s.matricule,
-      [locales.apparitorat.student_label]: `${s.firstName} ${s.lastName}`,
-      [locales.apparitorat.faculty]: s.facultyCode,
-      [locales.apparitorat.promotion]: s.promotionName,
-      [locales.apparitorat.phone_label]: s.phone,
-      [locales.apparitorat.status]: s.status
-    }))
-
-    const worksheet = XLSX.utils.aoa_to_sheet(headerData)
-    XLSX.utils.sheet_add_json(worksheet, tableData, { origin: "A9" })
-
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Students")
-    XLSX.writeFile(workbook, `liste_etudiants_${promotionName}.xlsx`)
-    toast.success("Excel généré avec succès")
-  }
-
   const columns: Column<StudentRow>[] = [
     {
       key: "matricule",
@@ -181,7 +71,6 @@ export function ApparitoratStudents() {
         </div>
       ),
     },
-    { key: "phone", header: locales.apparitorat.phone_label, render: (s) => s.phone },
     { key: "faculty", header: locales.apparitorat.faculty, render: (s) => s.facultyCode },
     { key: "promotion", header: locales.apparitorat.promotion, render: (s) => s.promotionName },
     {
@@ -199,7 +88,7 @@ export function ApparitoratStudents() {
       header: "",
       align: "right",
       render: (s) => (
-        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}>
+        <Button variant="outline" size="sm" onClick={() => setEditingStudent(s)}>
           {locales.apparitorat.modify_button}
         </Button>
       ),
@@ -213,21 +102,10 @@ export function ApparitoratStudents() {
         open={!!editingStudent}
         onOpenChange={(open) => !open && setEditingStudent(null)}
       />
+
       <PageHeader
-        title={locales.apparitorat.students_title}
-        subtitle={locales.apparitorat.students_subtitle}
-        action={
-          <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-            <Button variant="outline" size="sm" onClick={exportToExcel} className="flex-1 sm:flex-none">
-              <FileSpreadsheet className="mr-2 size-4 shrink-0" />
-              <span className="truncate">{locales.apparitorat.export_excel}</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={exportToPDF} className="flex-1 sm:flex-none">
-              <FileDown className="mr-2 size-4 shrink-0" />
-              <span className="truncate">{locales.apparitorat.export_pdf}</span>
-            </Button>
-          </div>
-        }
+        title="Gestion des Étudiants"
+        subtitle="Consultez et modifiez les statuts des étudiants (Exclus, Diplômés, etc.)"
       />
 
       <div className="flex flex-wrap gap-3 items-center">
@@ -238,7 +116,6 @@ export function ApparitoratStudents() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder={locales.apparitorat.search_placeholder}
             className="pl-9"
-            aria-label={locales.apparitorat.search_aria}
           />
         </div>
         <Select value={faculty} onValueChange={(v) => { setFaculty(v); setPromotion("all") }}>

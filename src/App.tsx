@@ -40,6 +40,7 @@ import { SecretariatGeneralPromotions }    from "@/pages/secretariat_general/Sec
 import { SecretariatGeneralTeachers }      from "@/pages/secretariat_general/SecretariatGeneralTeachers"
 import { SecretariatGeneralResults }       from "@/pages/secretariat_general/SecretariatGeneralResults"
 import { SecretariatGeneralRecours }       from "@/pages/secretariat_general/SecretariatGeneralRecours"
+import { SecretariatGeneralStudents }      from "@/pages/secretariat_general/SecretariatGeneralStudents"
 
 // ─── Rectorat ─────────────────────────────────────────────────────────────────
 import { RectoratDashboard } from "@/pages/rectorat/RectoratDashboard"
@@ -127,6 +128,7 @@ export default function App() {
           <Route path="/secretariat_general/dashboard"     element={<SecretariatGeneralDashboard />} />
           <Route path="/secretariat_general/faculties"     element={<SecretariatGeneralFaculties />} />
           <Route path="/secretariat_general/promotions"    element={<SecretariatGeneralPromotions />} />
+          <Route path="/secretariat_general/students"      element={<SecretariatGeneralStudents />} />
           <Route path="/secretariat_general/teachers"      element={<SecretariatGeneralTeachers />} />
           <Route path="/secretariat_general/results"       element={<SecretariatGeneralResults />} />
           <Route path="/secretariat_general/recours"       element={<SecretariatGeneralRecours />} />
