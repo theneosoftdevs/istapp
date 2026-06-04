@@ -107,8 +107,7 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   ],
   secretariat_general: [
     { label: "Accueil",      to: "/secretariat_general/dashboard", icon: Home },
-    { label: "Facultés",     to: "/secretariat_general/faculties", icon: Building2 },
-    { label: "Promotions",   to: "/secretariat_general/promotions",icon: GraduationCap },
+    { label: "Entités",      to: "/secretariat_general/entities",  icon: Building2 },
     { label: "Étudiants",    to: "/secretariat_general/students",  icon: Users },
     { label: "Enseignants",  to: "/secretariat_general/teachers",  icon: UserSquare2 },
     { label: "Académique",   to: "/secretariat_general/academic",  icon: BarChart3 },
