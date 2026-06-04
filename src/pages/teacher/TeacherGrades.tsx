@@ -1,6 +1,6 @@
 // src/pages/teacher/TeacherGrades.tsx
 import { useMemo, useState } from "react"
-import { CheckCircle2, Plus, Loader2 } from "lucide-react"
+import { CheckCircle2, Plus, Loader2, ArrowLeft, Save, Edit2, Trash2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { DataTable, type Column } from "@/components/ui/DataTable"
 import { StatusBadge } from "@/components/ui/StatusBadge"
@@ -9,6 +9,7 @@ import { Loader } from "@/components/ui/Loader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -26,8 +27,8 @@ import {
 import { usePageData, useStore } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
-import { updateGradeStatus, addGrade } from "@/lib/store"
-import type { Grade } from "@/types"
+import { updateGradeStatus, addGrade, updateGrade, removeGrade } from "@/lib/store"
+import type { Grade, Student } from "@/types"
 
 interface GradeRow extends Grade {
   studentName: string
@@ -39,17 +40,16 @@ export function TeacherGrades() {
   const { user } = useAuth()
   const [courseId, setCourseId] = useState<string>("all")
   const [addGradeOpen, setAddGradeOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [newGrade, setNewGrade] = useState({
+
+  // Session states
+  const [isSessionMode, setIsSessionMode] = useState(false)
+  const [sessionForm, setSessionForm] = useState({
     courseId: "",
-    studentId: "",
-    score: "",
-    type: "Examen" as const,
-    session: "Session Normale",
+    title: "",
+    type: "Interro" as Grade["type"],
   })
 
   const { data, loading } = usePageData((d) => {
-    // Robust teacher lookup
     const teacherId = user?.refId
     const teacher = d.teachers.find((t) => t.id === teacherId) || d.teachers[0]
 
@@ -88,49 +88,225 @@ export function TeacherGrades() {
     }
   }
 
-  const handleAddGrade = () => {
-    if (!newGrade.courseId || !newGrade.studentId || !newGrade.score) {
-      toast.error("Veuillez remplir tous les champs")
+  const startSession = () => {
+    if (!sessionForm.courseId || !sessionForm.title.trim()) {
+      toast.error("Veuillez sélectionner un cours et donner un titre à l'évaluation")
+      return
+    }
+    setIsSessionMode(true)
+    setAddGradeOpen(false)
+  }
+
+  // --- Session Mode Logic ---
+  const currentCourse = store.courses.find(c => c.id === sessionForm.courseId)
+  const promotionStudents = useMemo(() => {
+    if (!currentCourse) return []
+    return store.students.filter(s => s.promotionId === currentCourse.promotionId)
+  }, [currentCourse, store.students])
+
+  const sessionGrades = useMemo(() => {
+    return store.grades.filter(g =>
+      g.courseId === sessionForm.courseId &&
+      g.title === sessionForm.title &&
+      g.type === sessionForm.type
+    )
+  }, [store.grades, sessionForm])
+
+  const gradedStudents = useMemo(() => {
+    return promotionStudents.filter(s => sessionGrades.some(g => g.studentId === s.id))
+  }, [promotionStudents, sessionGrades])
+
+  const ungradedStudents = useMemo(() => {
+    return promotionStudents.filter(s => !sessionGrades.some(g => g.studentId === s.id))
+  }, [promotionStudents, sessionGrades])
+
+  const handleSaveGrade = (studentId: string, scoreStr: string) => {
+    const score = parseFloat(scoreStr)
+    if (isNaN(score) || score < 0 || score > 20) {
+      toast.error("Note invalide (0-20)")
       return
     }
 
-    const scoreNum = Number(newGrade.score)
-    if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 20) {
-      toast.error("La note doit être comprise entre 0 et 20")
-      return
+    const existing = sessionGrades.find(g => g.studentId === studentId)
+    if (existing) {
+      updateGrade({ ...existing, score })
+      toast.success("Note mise à jour")
+    } else {
+      addGrade({
+        id: `g-${Date.now()}-${studentId}`,
+        studentId,
+        courseId: sessionForm.courseId,
+        promotionId: currentCourse?.promotionId || "",
+        score,
+        status: "pending",
+        session: "Session Normale",
+        type: sessionForm.type,
+        title: sessionForm.title
+      })
+      toast.success("Note enregistrée")
     }
+  }
 
-    setIsSubmitting(true)
+  const handleDeleteGrade = (gradeId: string) => {
+    removeGrade(gradeId)
+    toast.success("Note supprimée")
+  }
 
-    const student = store.students.find(s => s.id === newGrade.studentId)
+  if (loading || !data) return <Loader fullHeight />
 
-    setTimeout(() => {
-      try {
-        addGrade({
-          id: `g-${Date.now()}`,
-          studentId: newGrade.studentId,
-          courseId: newGrade.courseId,
-          promotionId: student?.promotionId || "",
-          score: scoreNum,
-          status: "pending",
-          session: newGrade.session,
-          type: newGrade.type
-        })
-        toast.success("Note enregistrée avec succès")
-        setIsSubmitting(false)
-        setAddGradeOpen(false)
-        setNewGrade({
-          courseId: "",
-          studentId: "",
-          score: "",
-          type: "Examen",
-          session: "Session Normale",
-        })
-      } catch (e) {
-        toast.error("Erreur lors de l'enregistrement")
-        setIsSubmitting(false)
-      }
-    }, 500)
+  if (isSessionMode) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => setIsSessionMode(false)}>
+            <ArrowLeft className="size-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Session de cotation</h1>
+            <p className="text-sm text-muted-foreground">
+              {courseName(sessionForm.courseId)} — {sessionForm.title} ({sessionForm.type})
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-6">
+          {/* Section: Notes déjà saisies */}
+          <Card className="border-success/20">
+            <CardHeader className="bg-success/5 pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-success" />
+                Notes déjà saisies ({gradedStudents.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-2 text-left font-medium">Étudiant</th>
+                      <th className="px-4 py-2 text-center font-medium">Note /20</th>
+                      <th className="px-4 py-2 text-right font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {gradedStudents.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground italic">
+                          Aucune note saisie pour le moment.
+                        </td>
+                      </tr>
+                    ) : (
+                      gradedStudents.map(student => {
+                        const grade = sessionGrades.find(g => g.studentId === student.id)!
+                        return (
+                          <tr key={student.id} className="hover:bg-muted/30">
+                            <td className="px-4 py-2">
+                              <p className="font-medium">{student.firstName} {student.lastName}</p>
+                              <p className="text-xs text-muted-foreground font-mono">{student.matricule}</p>
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              <Input
+                                type="number"
+                                step="0.5"
+                                defaultValue={grade.score}
+                                className="w-20 mx-auto text-center h-8"
+                                onBlur={(e) => {
+                                  if (parseFloat(e.target.value) !== grade.score) {
+                                    handleSaveGrade(student.id, e.target.value)
+                                  }
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveGrade(student.id, (e.target as HTMLInputElement).value)
+                                    ;(e.target as HTMLInputElement).blur()
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td className="px-4 py-2 text-right">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-8 text-destructive hover:bg-destructive/10"
+                                onClick={() => handleDeleteGrade(grade.id)}
+                              >
+                                <Trash2 className="size-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        )
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section: Étudiants à coter */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">
+                Étudiants à coter ({ungradedStudents.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-2 text-left font-medium">Étudiant</th>
+                      <th className="px-4 py-2 text-center font-medium">Note /20</th>
+                      <th className="px-4 py-2 text-right font-medium"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {ungradedStudents.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground italic">
+                          Tous les étudiants ont été cotés.
+                        </td>
+                      </tr>
+                    ) : (
+                      ungradedStudents.map(student => (
+                        <tr key={student.id} className="hover:bg-muted/30">
+                          <td className="px-4 py-2">
+                            <p className="font-medium">{student.firstName} {student.lastName}</p>
+                            <p className="text-xs text-muted-foreground font-mono">{student.matricule}</p>
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            <Input
+                              type="number"
+                              step="0.5"
+                              placeholder="—"
+                              className="w-20 mx-auto text-center h-8"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveGrade(student.id, (e.target as HTMLInputElement).value)
+                                }
+                              }}
+                              onBlur={(e) => {
+                                if (e.target.value) {
+                                  handleSaveGrade(student.id, e.target.value)
+                                  e.target.value = "" // Reset input after moving
+                                }
+                              }}
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            <span className="text-[10px] text-muted-foreground">Appuyez sur Entrée pour valider</span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   const columns: Column<GradeRow>[] = [
@@ -148,7 +324,12 @@ export function TeacherGrades() {
     {
       key: "type",
       header: "Type",
-      render: (g) => <Badge variant="secondary" className="text-[10px]">{g.type || "Examen"}</Badge>
+      render: (g) => (
+        <div className="flex flex-col">
+          <Badge variant="secondary" className="text-[10px] w-fit">{g.type || "Examen"}</Badge>
+          {g.title && <span className="text-[10px] text-muted-foreground mt-0.5 truncate max-w-[100px]">{g.title}</span>}
+        </div>
+      )
     },
     {
       key: "score",
@@ -168,17 +349,23 @@ export function TeacherGrades() {
       align: "right",
       render: (g) =>
         g.status === "pending" ? (
-          <div className="flex justify-end">
-            <Button size="sm" variant="outline" onClick={() => handleValidate(g)}>
-              <CheckCircle2 className="size-4" />
-              <span className="hidden sm:inline ml-1">Valider</span>
+          <div className="flex justify-end gap-1">
+            <Button size="sm" variant="outline" onClick={() => handleValidate(g)} className="h-8">
+              <CheckCircle2 className="size-3.5 mr-1" />
+              Valider
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 text-destructive hover:bg-destructive/10"
+              onClick={() => removeGrade(g.id)}
+            >
+              <Trash2 className="size-3.5" />
             </Button>
           </div>
         ) : null,
     },
   ]
-
-  if (loading || !data) return <Loader fullHeight />
 
   return (
     <div className="space-y-6">
@@ -204,7 +391,7 @@ export function TeacherGrades() {
             </div>
             <Button onClick={() => setAddGradeOpen(true)} className="gap-2 shadow-sm">
               <Plus className="size-4" />
-              Saisir une note
+              Saisie rapide
             </Button>
           </div>
         }
@@ -218,15 +405,19 @@ export function TeacherGrades() {
         emptyDescription="Aucune cote n'a encore été saisie pour ce cours."
       />
 
+      {/* Dialog for starting a session */}
       <Dialog open={addGradeOpen} onOpenChange={setAddGradeOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Saisie d'une note</DialogTitle>
+            <DialogTitle>Nouvelle session de cotation</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Cours</Label>
-              <Select value={newGrade.courseId} onValueChange={(v) => setNewGrade({...newGrade, courseId: v, studentId: ""})}>
+              <Select
+                value={sessionForm.courseId}
+                onValueChange={(v) => setSessionForm({...sessionForm, courseId: v})}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez un cours" />
                 </SelectTrigger>
@@ -235,57 +426,35 @@ export function TeacherGrades() {
                 </SelectContent>
               </Select>
             </div>
+
             <div className="space-y-2">
-              <Label>Étudiant</Label>
-              <Select value={newGrade.studentId} onValueChange={(v) => setNewGrade({...newGrade, studentId: v})}>
+              <Label>Titre de l'évaluation</Label>
+              <Input
+                placeholder="Ex : Chapitre 1 — Introduction"
+                value={sessionForm.title}
+                onChange={e => setSessionForm({...sessionForm, title: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={sessionForm.type} onValueChange={(v: any) => setSessionForm({...sessionForm, type: v})}>
                 <SelectTrigger>
-                  <SelectValue placeholder={newGrade.courseId ? "Sélectionnez un étudiant" : "Choisissez d'abord un cours"} />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {newGrade.courseId ? (
-                    store.students
-                      .filter(s => s.promotionId === store.courses.find(c => c.id === newGrade.courseId)?.promotionId)
-                      .map(s => <SelectItem key={s.id} value={s.id}>{s.firstName} {s.lastName}</SelectItem>)
-                  ) : (
-                    <div className="p-2 text-center text-xs text-muted-foreground italic">Sélectionnez d'abord un cours</div>
-                  )}
+                  <SelectItem value="TD">TD</SelectItem>
+                  <SelectItem value="TP">TP</SelectItem>
+                  <SelectItem value="Interro">Interrogation</SelectItem>
+                  <SelectItem value="Examen">Examen</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Type</Label>
-                <Select value={newGrade.type} onValueChange={(v: any) => setNewGrade({...newGrade, type: v})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="TD">TD</SelectItem>
-                    <SelectItem value="TP">TP</SelectItem>
-                    <SelectItem value="Interro">Interrogation</SelectItem>
-                    <SelectItem value="Examen">Examen</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Note /20</Label>
-                <Input
-                  type="number"
-                  step="0.5"
-                  min="0"
-                  max="20"
-                  placeholder="0.0"
-                  value={newGrade.score}
-                  onChange={e => setNewGrade({...newGrade, score: e.target.value})}
-                />
-              </div>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddGradeOpen(false)}>Annuler</Button>
-            <Button onClick={handleAddGrade} disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-              Enregistrer
+            <Button onClick={startSession}>
+              Démarrer la saisie
             </Button>
           </DialogFooter>
         </DialogContent>
