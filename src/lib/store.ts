@@ -425,6 +425,85 @@ export function nextRoomId(): string {
   return uid("room-")
 }
 
+// ─── Schedules & Conflicts ───────────────────────────────────────────────────
+
+export function checkScheduleConflict(
+  roomId: string,
+  day: string,
+  start: string,
+  end: string,
+  startDate?: string,
+  endDate?: string,
+  excludeSlotId?: string
+): ScheduleSlot | null {
+  return state.schedules.find((s) => {
+    if (s.id === excludeSlotId) return false
+    if (s.room !== roomId) return false
+    if (s.day !== day) return false
+
+    // Overlap in date range if provided
+    if (startDate && endDate && s.startDate && s.endDate) {
+      if (startDate > s.endDate || endDate < s.startDate) return false
+    }
+
+    // Overlap in time: (StartA < EndB) and (EndA > StartB)
+    return start < s.end && end > s.start
+  }) || null
+}
+
+export function addScheduleSlot(slot: Omit<ScheduleSlot, "id">) {
+  const conflict = checkScheduleConflict(
+    slot.room,
+    slot.day,
+    slot.start,
+    slot.end,
+    slot.startDate,
+    slot.endDate
+  )
+
+  if (conflict) {
+    const course = state.courses.find(c => c.id === conflict.courseId)
+    const room = state.rooms.find(r => r.id === conflict.room)
+    throw new Error(
+      `Conflit détecté: La salle "${room?.name || conflict.room}" est déjà occupée par le cours "${course?.name || conflict.courseId}" le ${conflict.day} de ${conflict.start} à ${conflict.end}.`
+    )
+  }
+
+  const newSlot = { ...slot, id: uid("sch-") }
+  state = { ...state, schedules: [newSlot, ...state.schedules] }
+  emit()
+}
+
+export function removeScheduleSlot(id: string) {
+  state = { ...state, schedules: state.schedules.filter((s) => s.id !== id) }
+  emit()
+}
+
+export function updateCourseAssignment(courseId: string, teacherId: string, roomId?: string) {
+  state = {
+    ...state,
+    courses: state.courses.map((c) =>
+      c.id === courseId ? { ...c, teacherId, roomId } : c
+    ),
+    teachers: state.teachers.map((t) => {
+      // Remove from old teacher
+      const isOld = t.courseIds.includes(courseId) && t.id !== teacherId
+      if (isOld) {
+        return { ...t, courseIds: t.courseIds.filter((id) => id !== courseId) }
+      }
+      // Add to new teacher
+      if (t.id === teacherId) {
+        return {
+          ...t,
+          courseIds: t.courseIds.includes(courseId) ? t.courseIds : [...t.courseIds, courseId],
+        }
+      }
+      return t
+    })
+  }
+  emit()
+}
+
 // ─── Announcements ────────────────────────────────────────────────────────────
 
 export function addAnnouncement(announcement: Announcement) {
