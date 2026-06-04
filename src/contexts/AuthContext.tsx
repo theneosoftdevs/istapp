@@ -41,15 +41,15 @@ function readStoredRole(): Role | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role | null>(() => readStoredRole())
 
-  const login = useCallbackSafe((nextRole: Role) => {
+  const login = useCallback((nextRole: Role) => {
     window.localStorage.setItem(STORAGE_KEY, nextRole)
     setRole(nextRole)
-  })
+  }, [])
 
-  const logout = useCallbackSafe(() => {
+  const logout = useCallback(() => {
     window.localStorage.removeItem(STORAGE_KEY)
     setRole(null)
-  })
+  }, [])
 
   const value = useMemo<AuthContextValue>(() => {
     return {
@@ -64,10 +64,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-// Small helper to avoid relying on a non-existent React export name.
-function useCallbackSafe<T extends (...args: any[]) => any>(fn: T): T {
-  return useCallback(fn, []) as T
-}
 
 export function useAuth() {
   const ctx = useContext(AuthContext)

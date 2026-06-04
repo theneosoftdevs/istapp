@@ -18,6 +18,7 @@ import {
   UserSquare2,
   BarChart3,
   AlertCircle,
+  BookMarked,
   type LucideIcon,
 } from "lucide-react"
 import type { Role, PortalInfo } from "@/types"
@@ -116,5 +117,6 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
     { label: "Accueil",      to: "/rectorat/dashboard", icon: Home },
     { label: "Stats",        to: "/rectorat/stats",     icon: BarChart3 },
     { label: "Facultés",     to: "/rectorat/faculties", icon: Building2 },
+    { label: "Académique",   to: "/rectorat/academic",  icon: BookMarked },
   ],
 }

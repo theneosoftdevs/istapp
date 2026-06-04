@@ -161,6 +161,10 @@ export function TeacherGrades() {
     }
   ]
 
+  if (loading || !data || !data.teacher) return <Loader fullHeight />
+
+  const { courses } = data
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -179,7 +183,7 @@ export function TeacherGrades() {
                   <SelectValue placeholder="Sélectionner un cours" />
                 </SelectTrigger>
                 <SelectContent>
-                  {data.courses.map(c => (
+                  {courses.map(c => (
                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                   ))}
                 </SelectContent>
@@ -207,15 +211,6 @@ export function TeacherGrades() {
                   <SelectItem value="Examen">Examen</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Titre de l'évaluation</Label>
-              <Input
-                placeholder="Ex : Chapitre 1 — Introduction"
-                value={sessionForm.title}
-                onChange={e => setSessionForm({...sessionForm, title: e.target.value})}
-              />
             </div>
 
             <div className="space-y-2">

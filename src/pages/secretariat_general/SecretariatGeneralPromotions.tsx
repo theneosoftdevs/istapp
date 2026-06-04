@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useStore } from "@/hooks/usePageData"
-import { addPromotion, nextPromotionId } from "@/lib/store"
+import { addPromotion, generateId } from "@/lib/store"
 import { toast } from "sonner"
 import type { Promotion } from "@/types"
 
@@ -47,7 +47,7 @@ export function SecretariatGeneralPromotions() {
   const handleAdd = () => {
     if (!form.name || !form.facultyId) return
     addPromotion({
-      id: nextPromotionId(),
+      id: generateId("p"),
       name: form.name,
       level: parseInt(form.level),
       facultyId: form.facultyId,

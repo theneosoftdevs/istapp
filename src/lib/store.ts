@@ -133,6 +133,32 @@ export function getState(): AppData {
   return state
 }
 
+// ─── ID Generation ────────────────────────────────────────────────────────────
+
+export function generateId(prefix: string): string {
+  const mapping: Record<string, keyof AppData> = {
+    s: "students",
+    t: "teachers",
+    f: "faculties",
+    p: "promotions",
+    asgn: "assignments",
+    sub: "submissions",
+    res: "courseResources",
+    room: "rooms",
+    sch: "schedules",
+  }
+
+  const collectionName = mapping[prefix] || ((prefix + "s") as keyof AppData)
+  const collection = state[collectionName] as any[] | undefined
+  if (!collection) return uid(prefix + "-")
+
+  const max = collection.reduce((acc: number, item: any) => {
+    const n = Number(item.id.replace(/\D/g, ""))
+    return Number.isFinite(n) && n > acc ? n : acc
+  }, 0)
+  return `${prefix}${max + 1}`
+}
+
 // ─── Students ────────────────────────────────────────────────────────────────
 
 export function addStudent(student: Student) {
@@ -146,14 +172,6 @@ export function updateStudent(student: Student) {
     students: state.students.map((s) => (s.id === student.id ? student : s)),
   }
   emit()
-}
-
-export function nextStudentId(): string {
-  const max = state.students.reduce((acc, s) => {
-    const n = Number(s.id.replace(/\D/g, ""))
-    return Number.isFinite(n) && n > acc ? n : acc
-  }, 0)
-  return `s${max + 1}`
 }
 
 // ─── Grades ───────────────────────────────────────────────────────────────────
@@ -198,14 +216,6 @@ export function addTeacher(teacher: Teacher) {
   emit()
 }
 
-export function nextTeacherId(): string {
-  const max = state.teachers.reduce((acc, t) => {
-    const n = Number(t.id.replace(/\D/g, ""))
-    return Number.isFinite(n) && n > acc ? n : acc
-  }, 0)
-  return `t${max + 1}`
-}
-
 export function nextTeacherMatricule(): string {
   const max = state.teachers.reduce((acc, t) => {
     const n = Number(t.matricule.replace(/\D/g, ""))
@@ -224,22 +234,6 @@ export function addFaculty(faculty: Faculty) {
 export function addPromotion(promotion: Promotion) {
   state = { ...state, promotions: [promotion, ...state.promotions] }
   emit()
-}
-
-export function nextFacultyId(): string {
-  const max = state.faculties.reduce((acc, f) => {
-    const n = Number(f.id.replace(/\D/g, ""))
-    return Number.isFinite(n) && n > acc ? n : acc
-  }, 0)
-  return `f${max + 1}`
-}
-
-export function nextPromotionId(): string {
-  const max = state.promotions.reduce((acc, p) => {
-    const n = Number(p.id.replace(/\D/g, ""))
-    return Number.isFinite(n) && n > acc ? n : acc
-  }, 0)
-  return `p${max + 1}`
 }
 
 // ─── Course–teacher assignment ────────────────────────────────────────────────
@@ -296,7 +290,7 @@ export function removeAssignment(id: string) {
 }
 
 export function nextAssignmentId(): string {
-  return uid("asgn-")
+  return generateId("asgn")
 }
 
 // ─── Submissions ──────────────────────────────────────────────────────────────
@@ -374,7 +368,7 @@ export function upsertGrade(grade: Omit<Grade, "id" | "status">) {
 }
 
 export function nextSubmissionId(): string {
-  return uid("sub-")
+  return generateId("sub")
 }
 
 // ─── Grade Appeals ────────────────────────────────────────────────────────────
@@ -426,7 +420,7 @@ export function removeCourseResource(id: string) {
 }
 
 export function nextResourceId(): string {
-  return uid("res-")
+  return generateId("res")
 }
 
 // ─── Rooms ────────────────────────────────────────────────────────────────────
@@ -442,7 +436,7 @@ export function removeRoom(id: string) {
 }
 
 export function nextRoomId(): string {
-  return uid("room-")
+  return generateId("room")
 }
 
 // ─── Schedules & Conflicts ───────────────────────────────────────────────────
@@ -489,7 +483,7 @@ export function addScheduleSlot(slot: Omit<ScheduleSlot, "id">) {
     )
   }
 
-  const newSlot = { ...slot, id: uid("sch-") }
+  const newSlot = { ...slot, id: generateId("sch") }
   state = { ...state, schedules: [newSlot, ...state.schedules] }
   emit()
 }

@@ -1,24 +1,22 @@
-const CACHE_NAME = 'ista-portal-v3';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'ista-portal-v4';
+const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/ista.jpeg'
 ];
 
+// Cache static assets during installation
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return Promise.all(
-        ASSETS_TO_CACHE.map(url =>
-          cache.add(url).catch(err => console.warn(`Failed to cache ${url}:`, err))
-        )
-      );
+      return cache.addAll(STATIC_ASSETS);
     })
   );
 });
 
+// Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,32 +32,53 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const { request } = event;
+  const url = new URL(request.url);
 
+  if (request.method !== 'GET') return;
+
+  // 1. Network-First for Manifest and Index (HTML)
+  if (url.pathname === '/manifest.json' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clonedResponse = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // 2. Stale-While-Revalidate for JS, CSS, and Images
+  const isStaticAsset =
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.jpeg') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.includes('/assets/');
+
+  if (isStaticAsset) {
+    event.respondWith(
+      caches.match(request).then((cachedResponse) => {
+        const fetchPromise = fetch(request).then((networkResponse) => {
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()));
+          return networkResponse;
+        });
+        return cachedResponse || fetchPromise;
+      })
+    );
+    return;
+  }
+
+  // 3. Cache-First for everything else (fallback)
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
-      return fetch(event.request).then((response) => {
-        // Cache new successful GET requests for basic assets (icons, manifests)
-        const url = new URL(event.request.url);
-        const shouldCache =
-          response.status === 200 &&
-          (url.pathname.endsWith('.jpeg') ||
-           url.pathname.endsWith('.png') ||
-           url.pathname.endsWith('.json') ||
-           url.pathname.endsWith('.css') ||
-           url.pathname.endsWith('.js'));
-
-        if (shouldCache) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return response;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
+    caches.match(request).then((response) => {
+      return response || fetch(request).catch(() => {
+        if (request.mode === 'navigate') {
           return caches.match('/');
         }
       });

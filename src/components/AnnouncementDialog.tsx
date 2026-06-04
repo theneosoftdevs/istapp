@@ -37,7 +37,7 @@ export function AnnouncementDialog({ open, onOpenChange }: AnnouncementDialogPro
   const [isLoading, setIsLoading] = useState(false)
 
   const canCreateGlobal = ["rectorat", "secretariat_general", "apparitorat"].includes(user?.role || "")
-  const canCreateFaculty = user?.role === "secretariat_faculte"
+  const canCreateFacultyAnnouncement = user?.role === "secretariat_faculte"
   const canCreateCourse = user?.role === "teacher"
 
   const handleCreate = (e: React.FormEvent) => {
@@ -106,7 +106,7 @@ export function AnnouncementDialog({ open, onOpenChange }: AnnouncementDialogPro
                 </SelectTrigger>
                 <SelectContent>
                   {canCreateGlobal && <SelectItem value="global">Global</SelectItem>}
-                  {canCreateFaculty && <SelectItem value="faculty">Faculté</SelectItem>}
+                  {canCreateFacultyAnnouncement && <SelectItem value="faculty">Faculté</SelectItem>}
                   {canCreateCourse && <SelectItem value="course">Cours</SelectItem>}
                 </SelectContent>
               </Select>

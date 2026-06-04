@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useStore } from "@/hooks/usePageData"
-import { addTeacher, nextTeacherId, nextTeacherMatricule } from "@/lib/store"
+import { addTeacher, generateId, nextTeacherMatricule } from "@/lib/store"
 import type { Teacher } from "@/types"
 import { toast } from "sonner"
 
@@ -60,7 +60,7 @@ export function SecretariatGeneralTeachers() {
   function handleAdd() {
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.facultyId) return
     addTeacher({
-      id:        nextTeacherId(),
+      id:        generateId("t"),
       matricule: nextTeacherMatricule(),
       firstName: form.firstName.trim(),
       lastName:  form.lastName.trim(),
