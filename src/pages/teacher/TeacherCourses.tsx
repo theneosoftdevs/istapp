@@ -172,7 +172,7 @@ export function TeacherCourses() {
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <Label>Type</Label>
+                          <Label>Type de ressource</Label>
                           <Select
                             value={form.type}
                             onValueChange={(v) =>

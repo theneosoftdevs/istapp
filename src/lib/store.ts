@@ -333,7 +333,8 @@ export function gradeSubmission(id: string, rawGrade: number, feedback: string) 
       score,
       status: "pending",
       session: "Travail pratique",
-      type: assignment.type === "Formulaire" ? "Interro" : "TP"
+      type: assignment.type === "Formulaire" ? "Interro" : "TP",
+      title: assignment.title
     }
     state = {
       ...state,

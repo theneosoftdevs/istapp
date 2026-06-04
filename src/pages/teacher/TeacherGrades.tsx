@@ -161,8 +161,6 @@ export function TeacherGrades() {
     }
   ]
 
-  if (loading || !data) return <Loader fullHeight />
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -210,6 +208,16 @@ export function TeacherGrades() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>Titre de l'évaluation</Label>
+              <Input
+                placeholder="Ex : Chapitre 1 — Introduction"
+                value={sessionForm.title}
+                onChange={e => setSessionForm({...sessionForm, title: e.target.value})}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label>Session</Label>
               <Select value={session} onValueChange={setSession}>
