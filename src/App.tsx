@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { AppLayout } from "@/layouts/AppLayout"
 import { LoginPage } from "@/pages/LoginPage"
 import { NotificationsPage } from "@/pages/NotificationsPage"
+import { SettingsPage } from "@/pages/SettingsPage"
 import type { ReactNode } from "react"
 import type { Role } from "@/types"
 
@@ -86,6 +87,7 @@ export default function App() {
         
         {/* Unified Communications Center */}
         <Route path="/communications" element={<NotificationsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
         {/* Étudiant */}
         <Route element={<RoleGuard allow="student" />}>

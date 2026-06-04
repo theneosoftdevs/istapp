@@ -15,7 +15,7 @@ export function AppSidebar({ mode }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
+        "sticky top-0 h-screen flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
         isRail ? "w-20" : "w-64"
       )}
     >
