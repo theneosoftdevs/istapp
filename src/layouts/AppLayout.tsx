@@ -17,7 +17,6 @@ import { useApp } from "@/contexts/AppContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useNavigation } from "@/hooks/use-navigation"
 import { cn } from "@/lib/utils"
-import { SettingsDialog } from "@/components/SettingsDialog"
 import { useState } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import locales from "@/lib/locales.json"
@@ -31,7 +30,6 @@ export function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const navMode = useNavigation()
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const userName = user ? `${user.firstName} ${user.lastName}` : ""
 
@@ -131,9 +129,11 @@ export function AppLayout() {
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                  <Settings className="size-4" />
-                  {locales.settings.settings_title}
+                <DropdownMenuItem asChild>
+                  <Link to="/settings" className="flex w-full items-center">
+                    <Settings className="size-4" />
+                    {locales.settings.settings_title}
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                   <LogOut className="size-4" />
@@ -156,8 +156,6 @@ export function AppLayout() {
 
       {/* Navbar for Mobile */}
       {navMode === "mobile" && <MobileNavbar />}
-
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   )
 }
