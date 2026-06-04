@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { usePageData, useStore } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
 import { resolveGradeAppeal } from "@/lib/store"
 import { toast } from "sonner"
 import type { GradeAppeal } from "@/types"
@@ -21,13 +22,13 @@ interface RecoursRow extends GradeAppeal {
 
 export function FacultyRecours() {
   const store = useStore()
+  const { user } = useAuth()
   const [selected, setSelected] = useState<RecoursRow | null>(null)
   const [response, setResponse] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { data, loading } = usePageData((d) => {
-    // In a real app, filter by faculty of the logged-in user
-    const facultyId = "f1"
+    const facultyId = user?.facultyId || "f1"
     const facultyCourses = d.courses.filter(c => c.facultyId === facultyId)
     const courseIds = new Set(facultyCourses.map(c => c.id))
 

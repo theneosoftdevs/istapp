@@ -1,6 +1,7 @@
 // src/lib/store.ts
 import rawData from "@/data.json"
 import { fetchExternalPosts, fetchExternalUsers } from "./api"
+import { normalizeUser } from "./utils"
 import type {
   AppData,
   Grade,
@@ -36,18 +37,7 @@ function clampScore(n: number): number {
 function initState(): AppData {
   const raw = structuredClone(rawData) as Partial<AppData> & { users?: any[] }
 
-  const users = (raw.users || []).map((u) => {
-    if (u.name && !u.firstName) {
-      const parts = u.name.split(" ")
-      return {
-        ...u,
-        firstName: parts[0] || "",
-        lastName: parts[parts.length - 1] || "",
-        middleName: parts.slice(1, -1).join(" ") || ""
-      } as User
-    }
-    return u as User
-  })
+  const users = (raw.users || []).map(normalizeUser) as User[]
 
   const students = (raw.students || []).map((s) => ({
     ...s,

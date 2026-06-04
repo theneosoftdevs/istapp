@@ -14,18 +14,16 @@ import {
 } from "@/components/ui/select"
 import { usePageData } from "@/hooks/usePageData"
 import locales from "@/lib/locales.json"
+import { getFacultyDashboardData } from "@/lib/selectors"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function FacultyDashboard() {
-  const [facultyId, setFacultyId] = useState("f1")
+  const { user } = useAuth()
+  const [facultyId, setFacultyId] = useState(user?.facultyId || "f1")
 
-  const { data, loading } = usePageData((d) => {
-    const faculty = d.faculties.find((f) => f.id === facultyId) ?? d.faculties[0]
-    const promotions = d.promotions.filter((p) => p.facultyId === faculty.id)
-    const students = d.students.filter((s) => s.facultyId === faculty.id)
-    const courses = d.courses.filter((c) => c.facultyId === faculty.id)
-    const teachers = d.teachers.filter((t) => t.facultyId === faculty.id)
-    return { faculties: d.faculties, faculty, promotions, students, courses, teachers }
-  })
+  const { data, loading } = usePageData((d) =>
+    getFacultyDashboardData(d, facultyId)
+  )
 
   if (loading || !data) return <Loader fullHeight />
 

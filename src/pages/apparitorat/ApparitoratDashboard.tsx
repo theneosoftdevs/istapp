@@ -18,18 +18,7 @@ interface PendingRow extends Student {
 }
 
 export function ApparitoratDashboard() {
-  const { data, loading } = usePageData((d) => {
-    const counts = getApparitoratStats(d)
-    const pending: PendingRow[] = d.students
-      .filter((s) => s.status === "pending")
-      .map((s) => enrichStudent(d, s))
-    const byFaculty = d.faculties.map((f) => ({
-      name: f.name,
-      code: f.code,
-      count: d.students.filter((s) => s.facultyId === f.id).length,
-    }))
-    return { counts, pending, byFaculty }
-  })
+  const { data, loading } = usePageData(getApparitoratStats)
 
   if (loading || !data) return <Loader fullHeight />
 
@@ -71,10 +60,10 @@ export function ApparitoratDashboard() {
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KPICard title={locales.apparitorat.total_effectif} value={data.counts.total} icon={Users} colorClass="bg-chart-1/10 text-chart-1" subtitle={`${locales.apparitorat.capacity_max}: ${data.counts.totalMax}`} />
-        <KPICard title={locales.apparitorat.girls} value={data.counts.girls} icon={Venus} colorClass="bg-chart-4/10 text-chart-4" />
-        <KPICard title={locales.apparitorat.boys} value={data.counts.boys} icon={Mars} colorClass="bg-chart-5/10 text-chart-5" />
-        <KPICard title={locales.apparitorat.pending} value={data.counts.pending} icon={UserCog} colorClass="bg-chart-3/15 text-chart-3" />
+        <KPICard title={locales.apparitorat.total_effectif} value={data.total} icon={Users} colorClass="bg-chart-1/10 text-chart-1" subtitle={`${locales.apparitorat.capacity_max}: ${data.totalMax}`} />
+        <KPICard title={locales.apparitorat.girls} value={data.girls} icon={Venus} colorClass="bg-chart-4/10 text-chart-4" />
+        <KPICard title={locales.apparitorat.boys} value={data.boys} icon={Mars} colorClass="bg-chart-5/10 text-chart-5" />
+        <KPICard title={locales.apparitorat.pending} value={data.pendingCount} icon={UserCog} colorClass="bg-chart-3/15 text-chart-3" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

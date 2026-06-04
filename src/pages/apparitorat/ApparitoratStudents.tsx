@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { usePageData } from "@/hooks/usePageData"
+import { enrichStudent } from "@/lib/selectors"
 import type { Student } from "@/types"
 import { toast } from "sonner"
 import { EditStudentDialog } from "./EditStudentDialog"
@@ -35,11 +36,7 @@ export function ApparitoratStudents() {
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null)
 
   const { data, loading } = usePageData((d) => {
-    const students: StudentRow[] = d.students.map((s) => ({
-      ...s,
-      facultyCode: d.faculties.find((f) => f.id === s.facultyId)?.code ?? "—",
-      promotionName: d.promotions.find((p) => p.id === s.promotionId)?.name ?? "—",
-    }))
+    const students: StudentRow[] = d.students.map(s => enrichStudent(d, s))
     return { students, faculties: d.faculties, promotions: d.promotions }
   })
 

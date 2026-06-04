@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import type { ReactNode } from "react"
 import rawData from "@/data.json"
+import { normalizeUser } from "@/lib/utils"
 import type { AppData, Role, User } from "@/types"
 
 const data = rawData as AppData
@@ -20,16 +21,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 function userForRole(role: Role): User {
   const existing = data.users.find((u) => u.role === role)
   if (existing) {
-    if (existing.name && !existing.firstName) {
-      const parts = existing.name.split(" ")
-      return {
-        ...existing,
-        firstName: parts[0] || "",
-        lastName: parts[parts.length - 1] || "",
-        middleName: parts.slice(1, -1).join(" ") || ""
-      }
-    }
-    return existing
+    return normalizeUser(existing) as User
   }
   return {
     id: `tmp-${role}`,

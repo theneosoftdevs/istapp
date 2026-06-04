@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { usePageData } from "@/hooks/usePageData"
+import { useAuth } from "@/contexts/AuthContext"
 import type { Promotion } from "@/types"
 
 interface PromotionRow extends Promotion {
@@ -22,7 +23,8 @@ interface PromotionRow extends Promotion {
 }
 
 export function FacultyPromotions() {
-  const [facultyId, setFacultyId] = useState("all")
+  const { user } = useAuth()
+  const [facultyId, setFacultyId] = useState(user?.facultyId || "all")
 
   const { data, loading } = usePageData((d) => {
     const rows: PromotionRow[] = d.promotions.map((p) => {

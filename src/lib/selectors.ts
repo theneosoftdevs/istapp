@@ -20,6 +20,32 @@ export function getEnrichedStudents(d: AppData) {
 }
 
 /**
+ * Enriches a course object with promotion name, teacher info and schedules.
+ */
+export function enrichCourse(d: AppData, course: Course) {
+  const promotion = d.promotions.find((p) => p.id === course.promotionId)
+  const teacher = d.teachers.find((t) => t.id === course.teacherId)
+  const room = d.rooms.find(r => r.id === course.roomId)
+  const schedules = d.schedules.filter(s => s.courseId === course.id)
+
+  return {
+    ...course,
+    promotionName: promotion?.name ?? "—",
+    teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : "Non attribué",
+    teacherTitle: teacher?.title ?? "",
+    roomName: room?.name ?? "Non attribuée",
+    schedules
+  }
+}
+
+/**
+ * Gets enriched courses list.
+ */
+export function getEnrichedCourses(d: AppData) {
+  return d.courses.map(c => enrichCourse(d, c))
+}
+
+/**
  * Filters announcements by audience and sorts them by date.
  */
 export function getAnnouncementsFor(d: AppData, audience: "student" | "teacher" | "all" | "global") {
@@ -65,10 +91,113 @@ export function getStudentDashboardData(d: AppData, studentId: string) {
  */
 export function getApparitoratStats(d: AppData) {
   const total = d.students.length
-  const girls = d.students.filter((s) => s.gender === "F").length
-  const boys = d.students.filter((s) => s.gender === "M").length
-  const pending = d.students.filter((s) => s.status === "pending").length
+  let girls = 0
+  let boys = 0
+  const pending: any[] = []
+
+  d.students.forEach((s) => {
+    if (s.gender === "F") girls++
+    if (s.gender === "M") boys++
+    if (s.status === "pending") {
+      pending.push(enrichStudent(d, s))
+    }
+  })
+
+  const pendingCount = pending.length
   const totalMax = d.rooms.reduce((acc, r) => acc + r.capacity, 0)
 
-  return { total, girls, boys, pending, totalMax }
+  const byFaculty = d.faculties.map((f) => ({
+    name: f.name,
+    code: f.code,
+    count: d.students.filter((s) => s.facultyId === f.id).length,
+  }))
+
+  return { total, girls, boys, pendingCount, totalMax, pending, byFaculty }
+}
+
+/**
+ * Gets dashboard metrics for Secretariat General.
+ */
+export function getSecretariatGeneralDashboardData(d: AppData) {
+  const totalStudents = d.students.length
+  const activeStudents = d.students.filter((s) => s.status === "active").length
+  const byFaculty = d.faculties.map((f) => ({
+    id: f.id,
+    name: f.name,
+    code: f.code,
+    dean: f.dean,
+    studentCount: d.students.filter((s) => s.facultyId === f.id).length,
+    courseCount: d.courses.filter((c) => c.facultyId === f.id).length,
+    teacherCount: d.teachers.filter((t) => t.facultyId === f.id).length,
+  }))
+  const recentAnnouncements = d.announcements
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 4)
+
+  return {
+    totalStudents,
+    activeStudents,
+    totalFaculties: d.faculties.length,
+    totalTeachers: d.teachers.length,
+    totalCourses: d.courses.length,
+    byFaculty,
+    recentAnnouncements,
+  }
+}
+
+/**
+ * Gets dashboard metrics for a specific Faculty.
+ */
+export function getFacultyDashboardData(d: AppData, facultyId: string) {
+  const faculty = d.faculties.find((f) => f.id === facultyId) ?? d.faculties[0]
+  const promotions = d.promotions.filter((p) => p.facultyId === faculty.id)
+  const students = d.students.filter((s) => s.facultyId === faculty.id)
+  const courses = d.courses.filter((c) => c.facultyId === faculty.id)
+  const teachers = d.teachers.filter((t) => t.facultyId === faculty.id)
+
+  return { faculties: d.faculties, faculty, promotions, students, courses, teachers }
+}
+
+/**
+ * Gets dashboard metrics for Rectorat.
+ */
+export function getRectoratDashboardData(d: AppData) {
+  const totalStudents = d.students.length
+  const activeStudents = d.students.filter((s) => s.status === "active").length
+  const validatedGrades = d.grades.filter((g) => g.status === "validated").length
+  const pendingGrades = d.grades.filter((g) => g.status === "pending").length
+
+  const byFaculty = d.faculties.map((f) => ({
+    name: f.code,
+    fullName: f.name,
+    etudiants: d.students.filter((s) => s.facultyId === f.id).length,
+  }))
+
+  const recentActivity = [
+    {
+      label: "validated_grades_label", // These will be used as keys for locales in the component
+      value: validatedGrades,
+      total: d.grades.length,
+      percent: d.grades.length ? Math.round((validatedGrades / d.grades.length) * 100) : 0,
+      color: "bg-chart-3",
+    },
+    {
+      label: "active_students_label",
+      value: activeStudents,
+      total: totalStudents,
+      percent: totalStudents ? Math.round((activeStudents / totalStudents) * 100) : 0,
+      color: "bg-chart-1",
+    },
+  ]
+
+  return {
+    totalStudents,
+    activeStudents,
+    totalFaculties: d.faculties.length,
+    totalCourses: d.courses.length,
+    validatedGrades,
+    pendingGrades,
+    byFaculty,
+    recentActivity,
+  }
 }
