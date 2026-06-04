@@ -8,6 +8,7 @@ import {
   Landmark,
   ShieldCheck,
   LayoutDashboard,
+  Home,
   Users,
   CalendarDays,
   FileText,
@@ -78,33 +79,33 @@ export interface NavItem {
 
 export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   student: [
-    { label: "Accueil",      to: "/student/dashboard",    icon: LayoutDashboard },
+    { label: "Accueil",      to: "/student/dashboard",    icon: Home },
     { label: "Horaire",      to: "/student/schedule",     icon: CalendarDays },
     { label: "Travaux",      to: "/student/assignments",  icon: ClipboardCheck },
     { label: "Notes",        to: "/student/grades",       icon: FileText },
     { label: "Ressources",   to: "/student/resources",    icon: FolderOpen },
   ],
   teacher: [
-    { label: "Accueil",      to: "/teacher/dashboard",   icon: LayoutDashboard },
+    { label: "Accueil",      to: "/teacher/dashboard",   icon: Home },
     { label: "Cours",        to: "/teacher/courses",     icon: BookOpen },
     { label: "Travaux",      to: "/teacher/assignments", icon: ClipboardCheck },
     { label: "Notes",        to: "/teacher/grades",      icon: FileText },
     { label: "Horaire",      to: "/teacher/schedule",    icon: CalendarDays },
   ],
   apparitorat: [
-    { label: "Accueil",      to: "/apparitorat/dashboard",    icon: LayoutDashboard },
+    { label: "Accueil",      to: "/apparitorat/dashboard",    icon: Home },
     { label: "Inscriptions", to: "/apparitorat/inscriptions", icon: UserPlus },
     { label: "Étudiants",    to: "/apparitorat/students",     icon: Users },
     { label: "Locaux",       to: "/apparitorat/rooms",        icon: DoorOpen },
   ],
   secretariat_faculte: [
-    { label: "Accueil",      to: "/secretariat_faculte/dashboard",  icon: LayoutDashboard },
+    { label: "Accueil",      to: "/secretariat_faculte/dashboard",  icon: Home },
     { label: "Promotions",   to: "/secretariat_faculte/promotions", icon: Users },
     { label: "Cours",        to: "/secretariat_faculte/courses",    icon: BookOpen },
     { label: "Recours",      to: "/secretariat_faculte/recours",    icon: AlertCircle },
   ],
   secretariat_general: [
-    { label: "Accueil",      to: "/secretariat_general/dashboard", icon: LayoutDashboard },
+    { label: "Accueil",      to: "/secretariat_general/dashboard", icon: Home },
     { label: "Facultés",     to: "/secretariat_general/faculties", icon: Building2 },
     { label: "Promotions",   to: "/secretariat_general/promotions",icon: GraduationCap },
     { label: "Enseignants",  to: "/secretariat_general/teachers",  icon: UserSquare2 },
@@ -112,7 +113,7 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
     { label: "Recours",      to: "/secretariat_general/recours",   icon: AlertCircle },
   ],
   rectorat: [
-    { label: "Accueil",      to: "/rectorat/dashboard", icon: LayoutDashboard },
+    { label: "Accueil",      to: "/rectorat/dashboard", icon: Home },
     { label: "Stats",        to: "/rectorat/stats",     icon: BarChart3 },
     { label: "Facultés",     to: "/rectorat/faculties", icon: Building2 },
   ],

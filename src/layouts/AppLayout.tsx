@@ -50,7 +50,7 @@ export function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex min-h-16 h-auto py-2 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6 sm:h-16 sm:py-0">
           {/* Logo only on mobile in header */}
-          <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 sm:hidden">
+          <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 md:hidden">
             <img src="/ista.jpeg" alt="Logo ISTA" className="size-8 shrink-0 rounded-sm object-cover" />
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-tighter leading-none">
@@ -60,7 +60,7 @@ export function AppLayout() {
           </Link>
 
           {/* Title on desktop (no logo here because it's in sidebar) */}
-          <div className="hidden items-center gap-2 sm:flex">
+          <div className="hidden items-center gap-2 md:flex">
             <h2 className="text-lg font-black tracking-tighter text-foreground uppercase italic">ISTA PORTAL</h2>
             <div className="h-4 w-px bg-border mx-1" />
             <p className="text-xs font-bold uppercase tracking-widest text-primary">
