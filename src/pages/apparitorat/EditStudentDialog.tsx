@@ -138,21 +138,18 @@ export function EditStudentDialog({ student, open, onOpenChange }: EditStudentDi
               <Select
                 value={form.status}
                 onValueChange={(v) => set("status", v as any)}
-                disabled={role === "apparitorat"}
+                disabled={role !== "secretariat_general"}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="active">{locales.apparitorat.status_active}</SelectItem>
-                  <SelectItem value="pending">{locales.apparitorat.status_pending}</SelectItem>
                   <SelectItem value="suspended">{locales.apparitorat.status_suspended}</SelectItem>
-                  <SelectItem value="finished">{locales.apparitorat.status_finished}</SelectItem>
-                  <SelectItem value="dropped">{locales.apparitorat.status_dropped}</SelectItem>
                   <SelectItem value="excluded">{locales.apparitorat.status_excluded}</SelectItem>
                 </SelectContent>
               </Select>
-              {role === "apparitorat" && (
+              {role !== "secretariat_general" && (
                 <p className="text-[10px] text-muted-foreground italic">
                   Modification réservée au Secrétariat Général
                 </p>
