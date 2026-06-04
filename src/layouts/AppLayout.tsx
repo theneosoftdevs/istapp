@@ -16,14 +16,10 @@ import { MobileNavbar } from "@/layouts/MobileNavbar"
 import { useApp } from "@/contexts/AppContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useNavigation } from "@/hooks/use-navigation"
-import { cn } from "@/lib/utils"
+import { cn, getInitials } from "@/lib/utils"
 import { useState } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import locales from "@/lib/locales.json"
-
-function initials(firstName: string, lastName: string) {
-  return (firstName[0] || "") + (lastName[0] || "")
-}
 
 export function AppLayout() {
   const { theme, toggleTheme, portal } = useApp()
@@ -113,7 +109,7 @@ export function AppLayout() {
                 >
                   <Avatar className="size-8">
                     <AvatarFallback className="bg-primary/10 text-xs font-black text-primary uppercase">
-                      {user ? initials(user.firstName, user.lastName) : "?"}
+                      {user ? getInitials(user.firstName, user.lastName) : "?"}
                     </AvatarFallback>
                   </Avatar>
                   <span className="hidden text-xs font-bold text-foreground sm:inline uppercase tracking-tight">

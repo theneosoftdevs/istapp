@@ -7,6 +7,7 @@ import { Loader } from "@/components/ui/Loader"
 import { usePageData } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import locales from "@/lib/locales.json"
+import { getRectoratDashboardData } from "@/lib/selectors"
 import { cn } from "@/lib/utils"
 import {
   BarChart,
@@ -24,46 +25,7 @@ const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3
 export function RectoratDashboard() {
   const { user } = useAuth()
 
-  const { data, loading } = usePageData((d) => {
-    const totalStudents = d.students.length
-    const activeStudents = d.students.filter((s) => s.status === "active").length
-    const validatedGrades = d.grades.filter((g) => g.status === "validated").length
-    const pendingGrades = d.grades.filter((g) => g.status === "pending").length
-
-    const byFaculty = d.faculties.map((f) => ({
-      name: f.code,
-      fullName: f.name,
-      etudiants: d.students.filter((s) => s.facultyId === f.id).length,
-    }))
-
-    const recentActivity = [
-      {
-        label: locales.rectorat.validated_grades_label,
-        value: validatedGrades,
-        total: d.grades.length,
-        percent: d.grades.length ? Math.round((validatedGrades / d.grades.length) * 100) : 0,
-        color: "bg-chart-3",
-      },
-      {
-        label: locales.rectorat.active_students_label,
-        value: activeStudents,
-        total: totalStudents,
-        percent: totalStudents ? Math.round((activeStudents / totalStudents) * 100) : 0,
-        color: "bg-chart-1",
-      },
-    ]
-
-    return {
-      totalStudents,
-      activeStudents,
-      totalFaculties: d.faculties.length,
-      totalCourses: d.courses.length,
-      validatedGrades,
-      pendingGrades,
-      byFaculty,
-      recentActivity,
-    }
-  })
+  const { data, loading } = usePageData(getRectoratDashboardData)
 
   if (loading || !data) return <Loader fullHeight />
 
@@ -153,7 +115,9 @@ export function RectoratDashboard() {
             {data.recentActivity.map((item) => (
               <div key={item.label} className="space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{item.label}</span>
+                  <span className="text-muted-foreground">
+                    {locales.rectorat[item.label as keyof typeof locales.rectorat]}
+                  </span>
                   <span className="font-semibold text-foreground">
                     {item.value}/{item.total}
                   </span>

@@ -8,6 +8,7 @@ import { AnnouncementList } from "@/components/AnnouncementList"
 import { DataTable, type Column } from "@/components/ui/DataTable"
 import { usePageData } from "@/hooks/usePageData"
 import locales from "@/lib/locales.json"
+import { getSecretariatGeneralDashboardData } from "@/lib/selectors"
 
 interface FacultyRow {
   id: string
@@ -20,31 +21,7 @@ interface FacultyRow {
 }
 
 export function SecretariatGeneralDashboard() {
-  const { data, loading } = usePageData((d) => {
-    const totalStudents = d.students.length
-    const activeStudents = d.students.filter((s) => s.status === "active").length
-    const byFaculty: FacultyRow[] = d.faculties.map((f) => ({
-      id: f.id,
-      name: f.name,
-      code: f.code,
-      dean: f.dean,
-      studentCount: d.students.filter((s) => s.facultyId === f.id).length,
-      courseCount: d.courses.filter((c) => c.facultyId === f.id).length,
-      teacherCount: d.teachers.filter((t) => t.facultyId === f.id).length,
-    }))
-    const recentAnnouncements = d.announcements
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 4)
-    return {
-      totalStudents,
-      activeStudents,
-      totalFaculties: d.faculties.length,
-      totalTeachers: d.teachers.length,
-      totalCourses: d.courses.length,
-      byFaculty,
-      recentAnnouncements,
-    }
-  })
+  const { data, loading } = usePageData(getSecretariatGeneralDashboardData)
 
   const columns: Column<FacultyRow>[] = [
     {

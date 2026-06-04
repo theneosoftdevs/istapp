@@ -24,6 +24,7 @@ import {
 import { useStore } from "@/hooks/usePageData"
 import { useAuth } from "@/contexts/AuthContext"
 import { updateCourseAssignment, addScheduleSlot, removeScheduleSlot } from "@/lib/store"
+import { enrichCourse } from "@/lib/selectors"
 import type { Course, ScheduleSlot } from "@/types"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
@@ -51,20 +52,7 @@ export function FacultyCourses() {
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
 
-  const rows: CourseRow[] = store.courses.map((c) => {
-    const promotion = store.promotions.find((p) => p.id === c.promotionId)
-    const teacher = store.teachers.find((t) => t.id === c.teacherId)
-    const room = store.rooms.find(r => r.id === c.roomId)
-    const schedules = store.schedules.filter(s => s.courseId === c.id)
-    return {
-      ...c,
-      promotionName: promotion?.name ?? "—",
-      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : "Non attribué",
-      teacherTitle: teacher?.title ?? "",
-      roomName: room?.name ?? "Non attribuée",
-      schedules
-    }
-  })
+  const rows: CourseRow[] = store.courses.map(c => enrichCourse(store, c))
 
   const filtered = rows.filter((r) => {
     const isSameFaculty = r.facultyId === facultyId
