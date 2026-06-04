@@ -63,7 +63,7 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4 overflow-hidden">
       {/* Table view for Desktop/Tablet */}
       <div className="hidden overflow-hidden rounded-xl border border-border bg-card md:block">
         <div className="overflow-x-auto">
@@ -109,7 +109,7 @@ export function DataTable<T>({
       </div>
 
       {/* Card view for Mobile */}
-      <div className="grid grid-cols-1 gap-3 md:hidden">
+      <div className="grid grid-cols-1 gap-4 md:hidden">
         {data.map((row) => (
           <div
             key={rowKey(row)}
@@ -119,13 +119,13 @@ export function DataTable<T>({
               onRowClick && "active:bg-accent cursor-pointer"
             )}
           >
-            <div className="space-y-3">
+            <div className="space-y-4">
               {columns.map((col) => (
-                <div key={col.key} className="flex justify-between gap-4">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <div key={col.key} className="flex flex-col gap-1 border-b border-border/50 pb-2 last:border-0 last:pb-0">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
                     {col.header}
                   </span>
-                  <div className={cn("text-sm font-medium text-foreground text-right", col.className)}>
+                  <div className={cn("text-sm font-semibold text-foreground", col.className)}>
                     {col.render
                       ? col.render(row)
                       : ((row as Record<string, any>)[col.key] ?? "—")}

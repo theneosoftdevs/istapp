@@ -150,6 +150,14 @@ export function addStudent(student: Student) {
   emit()
 }
 
+export function updateStudent(student: Student) {
+  state = {
+    ...state,
+    students: state.students.map((s) => (s.id === student.id ? student : s)),
+  }
+  emit()
+}
+
 export function nextStudentId(): string {
   const max = state.students.reduce((acc, s) => {
     const n = Number(s.id.replace(/\D/g, ""))
