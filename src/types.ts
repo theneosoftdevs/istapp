@@ -15,6 +15,7 @@ export interface User {
   middleName?: string
   email: string
   role: Role
+  facultyId?: string
   avatar?: string
   refId?: string
   phone?: string
@@ -85,6 +86,7 @@ export interface Course {
   facultyId: string
   promotionId: string
   teacherId: string
+  roomId?: string
   hours: number
 }
 
@@ -97,6 +99,8 @@ export interface ScheduleSlot {
   start: string
   end: string
   room: string
+  startDate?: string
+  endDate?: string
 }
 
 export interface Grade {
