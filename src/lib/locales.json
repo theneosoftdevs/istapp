@@ -32,7 +32,20 @@
     "academic_year": "Année académique",
     "semester": "Semestre",
     "session_in_progress": "Session en cours",
-    "active": "actifs"
+    "active": "actifs",
+    "just_now": "À l'instant",
+    "notifications_title": "Communications",
+    "notifications_subtitle": "Annonces officielles et notifications personnelles.",
+    "create_announcement": "Créer une annonce",
+    "announcements_tab": "Annonces",
+    "notifications_tab": "Notifications",
+    "no_notifications": "Aucune notification",
+    "no_notifications_desc": "Vous n'avez reçu aucune notification personnelle pour le moment.",
+    "mark_all_read": "Tout marquer lu",
+    "type_grade_modified": "Note modifiée",
+    "type_new_appeal": "Nouveau recours",
+    "type_appeal_resolved": "Recours traité",
+    "type_course_assigned": "Cours attribué"
   },
   "portals": {
     "student": "PORTAL ÉTUDIANT",

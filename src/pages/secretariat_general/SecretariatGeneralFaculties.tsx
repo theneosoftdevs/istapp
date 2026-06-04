@@ -10,7 +10,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { addFaculty, nextFacultyId } from "@/lib/store"
+import { addFaculty, generateId } from "@/lib/store"
 import { toast } from "sonner"
 
 export function SecretariatGeneralFaculties() {
@@ -20,7 +20,7 @@ export function SecretariatGeneralFaculties() {
   const handleAdd = () => {
     if (!form.name || !form.code) return
     addFaculty({
-      id: nextFacultyId(),
+      id: generateId("f"),
       name: form.name,
       code: form.code,
       dean: form.dean || "À désigner"

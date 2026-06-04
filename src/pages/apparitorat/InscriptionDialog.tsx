@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useStore } from "@/hooks/usePageData"
-import { addStudent, nextStudentId } from "@/lib/store"
+import { addStudent, generateId } from "@/lib/store"
 import type { Student } from "@/types"
 import { toast } from "sonner"
 
@@ -86,7 +86,7 @@ export function InscriptionDialog() {
     const year = new Date().getFullYear()
     const seq = String(store.students.length + 1).padStart(3, "0")
     const newStudent: Student = {
-      id: nextStudentId(),
+      id: generateId("s"),
       matricule: `ISTA-${year}-${seq}`,
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),

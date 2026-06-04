@@ -1,33 +1,48 @@
-# ista-goma
+# ISTA PORTAL — Plateforme de Gestion Universitaire
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+## Présentation
+ISTA PORTAL est une solution complète de gestion académique pour l'ISTA-GOMA. Elle permet de centraliser les informations et les processus pour tous les acteurs de l'université : étudiants, enseignants, apparitorat, secrétariat de faculté, secrétariat général et rectorat.
 
-## Built with v0
+## Architecture Technique
+L'application est construite sur une stack moderne :
+- **Frontend** : React 19 avec Vite
+- **Stylisation** : Tailwind CSS
+- **Composants UI** : Radix UI & Lucide React
+- **Gestion d'état** : Custom in-memory store avec `useSyncExternalStore`
+- **Routage** : React Router DOM v6 (avec guards basés sur les rôles)
+- **PWA** : Support complet du mode hors ligne et installation multi-plateforme
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+## Installation & Développement
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_U8B4NAuCpNQMOvFtmd0UabUcolxo)
+### Prérequis
+- Node.js 18+
+- pnpm (recommandé) ou npm
 
-## Getting Started
-
-First, run the development server:
-
+### Lancer en local
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Installation des dépendances
+pnpm install
+
+# Lancer le serveur de développement
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Build de production
+```bash
+pnpm build
+pnpm preview
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Documentation Complémentaire
+- [Architecture & Gestion d'État](./docs/ARCHITECTURE.md)
+- [Stratégies PWA](./docs/PWA.md)
+- [Conventions de Développement](./docs/CONVENTIONS.md)
 
-## Learn More
-
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+## Rôles & Accès
+L'application utilise un système de RBAC (Role-Based Access Control) strict :
+- `student` : Accès aux cours, notes et horaires.
+- `teacher` : Gestion des cours, encodage des notes.
+- `apparitorat` : Inscriptions et gestion administrative des étudiants.
+- `secretariat_faculte` : Gestion académique au niveau de la faculté.
+- `secretariat_general` : Supervision globale et validation des résultats.
+- `rectorat` : Pilotage stratégique et statistiques institutionnelles.

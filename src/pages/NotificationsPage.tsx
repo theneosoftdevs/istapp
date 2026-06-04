@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import type { Notification } from "@/types"
+import locales from "@/lib/locales.json"
 
 const TYPE_CONFIG: Record<
   Notification["type"],
@@ -20,22 +21,22 @@ const TYPE_CONFIG: Record<
 > = {
   grade_modified: {
     icon: Star,
-    label: "Note modifiée",
+    label: locales.common.type_grade_modified,
     color: "bg-chart-2/10 text-chart-2",
   },
   new_appeal: {
     icon: AlertCircle,
-    label: "Nouveau recours",
+    label: locales.common.type_new_appeal,
     color: "bg-warning/10 text-warning",
   },
   appeal_resolved: {
     icon: CheckCheck,
-    label: "Recours traité",
+    label: locales.common.type_appeal_resolved,
     color: "bg-success/10 text-success",
   },
   course_assigned: {
     icon: BookMarked,
-    label: "Cours attribué",
+    label: locales.common.type_course_assigned,
     color: "bg-chart-5/10 text-chart-5",
   },
 }
@@ -44,7 +45,7 @@ function relativeDate(iso: string) {
   const date = new Date(iso)
   const now = new Date()
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000)
-  if (diff < 60) return "À l'instant"
+  if (diff < 60) return locales.common.just_now
   if (diff < 3600) return `${Math.floor(diff / 60)} min`
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`
   return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })
@@ -114,13 +115,13 @@ export function NotificationsPage() {
     <div className="space-y-6 pb-20 sm:pb-0">
       <div className="flex items-center justify-between gap-4">
         <PageHeader
-          title="Communications"
-          subtitle="Annonces officielles et notifications personnelles."
+          title={locales.common.notifications_title}
+          subtitle={locales.common.notifications_subtitle}
         />
         {canCreate && (
           <Button onClick={() => setDialogOpen(true)} className="gap-2 shrink-0">
             <Plus className="size-4" />
-            <span className="hidden sm:inline">Créer une annonce</span>
+            <span className="hidden sm:inline">{locales.common.create_announcement}</span>
           </Button>
         )}
       </div>
@@ -129,14 +130,14 @@ export function NotificationsPage() {
         <TabsList className="grid w-full grid-cols-2 lg:max-w-md">
           <TabsTrigger value="announcements" className="gap-1.5 px-2 text-xs sm:text-sm">
             <Megaphone className="hidden size-4 sm:block" />
-            Annonces
+            {locales.common.announcements_tab}
             <Badge variant="secondary" className="ml-0.5 h-5 px-1.5 py-0 text-[10px]">
               {announcements.length}
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="gap-1.5 px-2 text-xs sm:text-sm">
             <Bell className="hidden size-4 sm:block" />
-            Notifications
+            {locales.common.notifications_tab}
             {unreadNotifications > 0 && (
               <Badge variant="destructive" className="ml-0.5 h-5 px-1.5 py-0 text-[10px]">
                 {unreadNotifications}
@@ -161,9 +162,9 @@ export function NotificationsPage() {
                   <Bell className="size-6 text-muted-foreground" />
                 </div>
                 <div className="text-center px-4">
-                  <p className="font-medium text-foreground">Aucune notification</p>
+                  <p className="font-medium text-foreground">{locales.common.no_notifications}</p>
                   <p className="text-sm text-muted-foreground">
-                    Vous n'avez reçu aucune notification personnelle pour le moment.
+                    {locales.common.no_notifications_desc}
                   </p>
                 </div>
               </CardContent>
@@ -179,7 +180,7 @@ export function NotificationsPage() {
                     onClick={() => user?.role && markAllNotificationsRead(user.role)}
                   >
                     <CheckCheck className="size-3.5" />
-                    Tout marquer lu
+                    {locales.common.mark_all_read}
                   </Button>
                 )}
               </div>
