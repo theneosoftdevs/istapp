@@ -19,10 +19,17 @@ export function AppSidebar({ mode }: AppSidebarProps) {
         isRail ? "w-20" : "w-64"
       )}
     >
-      <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4", isRail ? "justify-center" : "gap-3")}>
-        <img src="/ista.jpeg" alt="Logo ISTA" className="size-9 shrink-0 rounded-lg object-cover shadow-sm" />
+      <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4 transition-all duration-300", isRail ? "justify-center" : "gap-3")}>
+        <img
+          src="/ista.jpeg"
+          alt="Logo ISTA"
+          className={cn(
+            "shrink-0 rounded-lg object-cover shadow-sm transition-all duration-300",
+            isRail ? "size-10" : "size-9"
+          )}
+        />
         {!isRail && (
-          <div className="min-w-0">
+          <div className="min-w-0 animate-in fade-in slide-in-from-left-2 duration-300">
             <p className="truncate text-sm font-black uppercase tracking-tighter text-sidebar-foreground">ISTA PORTAL</p>
             <p className="truncate text-[10px] font-bold uppercase tracking-widest text-primary">
               {portal?.role && locales.portals[portal.role as keyof typeof locales.portals]}
@@ -71,13 +78,15 @@ export function AppSidebar({ mode }: AppSidebarProps) {
         </TooltipProvider>
       </nav>
 
-      {!isRail && (
-        <div className="border-t border-sidebar-border p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+      <div className={cn("border-t border-sidebar-border p-4 transition-all duration-300", isRail && "flex justify-center")}>
+        {!isRail ? (
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 animate-in fade-in duration-300">
             ISTA PORTAL · 2024
           </p>
-        </div>
-      )}
+        ) : (
+          <div className="size-2 rounded-full bg-primary/40 animate-pulse" />
+        )}
+      </div>
     </aside>
   )
 }

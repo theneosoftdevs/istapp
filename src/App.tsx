@@ -36,8 +36,7 @@ import { FacultyRecours }     from "@/pages/secretariat_faculte/FacultyRecours"
 
 // ─── Secrétariat Général ──────────────────────────────────────────────────────
 import { SecretariatGeneralDashboard }     from "@/pages/secretariat_general/SecretariatGeneralDashboard"
-import { SecretariatGeneralFaculties }     from "@/pages/secretariat_general/SecretariatGeneralFaculties"
-import { SecretariatGeneralPromotions }    from "@/pages/secretariat_general/SecretariatGeneralPromotions"
+import { SecretariatGeneralEntities }      from "@/pages/secretariat_general/SecretariatGeneralEntities"
 import { SecretariatGeneralTeachers }      from "@/pages/secretariat_general/SecretariatGeneralTeachers"
 import { SecretariatGeneralStudents }      from "@/pages/secretariat_general/SecretariatGeneralStudents"
 import { SecretariatGeneralAcademic }      from "@/pages/secretariat_general/SecretariatGeneralAcademic"
@@ -127,8 +126,7 @@ export default function App() {
         {/* Secrétariat Général */}
         <Route element={<RoleGuard allow="secretariat_general" />}>
           <Route path="/secretariat_general/dashboard"     element={<SecretariatGeneralDashboard />} />
-          <Route path="/secretariat_general/faculties"     element={<SecretariatGeneralFaculties />} />
-          <Route path="/secretariat_general/promotions"    element={<SecretariatGeneralPromotions />} />
+          <Route path="/secretariat_general/entities"      element={<SecretariatGeneralEntities />} />
           <Route path="/secretariat_general/students"      element={<SecretariatGeneralStudents />} />
           <Route path="/secretariat_general/teachers"      element={<SecretariatGeneralTeachers />} />
           <Route path="/secretariat_general/academic"      element={<SecretariatGeneralAcademic />} />
