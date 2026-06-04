@@ -112,7 +112,7 @@ export interface Grade {
   status: "validated" | "pending" | "rejected"
   session: string
   type: "TD" | "TP" | "Interro" | "Examen"
-  title?: string
+  assessmentTitle?: string
 }
 
 export interface Announcement {

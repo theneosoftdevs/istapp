@@ -162,15 +162,15 @@ export function TeacherCourses() {
 
                     <div className="space-y-3 border-t pt-4">
                       <p className="text-sm font-semibold text-foreground">Ajouter une ressource</p>
-                      <div className="space-y-1.5">
-                        <Label>Titre du chapitre / Sujet</Label>
-                        <Input
-                          placeholder="Ex : Chapitre 1 — Introduction aux Algorithmes"
-                          value={form.title}
-                          onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                        />
-                      </div>
                       <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5 col-span-2">
+                          <Label>Titre de la ressource</Label>
+                          <Input
+                            placeholder="Ex : Introduction au chapitre 1"
+                            value={form.title}
+                            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                          />
+                        </div>
                         <div className="space-y-1.5">
                           <Label>Type de ressource</Label>
                           <Select
@@ -181,17 +181,17 @@ export function TeacherCourses() {
                           >
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="pdf">Chapitre (PDF)</SelectItem>
-                              <SelectItem value="video">Vidéo explicative</SelectItem>
-                              <SelectItem value="link">Lien de référence</SelectItem>
-                              <SelectItem value="doc">Document / Exercice</SelectItem>
+                              <SelectItem value="pdf">Fichier PDF</SelectItem>
+                              <SelectItem value="video">Lien Vidéo (YouTube...)</SelectItem>
+                              <SelectItem value="link">Lien Web / Article</SelectItem>
+                              <SelectItem value="doc">Document (Word, PPT...)</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <div className="space-y-1.5">
-                          <Label>URL / Lien du support</Label>
+                          <Label>URL / Lien de téléchargement</Label>
                           <Input
-                            placeholder="https://drive.google.com/..."
+                            placeholder="https://votre-lien.com/fichier"
                             value={form.url}
                             onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
                           />

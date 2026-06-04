@@ -354,18 +354,31 @@ export function addGrade(grade: Grade) {
   emit()
 }
 
-export function updateGrade(grade: Grade) {
-  state = {
-    ...state,
-    grades: state.grades.map((g) => (g.id === grade.id ? grade : g)),
-  }
-  emit()
-}
+export function upsertGrade(grade: Omit<Grade, "id" | "status">) {
+  const existingIndex = state.grades.findIndex(
+    (g) =>
+      g.studentId === grade.studentId &&
+      g.courseId === grade.courseId &&
+      g.type === grade.type &&
+      g.assessmentTitle === grade.assessmentTitle
+  )
 
-export function removeGrade(id: string) {
-  state = {
-    ...state,
-    grades: state.grades.filter((g) => g.id !== id),
+  if (existingIndex >= 0) {
+    const updatedGrades = [...state.grades]
+    updatedGrades[existingIndex] = {
+      ...updatedGrades[existingIndex],
+      score: clampScore(grade.score),
+      session: grade.session,
+    }
+    state = { ...state, grades: updatedGrades }
+  } else {
+    const newGrade: Grade = {
+      ...grade,
+      id: uid("g-"),
+      score: clampScore(grade.score),
+      status: "pending",
+    }
+    state = { ...state, grades: [newGrade, ...state.grades] }
   }
   emit()
 }
