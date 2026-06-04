@@ -1,6 +1,6 @@
 // src/pages/secretariat_faculte/FacultyCourses.tsx
 import { useState } from "react"
-import { BookOpen, Clock, UserCheck, DoorOpen } from "lucide-react"
+import { BookOpen, Clock, UserCheck, DoorOpen, Trash2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { KPICard } from "@/components/ui/KPICard"
 import { DataTable, type Column } from "@/components/ui/DataTable"
@@ -27,7 +27,6 @@ import { updateCourseAssignment, addScheduleSlot, removeScheduleSlot } from "@/l
 import type { Course, ScheduleSlot } from "@/types"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
-import { Trash2 } from "lucide-react"
 
 interface CourseRow extends Course {
   promotionName: string

@@ -1,0 +1,6 @@
+
+> my-project@0.1.0 preview /app
+> vite preview --port 5005
+
+  ➜  Local:   http://localhost:5005/
+  ➜  Network: http://192.168.0.2:5005/
