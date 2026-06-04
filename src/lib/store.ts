@@ -333,7 +333,8 @@ export function gradeSubmission(id: string, rawGrade: number, feedback: string) 
       score,
       status: "pending",
       session: "Travail pratique",
-      type: assignment.type === "Formulaire" ? "Interro" : "TP"
+      type: assignment.type === "Formulaire" ? "Interro" : "TP",
+      title: assignment.title
     }
     state = {
       ...state,
@@ -350,6 +351,22 @@ export function gradeSubmission(id: string, rawGrade: number, feedback: string) 
 
 export function addGrade(grade: Grade) {
   state = { ...state, grades: [grade, ...state.grades] }
+  emit()
+}
+
+export function updateGrade(grade: Grade) {
+  state = {
+    ...state,
+    grades: state.grades.map((g) => (g.id === grade.id ? grade : g)),
+  }
+  emit()
+}
+
+export function removeGrade(id: string) {
+  state = {
+    ...state,
+    grades: state.grades.filter((g) => g.id !== id),
+  }
   emit()
 }
 

@@ -163,16 +163,16 @@ export function TeacherCourses() {
                     <div className="space-y-3 border-t pt-4">
                       <p className="text-sm font-semibold text-foreground">Ajouter une ressource</p>
                       <div className="space-y-1.5">
-                        <Label>Titre</Label>
+                        <Label>Titre du chapitre / Sujet</Label>
                         <Input
-                          placeholder="Ex : Cours 1 — Introduction"
+                          placeholder="Ex : Chapitre 1 — Introduction aux Algorithmes"
                           value={form.title}
                           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
-                          <Label>Type</Label>
+                          <Label>Type de ressource</Label>
                           <Select
                             value={form.type}
                             onValueChange={(v) =>
@@ -181,17 +181,17 @@ export function TeacherCourses() {
                           >
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="pdf">PDF</SelectItem>
-                              <SelectItem value="video">Vidéo</SelectItem>
-                              <SelectItem value="link">Lien web</SelectItem>
-                              <SelectItem value="doc">Document</SelectItem>
+                              <SelectItem value="pdf">Chapitre (PDF)</SelectItem>
+                              <SelectItem value="video">Vidéo explicative</SelectItem>
+                              <SelectItem value="link">Lien de référence</SelectItem>
+                              <SelectItem value="doc">Document / Exercice</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <div className="space-y-1.5">
-                          <Label>URL / Lien</Label>
+                          <Label>URL / Lien du support</Label>
                           <Input
-                            placeholder="https://…"
+                            placeholder="https://drive.google.com/..."
                             value={form.url}
                             onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
                           />
