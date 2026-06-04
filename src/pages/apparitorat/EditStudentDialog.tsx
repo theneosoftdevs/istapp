@@ -23,6 +23,7 @@ import { updateStudent } from "@/lib/store"
 import type { Student } from "@/types"
 import { toast } from "sonner"
 import locales from "@/lib/locales.json"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface EditStudentDialogProps {
   student: Student | null
@@ -32,6 +33,7 @@ interface EditStudentDialogProps {
 
 export function EditStudentDialog({ student, open, onOpenChange }: EditStudentDialogProps) {
   const store = useStore()
+  const { role } = useAuth()
   const [form, setForm] = useState<Student | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -133,7 +135,11 @@ export function EditStudentDialog({ student, open, onOpenChange }: EditStudentDi
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Status</Label>
-              <Select value={form.status} onValueChange={(v) => set("status", v as any)}>
+              <Select
+                value={form.status}
+                onValueChange={(v) => set("status", v as any)}
+                disabled={role === "apparitorat"}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -146,6 +152,11 @@ export function EditStudentDialog({ student, open, onOpenChange }: EditStudentDi
                   <SelectItem value="excluded">{locales.apparitorat.status_excluded}</SelectItem>
                 </SelectContent>
               </Select>
+              {role === "apparitorat" && (
+                <p className="text-[10px] text-muted-foreground italic">
+                  Modification réservée au Secrétariat Général
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label>Genre</Label>

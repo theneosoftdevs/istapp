@@ -149,6 +149,10 @@
   "secretariat_general": {
     "dashboard_title": "Tableau de bord — Secrétariat Général",
     "dashboard_subtitle": "Vue d'ensemble de l'institution.",
+    "results_title": "Résultats des étudiants",
+    "results_subtitle": "Consultez les résultats académiques de tous les étudiants inscrits.",
+    "appeals_title": "Recours sur les notes",
+    "appeals_subtitle": "Examinez et traitez les contestations de notes soumises par les étudiants.",
     "enrolled_students": "Étudiants inscrits",
     "faculties": "Facultés",
     "teachers": "Enseignants",
