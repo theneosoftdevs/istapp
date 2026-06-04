@@ -136,7 +136,11 @@ export function RectoratStats() {
                     fontSize: "0.875rem",
                   }}
                 />
-                <Bar dataKey="count" name="Étudiants" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" name="Étudiants" radius={[4, 4, 0, 0]}>
+                  {data.gradeDistribution.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

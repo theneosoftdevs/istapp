@@ -1,6 +1,6 @@
 // src/pages/teacher/TeacherCourses.tsx
 import { useState } from "react"
-import { Users, Clock, BookOpen, Plus, Trash2 } from "lucide-react"
+import { Users, Clock, BookOpen, Plus, Trash2, Loader2 } from "lucide-react"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -40,6 +40,7 @@ export function TeacherCourses() {
 
   const [openCourse, setOpenCourse] = useState<string | null>(null)
   const [form, setForm] = useState<ResForm>({ title: "", type: "pdf", url: "" })
+  const [isUploading, setIsUploading] = useState(false)
 
   const courses = store.courses
     .filter((c) => c.teacherId === teacher.id)
@@ -52,16 +53,39 @@ export function TeacherCourses() {
 
   function handleAdd(courseId: string) {
     if (!form.title.trim() || !form.url.trim()) return
-    addCourseResource({
-      id:        nextResourceId(),
-      courseId,
-      teacherId: teacher.id,
-      title:     form.title.trim(),
-      type:      form.type,
-      url:       form.url.trim(),
-      createdAt: new Date().toISOString().slice(0, 10),
-    })
-    setForm({ title: "", type: "pdf", url: "" })
+    setIsUploading(true)
+
+    // Simulate upload delay
+    setTimeout(() => {
+      addCourseResource({
+        id:        nextResourceId(),
+        courseId,
+        teacherId: teacher.id,
+        title:     form.title.trim(),
+        type:      form.type,
+        url:       form.url.trim(),
+        createdAt: new Date().toISOString().slice(0, 10),
+      })
+      setForm({ title: "", type: "pdf", url: "" })
+      setIsUploading(false)
+    }, 1000)
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) {
+      const extension = file.name.split('.').pop()?.toLowerCase()
+      let type: CourseResource["type"] = "pdf"
+      if (extension === "mp4" || extension === "webm") type = "video"
+      else if (extension === "doc" || extension === "docx") type = "doc"
+
+      setForm({
+        ...form,
+        title: form.title || file.name.split('.')[0],
+        type,
+        url: `/uploads/${file.name}`
+      })
+    }
   }
 
   function resetDialog() {
@@ -189,12 +213,26 @@ export function TeacherCourses() {
                           </Select>
                         </div>
                         <div className="space-y-1.5">
-                          <Label>URL / Lien du support</Label>
-                          <Input
-                            placeholder="https://drive.google.com/..."
-                            value={form.url}
-                            onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-                          />
+                          <Label>Fichier ou URL</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="https://..."
+                              value={form.url}
+                              onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
+                              className="flex-1"
+                            />
+                            <div className="relative">
+                              <Input
+                                type="file"
+                                className="absolute inset-0 opacity-0 cursor-pointer w-full"
+                                onChange={handleFileChange}
+                                accept=".pdf,.doc,.docx,.mp4,.webm"
+                              />
+                              <Button variant="outline" type="button" size="sm">
+                                Choisir...
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -202,11 +240,20 @@ export function TeacherCourses() {
                     <DialogFooter>
                       <Button
                         onClick={() => handleAdd(c.id)}
-                        disabled={!form.title.trim() || !form.url.trim()}
-                        className="gap-1.5"
+                        disabled={!form.title.trim() || !form.url.trim() || isUploading}
+                        className="gap-1.5 w-full sm:w-auto"
                       >
-                        <Plus className="size-4" />
-                        Ajouter
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="size-4 animate-spin" />
+                            Envoi...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="size-4" />
+                            Ajouter la ressource
+                          </>
+                        )}
                       </Button>
                     </DialogFooter>
                   </DialogContent>

@@ -46,6 +46,8 @@ import { SecretariatGeneralAcademic }      from "@/pages/secretariat_general/Sec
 import { RectoratDashboard } from "@/pages/rectorat/RectoratDashboard"
 import { RectoratStats }     from "@/pages/rectorat/RectoratStats"
 import { RectoratFaculties } from "@/pages/rectorat/RectoratFaculties"
+import { RectoratResults }   from "@/pages/rectorat/RectoratResults"
+import { RectoratAppeals }   from "@/pages/rectorat/RectoratAppeals"
 
 // ─── Guards ───────────────────────────────────────────────────────────────────
 
@@ -139,6 +141,8 @@ export default function App() {
         {/* Rectorat */}
         <Route element={<RoleGuard allow="rectorat" />}>
           <Route path="/rectorat/dashboard" element={<RectoratDashboard />} />
+          <Route path="/rectorat/results"   element={<RectoratResults />} />
+          <Route path="/rectorat/recours"   element={<RectoratAppeals />} />
           <Route path="/rectorat/stats"     element={<RectoratStats />} />
           <Route path="/rectorat/faculties" element={<RectoratFaculties />} />
         </Route>

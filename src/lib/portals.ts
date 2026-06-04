@@ -114,6 +114,8 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   ],
   rectorat: [
     { label: "Accueil",      to: "/rectorat/dashboard", icon: Home },
+    { label: "Résultats",    to: "/rectorat/results",   icon: FileText },
+    { label: "Recours",      to: "/rectorat/recours",   icon: AlertCircle },
     { label: "Stats",        to: "/rectorat/stats",     icon: BarChart3 },
     { label: "Facultés",     to: "/rectorat/faculties", icon: Building2 },
   ],
