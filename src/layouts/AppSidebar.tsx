@@ -15,17 +15,17 @@ export function AppSidebar({ mode }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "sticky top-0 h-screen flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
-        isRail ? "w-20" : "w-64"
+        "sticky top-0 h-screen flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-500 ease-in-out",
+        isRail ? "w-[80px]" : "w-64"
       )}
     >
-      <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4 transition-all duration-300", isRail ? "justify-center" : "gap-3")}>
+      <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4 transition-all duration-500", isRail ? "justify-center" : "gap-3")}>
         <img
           src="/ista.jpeg"
           alt="Logo ISTA"
           className={cn(
-            "shrink-0 rounded-lg object-cover shadow-sm transition-all duration-300",
-            isRail ? "size-10" : "size-9"
+            "shrink-0 rounded-lg object-cover shadow-md transition-all duration-500",
+            isRail ? "size-11" : "size-9"
           )}
         />
         {!isRail && (
@@ -38,7 +38,7 @@ export function AppSidebar({ mode }: AppSidebarProps) {
         )}
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+      <nav className={cn("flex-1 space-y-2 overflow-y-auto", isRail ? "p-2" : "p-3")}>
         <TooltipProvider delayDuration={0}>
           {nav.map((item) => {
             const link = (
@@ -47,16 +47,16 @@ export function AppSidebar({ mode }: AppSidebarProps) {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center rounded-lg px-3 py-2.5 text-xs font-bold uppercase tracking-widest transition-all",
-                    isRail ? "justify-center" : "gap-3",
+                    "flex items-center rounded-xl transition-all duration-300",
+                    isRail ? "h-14 w-14 justify-center" : "px-3 py-2.5 gap-3",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 ring-2 ring-primary/20 ring-offset-2 ring-offset-sidebar"
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   )
                 }
               >
-                <item.icon className="size-5 shrink-0" />
-                {!isRail && <span className="truncate">{item.label}</span>}
+                <item.icon className={cn("shrink-0 transition-transform duration-300", isRail ? "size-6" : "size-5")} />
+                {!isRail && <span className="truncate text-xs font-bold uppercase tracking-widest">{item.label}</span>}
               </NavLink>
             )
 

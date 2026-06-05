@@ -50,7 +50,7 @@ export interface Student {
   gender: "M" | "F"
   promotionId: string
   facultyId: string
-  status: "active" | "pending" | "suspended" | "finished" | "dropped" | "excluded"
+  status: "active" | "suspended" | "excluded" | "pending"
   enrollmentDate: string
   average: number
 }
